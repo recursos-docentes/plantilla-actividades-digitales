@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --acc:#3B1F6E;--acc2:#5c35a8;--acc-bg:#f3f0fa;--acc-border:#c9bfe6;
+  --acc:#1e3a8a;--acc2:#3b5bdb;--acc-bg:#e8ecfd;--acc-border:#b0bef8;
   --ok:#2d6a4f;--ok-bg:#eafaf4;--warn:#9b2335;--warn-bg:#fdf0f2;
   --bg:#f0ece2;--card:#fffdf6;--border:#d9cdb7;--text:#2c2117;--muted:#7a6e5a;
 }
@@ -28,7 +28,7 @@ body{font-family:'Lora',Georgia,serif;font-size:14px;background:var(--bg);color:
 .frow.three{grid-template-columns:1fr 1fr 1fr}
 label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
 input[type=text],input[type=number],select,textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--text);background:#fafaf8;outline:none;font-family:inherit;transition:border-color .15s}
-input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px #3b1f6e18}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px #3b5bdb18}
 textarea{resize:vertical;min-height:68px}
 .q-list{display:flex;flex-direction:column;gap:10px}
 .q-card{background:var(--acc-bg);border:1px solid var(--acc-border);border-radius:8px;padding:14px 16px}
@@ -129,6 +129,10 @@ textarea{resize:vertical;min-height:68px}
             <label>Color del escrito</label>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="theme-swatches"></div>
           </div>
+        </div>
+        <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap">
+          <label class="oblig-toggle"><input type="checkbox" id="cfg-shuffle-q"> Orden de preguntas aleatorio</label>
+          <label class="oblig-toggle"><input type="checkbox" id="cfg-shuffle-opts"> Opciones de respuesta aleatorias</label>
         </div>
       </div>
 
@@ -235,7 +239,7 @@ function startTimer(){
 }
 
 function buildToolbar(qid){
-  var groupLabels = ['Conjuntos', 'ℕ ℤ ℝ ℚ', 'Otros'];
+  var groupLabels = ['Conjuntos', 'ℕ ℤ ℝ ℚ', 'Operadores', 'Lógica', 'Otros'];
   var h = '<div class="open-toolbar">';
   h += '<span class="tb-label">Formato</span>';
   h += '<button type="button" class="tb-btn fmt" onclick="fmtCmd(\'' + qid + '\',\'bold\')"><b>B</b></button>';
@@ -284,6 +288,19 @@ function shuffleArr(arr){
 }
 
 function renderQuiz(){
+  if(SHUFFLE_QUESTIONS) questions = shuffleArr(questions);
+  if(SHUFFLE_OPTIONS){
+    questions.forEach(function(q){
+      if(q.type === 'single'){
+        var ltrs = ['a','b','c','d'];
+        var order = shuffleArr([0,1,2,3]);
+        var newOpts = order.map(function(i){ return q.opts[i]; });
+        var oldIdx = ltrs.indexOf(q.correct);
+        q.correct = ltrs[order.indexOf(oldIdx)];
+        q.opts = newOpts;
+      }
+    });
+  }
   var typeLabels = { single:'opción única', tf:'verdadero / falso', open:'pregunta abierta', match:'emparejar', fill:'banco de palabras' };
   var h = '<div class="quiz-header"><h1>' + escH(QUIZ_SECTION_TITLE) + '</h1><p>' + escH(QUIZ_SECTION_SUB) + '</p></div>';
   questions.forEach(function(q, i){
@@ -787,7 +804,9 @@ function getConfig(){
     tiempo:    document.getElementById('cfg-tiempo').value.trim()||'60',
     lskey:     document.getElementById('cfg-lskey').value.trim().replace(/\s/g,'_'),
     filename:  (document.getElementById('cfg-filename').value.trim().replace(/\s/g,'_'))||'escrito',
-    url:       document.getElementById('cfg-url').value.trim()
+    url:       document.getElementById('cfg-url').value.trim(),
+    shuffleQ:  document.getElementById('cfg-shuffle-q').checked,
+    shuffleOpts: document.getElementById('cfg-shuffle-opts').checked
   };
   if(!cfg.titulo){showAlert('Completar el título del escrito.');return null;}
   if(!cfg.lskey) {showAlert('Completar la clave localStorage.');return null;}
@@ -831,7 +850,9 @@ function getQuizJS(cfg, qJson){
     'var QUIZ_SUBTITLE    = ' + JSON.stringify(cfg.subtitulo) + ';\n' +
     'var QUIZ_SECTION_TITLE = ' + JSON.stringify(cfg.seccion) + ';\n' +
     'var QUIZ_SECTION_SUB   = ' + JSON.stringify('Responder con el procedimiento completo donde se solicite. Tiempo: ' + cfg.tiempo + ' minutos.') + ';\n' +
-    'var MATH_SYMBOLS = [["∈","∉","⊆","⊂","∪","∩","−","△","ᶜ","∅"],["ℕ","ℤ","ℝ","ℚ"],["|A|","⊇","≠","≤","≥"]];\n' +
+    'var MATH_SYMBOLS = [["∈","∉","⊆","⊂","∪","∩","−","△","ᶜ","∅"],["ℕ","ℤ","ℝ","ℚ"],["×","÷","±","√","∑","∏","∞"],["∧","∨","¬","→","↔","∀","∃"],["|A|","⊇","≠","≤","≥"]];\n' +
+    'var SHUFFLE_QUESTIONS = ' + (cfg.shuffleQ ? 'true' : 'false') + ';\n' +
+    'var SHUFFLE_OPTIONS   = ' + (cfg.shuffleOpts ? 'true' : 'false') + ';\n' +
     'var questions = ' + qJson + ';\n' +
     'var QUESTION_POINTS = ' + (function(){ var pts={}; questions.forEach(function(q){ pts[q.id]=q.puntaje||1; }); return JSON.stringify(pts); })() + ';\n' +
     'var QUIZ_TIME_SECS = ' + ((parseInt(cfg.tiempo)||60)*60) + ';\n' +
