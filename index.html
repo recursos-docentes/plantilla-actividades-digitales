@@ -3,107 +3,108 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cómo armar un escrito digital — Guía v2 (con Generador)</title>
+<title>Cómo armar una actividad digital — Guía v2 (con Generador)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  color-scheme:light;
-  --bg:#f0ece2;--panel:#fffdf6;--panel-2:#f5f0e4;--border:#d9cdb7;
-  --text:#2c2117;--muted:#7a6e5a;--amber:#3B1F6E;--amber-dim:#3B1F6E20;
-  --green:#2d6a4f;--green-dim:#2d6a4f15;--red:#9b2335;--red-dim:#9b233518;
-  --mono:ui-monospace,"Fira Code",Consolas,"Courier New",monospace;
+  --bg:#f4f6f9;
+  --panel:#ffffff;
+  --panel2:#f0f3f8;
+  --border:#dde2ea;
+  --text:#1a2030;
+  --muted:#6b7a95;
+  --acc:#3b5bdb;
+  --acc-light:#e8ecfd;
+  --acc-border:#b0bef8;
+  --green:#2f9e44;
+  --green-bg:#ebfbee;
+  --amber:#e67700;
+  --amber-bg:#fff3bf;
+  --red:#c92a2a;
+  --red-bg:#fff5f5;
+  --radius:10px;
+  --shadow:0 2px 12px rgba(0,0,0,.08);
 }
-*{box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{margin:0;background:var(--bg);color:var(--text);font-family:'Lora',Georgia,serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
-.wrap{max-width:820px;margin:0 auto;padding:0 24px 100px;}
-header.hero{padding:56px 0 32px;border-bottom:1px solid var(--border);margin-bottom:32px;}
-.eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-weight:600;margin-bottom:14px;}
-h1{font-size:clamp(26px,4vw,38px);line-height:1.18;margin:0 0 16px;font-weight:600;}
-.tagline{color:var(--muted);font-size:18px;font-style:italic;max-width:60ch;}
-.badge-new{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--green);color:#fff;padding:2px 10px;border-radius:20px;letter-spacing:.06em;margin-left:10px;vertical-align:middle;}
-
-/* pestañas */
-.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:40px;}
-.tab-btn{font-family:var(--mono);font-size:12.5px;background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:9px 15px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s;}
-.tab-btn .num{color:var(--amber);font-weight:700;margin-right:6px;}
-.tab-btn:hover{border-color:var(--amber);}
-.tab-btn.active{background:var(--amber);border-color:var(--amber);color:#fffdf6;}
-.tab-btn.active .num{color:#fffdf6;}
-
-/* paneles */
-.panel{display:none;}
-.panel.active{display:block;animation:fade .2s ease;}
-@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
-.panel h2{display:flex;align-items:baseline;gap:14px;font-size:24px;font-weight:600;margin:0 0 8px;}
-.panel h2 .n{font-family:'Lora',Georgia,serif;font-style:italic;font-weight:600;font-size:34px;color:var(--amber);line-height:1;}
-.panel .sub{color:var(--muted);margin:0 0 20px;}
-h3{font-size:17px;font-weight:600;margin:28px 0 10px;}
-p{margin:0 0 14px;}
-ul,ol{padding-left:24px;margin:0 0 14px;}
-li{margin-bottom:6px;}
-strong{color:var(--text);}
-
-/* tablas */
-table{width:100%;border-collapse:collapse;margin:18px 0 22px;background:var(--panel);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:15px;}
-th,td{padding:10px 14px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top;}
-th{background:var(--panel-2);font-weight:600;font-family:var(--mono);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);}
-tr:last-child td{border-bottom:none;}
-td code{font-family:var(--mono);background:var(--panel-2);padding:1px 6px;border-radius:4px;font-size:13px;}
-
-/* callouts */
-.callout{border:1px solid var(--border);border-left:4px solid var(--muted);background:var(--panel);border-radius:6px;padding:14px 18px;margin:18px 0;font-size:15.5px;}
-.callout .tag{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:600;display:block;margin-bottom:4px;}
-.callout.tip{border-left-color:var(--green);background:var(--green-dim);}
-.callout.tip .tag{color:var(--green);}
-.callout.warn{border-left-color:var(--amber);background:var(--amber-dim);}
-.callout.warn .tag{color:var(--amber);}
-.callout.info{border-left-color:var(--muted);}
-.callout.info .tag{color:var(--muted);}
-
-/* bloques de código */
-.filebox{background:#1d1a15;border-radius:10px;overflow:hidden;margin:16px 0 20px;box-shadow:0 1px 0 var(--border);}
-.filebox .bar{display:flex;align-items:center;justify-content:space-between;background:#2a251d;color:#d9cdb7;font-family:var(--mono);font-size:12.5px;padding:9px 14px;}
-.filebox .bar .copybtn{font-family:var(--mono);font-size:11.5px;background:transparent;border:1px solid #4a4235;color:#d9cdb7;border-radius:5px;padding:3px 10px;cursor:pointer;}
-.filebox .bar .copybtn:hover{border-color:#9b8f78;}
-.filebox .bar .copybtn.copied{color:#7fbf9e;border-color:#7fbf9e;}
-.filebox pre{margin:0;padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:13.3px;line-height:1.55;color:#f0ece2;white-space:pre;}
-
-/* pasos visuales */
-.steps{display:flex;flex-direction:column;gap:0;}
-.step{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
-.step:last-child{border-bottom:none;}
-.step-num{width:32px;height:32px;border-radius:50%;background:var(--amber);color:#fff;font-family:var(--mono);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-.step-body{flex:1;}
-.step-body strong{display:block;margin-bottom:4px;font-size:16px;}
-.step-body p{margin:0;color:var(--muted);font-size:14.5px;}
-
-/* navegación */
-.panel-nav{display:flex;justify-content:space-between;margin-top:36px;padding-top:20px;border-top:1px solid var(--border);}
-.panel-nav button{font-family:'Lora',Georgia,serif;font-size:14.5px;background:none;border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:8px;cursor:pointer;}
-.panel-nav button:hover{border-color:var(--amber);color:var(--amber);}
-.panel-nav button:disabled{opacity:0;pointer-events:none;}
-
-/* CTA */
-.cta{text-align:center;padding:32px 24px;background:var(--panel);border:1px solid var(--border);border-radius:12px;}
-.cta a.btn{display:inline-block;margin-top:14px;background:var(--amber);color:#fffdf6;font-family:'Lora',Georgia,serif;font-weight:600;text-decoration:none;padding:12px 26px;border-radius:8px;}
-.cta a.btn:hover{opacity:.9;}
-
-footer{text-align:center;color:var(--muted);font-size:13.5px;margin-top:56px;padding-top:24px;border-top:1px solid var(--border);font-family:var(--mono);}
-dl.glosario{margin:0;}
-dl.glosario dt{font-weight:600;font-size:16px;margin-top:24px;margin-bottom:4px;color:var(--text);}
-dl.glosario dt:first-child{margin-top:0;}
-dl.glosario dd{margin:0 0 0 0;color:var(--muted);font-size:15px;line-height:1.65;border-left:3px solid var(--border);padding-left:14px;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+header{background:linear-gradient(135deg,#1e3a8a 0%,#3b5bdb 100%);color:#fff;padding:36px 24px 32px;text-align:center}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
+h1{font-size:clamp(22px,4vw,32px);font-weight:700;line-height:1.2;margin-bottom:10px}
+.tagline{font-size:14px;opacity:.85;max-width:620px;margin:0 auto}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.tab-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid transparent;border-radius:6px;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--muted);font-weight:500;transition:all .15s}
+.tab-btn:hover{background:var(--acc-light);color:var(--acc)}
+.tab-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.tab-btn .num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);font-size:11px;font-weight:700}
+.tab-btn:not(.active) .num{background:var(--border);color:var(--muted)}
+.panel{display:none;max-width:820px;margin:0 auto;padding:32px 24px 40px}
+.panel.active{display:block}
+h2{font-size:22px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+h2 .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--acc);color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+.sub{color:var(--muted);font-size:14px;margin-bottom:22px;margin-top:2px}
+h3{font-size:16px;font-weight:600;margin:24px 0 10px;color:var(--text)}
+p{margin-bottom:12px}
+ul,ol{padding-left:22px;margin-bottom:12px}
+li{margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px}
+th{background:var(--acc-light);color:var(--acc);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--acc-border)}
+td{padding:10px 14px;border:1px solid var(--border);vertical-align:top}
+tr:nth-child(even) td{background:var(--panel2)}
+code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
+pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.callout{border-radius:var(--radius);padding:14px 16px;margin:18px 0;font-size:14px;line-height:1.55}
+.callout .tag{display:inline-block;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;padding:2px 8px;border-radius:20px}
+.callout.tip{background:var(--acc-light);border-left:4px solid var(--acc)}
+.callout.tip .tag{background:var(--acc);color:#fff}
+.callout.warn{background:var(--amber-bg);border-left:4px solid var(--amber)}
+.callout.warn .tag{background:var(--amber);color:#fff}
+.callout.info{background:var(--green-bg);border-left:4px solid var(--green)}
+.callout.info .tag{background:var(--green);color:#fff}
+.callout.danger{background:var(--red-bg);border-left:4px solid var(--red)}
+.callout.danger .tag{background:var(--red);color:#fff}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-body strong{display:block;margin-bottom:4px;font-size:15px}
+.step-body p{margin-bottom:0;font-size:14px;color:var(--muted)}
+.filebox{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:14px 0 18px}
+.filebox .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--muted)}
+.filebox pre{padding:14px 16px;background:var(--panel);font-size:12px}
+.copybtn{padding:4px 12px;border:1px solid var(--border);border-radius:5px;background:var(--panel);cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .15s}
+.copybtn:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.cta{background:var(--acc-light);border:1px solid var(--acc-border);border-radius:var(--radius);padding:20px 22px;margin:24px 0;text-align:center}
+.btn{display:inline-block;background:var(--acc);color:#fff!important;padding:10px 22px;border-radius:7px;font-weight:600;font-size:14px;text-decoration:none;transition:background .15s}
+.btn:hover{background:#2f4abf;text-decoration:none}
+.panel-nav{display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid var(--border)}
+.panel-nav button{padding:9px 20px;border:1px solid var(--border);border-radius:7px;background:var(--panel);cursor:pointer;font-size:14px;font-family:inherit;color:var(--muted);font-weight:500;transition:all .15s}
+.panel-nav button:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
+.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 20px}
+.arch-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+.arch-card .arch-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+.arch-card .arch-name{font-size:15px;font-weight:600;color:var(--acc);margin-bottom:4px}
+.arch-card p{font-size:13px;color:var(--muted);margin:0}
+dl{margin:12px 0}
+dt{font-weight:600;margin-top:16px;color:var(--text)}
+dd{margin-left:0;color:var(--muted);font-size:14px;margin-top:3px}
+@media(max-width:600px){
+  .arch-grid{grid-template-columns:1fr}
+  .tabs{gap:3px}
+  .tab-btn{font-size:12px;padding:6px 10px}
+  .panel{padding:20px 14px 32px}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-<header class="hero">
+<header>
   <div class="eyebrow">Recursos docentes</div>
-  <h1>Cómo armar un escrito digital<br>paso a paso</h1>
-  <p class="tagline">Sin editar código a mano: el Generador produce el HTML del escrito y el Code.gs listos para descargar y publicar.</p>
+  <h1>Cómo armar una actividad digital<br>paso a paso</h1>
+  <p class="tagline">Sin editar código a mano: el Generador produce el HTML de la actividad y el Code.gs listos para descargar y publicar.</p>
 </header>
 
 <div class="tabs" role="tablist">
@@ -113,41 +114,65 @@ dl.glosario dd{margin:0 0 0 0;color:var(--muted);font-size:15px;line-height:1.65
   <button class="tab-btn" data-tab="planilla"><span class="num">4</span>Planilla y Code.gs</button>
   <button class="tab-btn" data-tab="webapp"><span class="num">5</span>Publicar Web App</button>
   <button class="tab-btn" data-tab="url"><span class="num">6</span>Pegar la URL</button>
-  <button class="tab-btn" data-tab="descargar"><span class="num">7</span>Generar el escrito</button>
+  <button class="tab-btn" data-tab="descargar"><span class="num">7</span>Generar la actividad</button>
   <button class="tab-btn" data-tab="github"><span class="num">8</span>GitHub Pages</button>
-  <button class="tab-btn" data-tab="probar"><span class="num">9</span>Probar y usar</button>
-  <button class="tab-btn" data-tab="glosario"><span class="num">★</span>Glosario</button>
+  <button class="tab-btn" data-tab="glosario"><span class="num">9</span>Glosario</button>
 </div>
 
 <!-- ═══════════════════════════════════  1 ══ -->
 <section class="panel" id="panel-arquitectura">
-  <h2><span class="n">1</span>Arquitectura del sistema</h2>
-  <p class="sub">Dos archivos, cada uno en su lugar — así funciona la corrección automática sin exponer las respuestas.</p>
+  <h2><span class="n">1</span>¿Cómo funciona el sistema?</h2>
+  <p class="sub">Dos archivos que trabajan juntos: uno que corre en el navegador del alumno, otro que guarda las respuestas en Google Sheets.</p>
 
-  <p>El sistema funciona con <strong>dos piezas</strong> que viven separadas.</p>
+  <div class="arch-grid">
+    <div class="arch-card">
+      <div class="arch-label">Archivo del alumno</div>
+      <div class="arch-name">actividad.html</div>
+      <p>Se publica en la web (GitHub Pages u otro servicio). El alumno lo abre en el navegador, responde en pantalla completa y envía.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-label">Script del docente</div>
+      <div class="arch-name">Code.gs</div>
+      <p>Se pega en Google Apps Script, se publica como Web App. Recibe las respuestas y las guarda en una Google Sheet.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-label">Herramienta de armado</div>
+      <div class="arch-name">Generador</div>
+      <p>Un archivo HTML que corre localmente. Permite armar la actividad de forma visual y descarga los dos archivos anteriores listos para usar.</p>
+    </div>
+    <div class="arch-card">
+      <div class="arch-label">Almacenamiento</div>
+      <div class="arch-name">Google Sheets</div>
+      <p>Cada envío agrega una fila nueva con marca de tiempo, nombre del alumno, respuestas y corrección automática.</p>
+    </div>
+  </div>
 
   <table>
-    <tr><th>Archivo</th><th>Dónde vive</th><th>Qué hace</th></tr>
+    <tr><th>Archivo</th><th>Dónde vive</th></tr>
     <tr>
-      <td><code>escrito_TEMA.html</code></td>
+      <td><code>actividad.html</code></td>
       <td>GitHub Pages (o cualquier servidor web)</td>
-      <td>El examen que abre el alumno: preguntas, pantalla completa forzada, anti-doble-envío. <strong>No contiene ninguna respuesta correcta.</strong></td>
     </tr>
     <tr>
       <td><code>Code.gs</code></td>
-      <td>Apps Script vinculado a una Google Sheet</td>
-      <td>Recibe cada intento, autocorrige y guarda la fila en la planilla. La clave de respuestas vive solo aquí.</td>
+      <td>Google Apps Script (dentro de Google Drive)</td>
+    </tr>
+    <tr>
+      <td>Google Sheet</td>
+      <td>Google Drive</td>
+    </tr>
+    <tr>
+      <td>Generador</td>
+      <td>Tu computadora (o en la web — ver pestaña 2)</td>
     </tr>
   </table>
 
-  <p>El <strong>Generador</strong> produce ambos archivos con un clic — sin necesidad de editar código a mano.</p>
-
-  <div class="callout info">
+  <div class="callout tip">
     <span class="tag">Flujo general</span>
-    Abrir el Generador → cargar las preguntas → descargar Code.gs → crear planilla y publicar Web App → copiar la URL → pegarla en el Generador → descargar el escrito.html → publicarlo en la web (GitHub Pages u otro servicio).
+    Abrir el Generador → cargar las preguntas → descargar Code.gs → crear planilla y publicar Web App → copiar la URL → pegarla en el Generador → descargar la actividad.html → publicarla en la web (GitHub Pages u otro servicio).
   </div>
 
-  <div class="panel-nav"><button disabled>← Anterior</button><button class="next">Siguiente →</button></div>
+  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
 </section>
 
 <!-- ═══════════════════════════════════  2 ══ -->
@@ -155,28 +180,31 @@ dl.glosario dd{margin:0 0 0 0;color:var(--muted);font-size:15px;line-height:1.65
   <h2><span class="n">2</span>El Generador</h2>
   <p class="sub">Un archivo HTML que corre en el navegador: no requiere instalar nada.</p>
 
-  <p>El Generador es el archivo <code>generador_escritos.html</code>. Para usarlo:</p>
+  <div class="cta" style="margin-bottom:18px">
+    <a class="btn" href="https://recursos-docentes.github.io/plantilla-actividades-digitales/generador_escritos.html" target="_blank" rel="noopener">Abrir el Generador ↗</a>
+    <p style="margin:10px 0 0;font-size:13px;color:var(--muted)">O descargarlo desde <a href="https://github.com/recursos-docentes/plantilla-actividades-digitales/blob/main/generador_escritos.html" target="_blank" rel="noopener">GitHub</a> para usar sin conexión.</p>
+  </div>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>Abrir el archivo en el navegador</strong>
-        <p>Hacer doble clic en <code>generador_escritos.html</code>. Se abre como una aplicación web local — no necesita conexión a internet para funcionar.</p>
+        <strong>Abrir el Generador</strong>
+        <p>Hacer clic en el botón de arriba para abrirlo directamente en el navegador. También se puede descargar y abrir como archivo local — funciona igual en los dos casos.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <strong>Completar la sección Configuración</strong>
-        <p>Título del escrito, materia, instrucción inicial, cabecera de sección, tiempo en minutos y nombre del archivo que se va a descargar. La clave localStorage y la URL del Web App se completan más adelante.</p>
+        <p>Título de la actividad, materia, instrucción inicial, cabecera de sección, tiempo en minutos y nombre del archivo que se va a descargar. La clave localStorage y la URL del Web App se completan más adelante.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <strong>Cargar las preguntas</strong>
-        <p>Usar los botones <strong>+ Opción múltiple</strong>, <strong>+ V / F</strong> y <strong>+ Abierta</strong>. Cada pregunta se edita, reordena y elimina desde su propio panel desplegable.</p>
+        <p>Usar los botones <strong>+ Opción múltiple</strong>, <strong>+ V / F</strong>, <strong>+ Abierta</strong>, <strong>+ Emparejar</strong> y <strong>+ Banco de palabras</strong>. Cada pregunta se edita, reordena y elimina desde su propio panel desplegable.</p>
       </div>
     </div>
   </div>
@@ -337,43 +365,43 @@ Reglas:
 
 <!-- ═══════════════════════════════════  4 ══ -->
 <section class="panel" id="panel-planilla">
-  <h2><span class="n">4</span>Crear la planilla y pegar el Code.gs</h2>
-  <p class="sub">Primero la planilla, luego el script — en ese orden para que queden vinculados.</p>
+  <h2><span class="n">4</span>Planilla y Code.gs</h2>
+  <p class="sub">El script que recibe las respuestas y las guarda en Google Sheets.</p>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
         <strong>Descargar el Code.gs desde el Generador</strong>
-        <p>En el panel derecho del Generador, hacer clic en <strong>⬇ Descargar Code.gs</strong>. El archivo se descarga listo — no hace falta editarlo.</p>
+        <p>En el Generador, una vez cargadas las preguntas, hacer clic en <strong>⬇ Descargar Code.gs</strong>. Se descarga un archivo de texto con el script ya configurado para esa actividad.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <strong>Crear una Google Sheet nueva</strong>
-        <p>En Google Drive: <strong>Nuevo → Google Sheets</strong>. Darle un nombre descriptivo, por ejemplo <em>Respuestas Conjuntos 2026</em>. No hace falta escribir nada adentro — los encabezados los agrega el script solo cuando llega el primer envío.</p>
+        <p>En Google Drive: <strong>Nuevo → Google Sheets</strong>. Darle un nombre relacionado con la actividad, por ejemplo <em>Respuestas – Conjuntos 2026</em>.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>Abrir Apps Script desde esa planilla</strong>
-        <p>Menú <strong>Extensiones → Apps Script</strong>. Se abre el editor con un archivo <code>Code.gs</code> vacío.</p>
+        <strong>Abrir el editor de Apps Script</strong>
+        <p>En la planilla: menú <strong>Extensiones → Apps Script</strong>. Se abre el editor con un archivo <code>Code.gs</code> vacío.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>Reemplazar el contenido y guardar</strong>
-        <p>Seleccionar todo (Ctrl+A), borrar, pegar el contenido del Code.gs descargado. Guardar con Ctrl+S.</p>
+        <strong>Pegar el código descargado</strong>
+        <p>Borrar todo el contenido del editor, pegar el contenido del archivo <code>Code.gs</code> descargado y hacer clic en <strong>Guardar</strong> (ícono del diskette o Ctrl+S).</p>
       </div>
     </div>
   </div>
 
-  <div class="callout info">
-    <span class="tag">Por qué desde la planilla y no suelto</span>
-    El script usa <code>getActiveSpreadsheet()</code> para encontrar la hoja donde guardar las respuestas. Eso solo funciona cuando el script está vinculado a una planilla — lo que ocurre al crearlo desde <strong>Extensiones → Apps Script</strong> dentro de una Sheet. Si se crea un proyecto suelto en script.google.com, el script no encuentra ninguna hoja y no guarda nada.
+  <div class="callout warn">
+    <span class="tag">No hacer clic en Ejecutar</span>
+    El botón Ejecutar del editor sirve para probar funciones manualmente. La función <code>doGet</code> espera un parámetro que solo llega cuando un alumno envía la actividad, así que ejecutarla a mano da error. No es necesario ejecutar nada: el script se activa solo cuando recibe un envío.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -382,47 +410,51 @@ Reglas:
 <!-- ═══════════════════════════════════  5 ══ -->
 <section class="panel" id="panel-webapp">
   <h2><span class="n">5</span>Publicar como aplicación web</h2>
-  <p class="sub">Este paso convierte el script en una URL que el escrito puede llamar para guardar respuestas.</p>
+  <p class="sub">Este paso convierte el script en una URL que la actividad puede llamar para guardar respuestas.</p>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
         <strong>Implementar → Nueva implementación</strong>
-        <p>Botón azul arriba a la derecha en el editor de Apps Script.</p>
+        <p>En el editor de Apps Script: botón azul <strong>Implementar</strong> (arriba a la derecha) → <strong>Nueva implementación</strong>.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>Configurar el tipo</strong>
-        <p>Tipo: <strong>Aplicación web</strong>. Ejecutar como: <strong>Yo</strong>. Quién tiene acceso: <strong>Cualquier persona</strong>.</p>
+        <strong>Configurar la implementación</strong>
+        <p>En el diálogo que aparece:<br>
+        — Tipo: <strong>Aplicación web</strong> (ícono de engranaje → seleccionar si no está)<br>
+        — Ejecutar como: <strong>Yo</strong><br>
+        — Quién tiene acceso: <strong>Cualquier usuario</strong><br>
+        Hacer clic en <strong>Implementar</strong>.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>Autorizar</strong>
-        <p>Google va a pedir permiso para ejecutar el script. El aviso de "aplicación no verificada" es normal — se trata de un script propio, no de una app de terceros. Hacer clic en <em>Configuración avanzada → Ir a [nombre del proyecto]</em> y aceptar.</p>
+        <strong>Autorizar el acceso</strong>
+        <p>La primera vez pide autorización. Hacer clic en <strong>Autorizar acceso</strong> → elegir la cuenta de Google → en la pantalla de advertencia, clic en <strong>Avanzado → Ir a [nombre del proyecto] (no seguro)</strong> → <strong>Permitir</strong>.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
         <strong>Copiar la URL del Web App</strong>
-        <p>Aparece en la sección <strong>App web</strong>, termina en <code>/exec</code>. Copiar esa URL — se necesita en el paso siguiente.</p>
+        <p>Aparece una URL larga que empieza con <code>https://script.google.com/macros/s/...</code>. Copiarla — se necesita en el siguiente paso.</p>
       </div>
     </div>
   </div>
 
-  <div class="callout warn">
-    <span class="tag">Para actualizar el Code.gs más adelante</span>
-    Si se modifica el script, guardar no alcanza. Hay que ir a <strong>Implementar → Administrar implementaciones → ✏️ editar → Nueva versión → Implementar</strong>. Crear una implementación nueva desde cero genera una URL distinta — conviene evitarlo porque habría que actualizar el HTML también.
+  <div class="callout info">
+    <span class="tag">Permisos necesarios</span>
+    Al autorizar, el script pide permiso para leer y escribir en Google Sheets. Es necesario para que pueda crear los encabezados y agregar las filas de respuestas. El script solo accede a la planilla donde fue creado.
   </div>
 
   <div class="callout warn">
-    <span class="tag">No hacer clic en Ejecutar</span>
-    El botón Ejecutar del editor sirve para probar funciones manualmente. La función <code>doGet</code> espera un parámetro que solo llega cuando un alumno envía el escrito, así que ejecutarla a mano da error. No es necesario ejecutar nada: el script se activa solo cuando recibe un envío.
+    <span class="tag">Si se modifica el script después</span>
+    Cada vez que se guarda un cambio en el Code.gs hay que hacer una nueva implementación (<strong>Implementar → Administrar implementaciones → Nueva versión</strong>). La URL no cambia, pero el código actualizado no entra en efecto hasta publicar la nueva versión.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -431,13 +463,13 @@ Reglas:
 <!-- ═══════════════════════════════════  6 ══ -->
 <section class="panel" id="panel-url">
   <h2><span class="n">6</span>Pegar la URL en el Generador</h2>
-  <p class="sub">Este es el dato que conecta el escrito con la planilla.</p>
+  <p class="sub">Este es el dato que conecta la actividad con la planilla.</p>
 
-  <p>Volver al Generador y pegar la URL copiada en el paso anterior en el campo <strong>"URL del Web App de Google Apps Script"</strong>. Ahora el Generador tiene todo lo que necesita para producir el escrito completo.</p>
+  <p>Volver al Generador y pegar la URL copiada en el paso anterior en el campo <strong>"URL del Web App de Google Apps Script"</strong>. Ahora el Generador tiene todo lo que necesita para producir la actividad completa.</p>
 
   <div class="callout tip">
     <span class="tag">Si ya se descargó el Code.gs antes de tener la URL</span>
-    No hace falta volver a descargarlo: el Code.gs no cambia si se modifica la URL. La URL solo va adentro del <strong>escrito.html</strong>, que se genera en el paso siguiente.
+    No hace falta volver a descargarlo: el Code.gs no cambia si se modifica la URL. La URL solo va adentro del <strong>actividad.html</strong>, que se genera en el paso siguiente.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -445,23 +477,44 @@ Reglas:
 
 <!-- ═══════════════════════════════════  7 ══ -->
 <section class="panel" id="panel-descargar">
-  <h2><span class="n">7</span>Generar y descargar el escrito</h2>
-  <p class="sub">El Generador produce el HTML del escrito con todo adentro: preguntas, estilos, lógica y URL de la planilla.</p>
+  <h2><span class="n">7</span>Generar y descargar la actividad</h2>
+  <p class="sub">El Generador produce el HTML de la actividad con todo adentro: preguntas, estilos, lógica y URL de la planilla.</p>
 
-  <p>Hacer clic en <strong>⬇ Descargar escrito.html</strong>. El archivo se descarga con el nombre configurado (por ejemplo <code>escrito_conjuntos.html</code>).</p>
-
-  <p>El archivo resultante es completamente autocontenido: CSS, JS y preguntas en un solo HTML. No depende de ninguna librería externa salvo la fuente de Google Fonts (que carga con internet).</p>
+  <p>Hacer clic en <strong>⬇ Descargar actividad.html</strong>. El archivo se descarga con el nombre configurado (por ejemplo <code>actividad_conjuntos.html</code>).</p>
 
   <div class="callout info">
-    <span class="tag">Qué lleva el escrito generado</span>
+    <span class="tag">Qué lleva la actividad generada</span>
     <ul style="margin:6px 0 0; padding-left:20px;">
-      <li>Pantalla de inicio con campo de nombre y apellido</li>
-      <li>Pantalla completa forzada al hacer clic en Comenzar</li>
+      <li>Todas las preguntas con corrección automática para opción múltiple, V/F, emparejar y banco de palabras</li>
+      <li>Pantalla completa forzada al comenzar</li>
       <li>Auto-envío si el alumno sale de pantalla completa</li>
-      <li>Anti-doble-envío: si el alumno reabre el archivo ya enviado, ve "Escrito enviado"</li>
+      <li>Anti-doble-envío: si el alumno reabre el archivo ya enviado, ve "Actividad enviada"</li>
       <li>Barra de símbolos matemáticos en preguntas abiertas</li>
-      <li>Pantalla de confirmación con autocorrección parcial de las preguntas cerradas</li>
+      <li>Temporizador configurable</li>
     </ul>
+  </div>
+
+  <h3>Probar antes de distribuir</h3>
+  <p>Abrir el archivo descargado y completarlo como lo haría un alumno:</p>
+  <ul>
+    <li>Responder todas las preguntas y enviar.</li>
+    <li>Abrir la Google Sheet: debe haber aparecido una fila nueva con el nombre, las respuestas y el puntaje automático.</li>
+    <li>Cerrar y volver a abrir la actividad en el mismo navegador: debe mostrar "Actividad enviada" sin permitir responder de nuevo.</li>
+  </ul>
+
+  <div class="callout tip">
+    <span class="tag">Reiniciar el anti-doble-envío para seguir probando</span>
+    Si se quiere volver a hacer la actividad desde el mismo navegador (para probar), hay que abrir las <strong>herramientas de desarrollo</strong> (F12) → pestaña <strong>Application</strong> → <strong>Local Storage</strong> → encontrar la clave de la actividad (por ejemplo <code>logica_conjuntos_2026</code>) → eliminarla. Recargando la página, la actividad vuelve a la pantalla de inicio.
+  </div>
+
+  <div class="callout tip">
+    <span class="tag">Próxima actividad</span>
+    Para armar la siguiente actividad de otra unidad: abrir el Generador, cambiar el título, la clave localStorage (¡obligatorio!) y las preguntas, y repetir desde el paso 4 si se usa una planilla nueva, o desde el paso 6 si se reutiliza la misma planilla con el mismo Web App.
+  </div>
+
+  <div class="cta">
+    <p style="margin:0;color:var(--muted);">¿Querés ver cómo queda? Acá hay una actividad de prueba con preguntas de ejemplo:</p>
+    <a class="btn" href="https://logica-metodosdiscretos.github.io/EscritoConjuntos/escrito_conjuntos.html" target="_blank" rel="noopener">Ver actividad de prueba ↗</a>
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -470,163 +523,119 @@ Reglas:
 <!-- ═══════════════════════════════════  8 ══ -->
 <section class="panel" id="panel-github">
   <h2><span class="n">8</span>Publicar en GitHub Pages</h2>
-  <p class="sub">Para que los alumnos accedan con una URL, sin repartir el archivo.</p>
+  <p class="sub">Una URL pública y gratuita para que los alumnos accedan desde cualquier dispositivo.</p>
 
   <div class="steps">
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
         <strong>Crear o usar un repositorio de GitHub</strong>
-        <p>En <a href="https://github.com" target="_blank" rel="noopener">github.com</a>: <strong>New repository</strong>. Darle un nombre relacionado con el escrito, por ejemplo <em>EscritoConjuntos</em>. Dejarlo público.</p>
+        <p>En <a href="https://github.com" target="_blank" rel="noopener">github.com</a>: <strong>New repository</strong>. Darle un nombre relacionado con la actividad, por ejemplo <em>ActividadConjuntos</em>. Dejarlo público.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>Subir el archivo HTML</strong>
-        <p>Dentro del repositorio: <strong>Add file → Upload files</strong>. Subir el <code>escrito_conjuntos.html</code>. Hacer clic en <strong>Commit changes</strong>.</p>
+        <strong>Activar GitHub Pages</strong>
+        <p>En el repositorio: <strong>Settings → Pages → Branch: main → Save</strong>. GitHub Pages queda habilitado para ese repositorio.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>Activar GitHub Pages</strong>
-        <p><strong>Settings → Pages → Source: Deploy from a branch → main / (root) → Save</strong>. En unos minutos el repositorio queda publicado.</p>
+        <strong>Subir el archivo HTML</strong>
+        <p>Dentro del repositorio: <strong>Add file → Upload files</strong>. Subir el <code>actividad_conjuntos.html</code>. Hacer clic en <strong>Commit changes</strong>.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
-        <strong>Obtener la URL del escrito</strong>
-        <p>La URL tiene el formato <code>https://USUARIO.github.io/REPO/escrito_conjuntos.html</code>. Si el archivo se llama <code>index.html</code>, alcanza con <code>https://USUARIO.github.io/REPO/</code>.</p>
+        <strong>Esperar unos segundos y obtener la URL</strong>
+        <p>La URL tiene el formato <code>https://USUARIO.github.io/REPO/actividad_conjuntos.html</code>. Si el archivo se llama <code>index.html</code>, alcanza con <code>https://USUARIO.github.io/REPO/</code>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Compartir la URL con los alumnos</strong>
+        <p>Por Google Classroom, correo o cualquier otro medio. Los alumnos la abren en cualquier navegador desde cualquier dispositivo.</p>
       </div>
     </div>
   </div>
 
-  <div class="callout warn">
-    <span class="tag">Solo el título visible — causa frecuente</span>
-    Si al abrir la URL de GitHub Pages solo se ve el título y nada más, casi siempre es porque se está accediendo a <code>github.com/usuario/repo/blob/main/archivo.html</code> (la vista de código fuente de GitHub) en vez de a la URL de GitHub Pages. La URL correcta empieza con <code>USUARIO.github.io</code>, no con <code>github.com</code>.
-  </div>
-
-  <div class="callout info">
+  <div class="callout tip">
     <span class="tag">Alternativa sin publicar</span>
-    El escrito funciona igual si se reparte como archivo (por Classroom, correo o pendrive) y el alumno lo abre directamente en el navegador. La conexión con la planilla funciona igual en los dos casos — no depende de dónde esté el HTML.
+    La actividad funciona igual si se reparte como archivo (por Classroom, correo o pendrive) y el alumno lo abre directamente en el navegador. La conexión con la planilla funciona igual en los dos casos — no depende de dónde esté el HTML.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
 </section>
 
 <!-- ═══════════════════════════════════  9 ══ -->
-<section class="panel" id="panel-probar">
-  <h2><span class="n">9</span>Probar y usar con alumnos</h2>
-  <p class="sub">Siempre probarlo completo antes de usarlo en clase.</p>
-
-  <p>Abrir la URL del escrito y completarlo como lo haría un alumno:</p>
-
-  <ul>
-    <li>Verificar que pide el nombre antes de empezar.</li>
-    <li>Verificar que solicita pantalla completa al hacer clic en Comenzar.</li>
-    <li>Responder todas las preguntas y hacer clic en <strong>Enviar respuestas</strong>.</li>
-    <li>Verificar que aparece la pantalla de confirmación con la autocorrección parcial.</li>
-    <li>Abrir la Google Sheet: debe haber aparecido una fila nueva con el nombre, las respuestas y el puntaje automático.</li>
-    <li>Cerrar y volver a abrir el escrito en el mismo navegador: debe mostrar "Escrito enviado" sin permitir responder de nuevo.</li>
-  </ul>
-
-  <div class="callout warn">
-    <span class="tag">Reiniciar el anti-doble-envío para seguir probando</span>
-    Si se quiere volver a hacer el escrito desde el mismo navegador (para probar), hay que abrir las <strong>herramientas de desarrollo</strong> (F12) → pestaña <strong>Application</strong> → <strong>Local Storage</strong> → encontrar la clave del escrito (por ejemplo <code>logica_conjuntos_2026</code>) → eliminarla. Recargando la página, el escrito vuelve a la pantalla de inicio.
-  </div>
-
-  <div class="callout tip">
-    <span class="tag">Próximo escrito</span>
-    Para armar el siguiente escrito de otra unidad: abrir el Generador, cambiar el título, la clave localStorage (¡obligatorio!) y las preguntas, y repetir desde el paso 4 si se usa una planilla nueva, o desde el paso 6 si se reutiliza la misma planilla con el mismo Web App.
-  </div>
-
-  <div class="cta">
-    <p style="margin:0;color:var(--muted);">¿Querés ver cómo queda? Acá hay un escrito de prueba con preguntas de ejemplo (incluyendo si conviene estudiar o confiar en la suerte):</p>
-    <a class="btn" href="https://logica-metodosdiscretos.github.io/EscritoConjuntos/escrito_conjuntos.html" target="_blank" rel="noopener">Ver escrito de prueba ↗</a>
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button disabled>Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  ★ ══ -->
 <section class="panel" id="panel-glosario">
-  <h2><span class="n">★</span>Glosario</h2>
-  <p class="sub">Términos técnicos explicados sin tecnicismos — para docentes, no para ingenieros.</p>
+  <h2><span class="n">9</span>Glosario</h2>
+  <p class="sub">Términos técnicos que aparecen en la guía, explicados sin jerga.</p>
 
-  <dl class="glosario">
-
+  <dl>
     <dt>Archivo HTML</dt>
-    <dd>Un archivo de texto con extensión <code>.html</code> que el navegador sabe cómo mostrar como una página web. Es el formato del escrito digital y del Generador. No necesita instalarse ni compilarse: se abre directamente con doble clic, como un documento Word, pero en el navegador.</dd>
-
-    <dt>Navegador</dt>
-    <dd>El programa que usamos para entrar a internet: Chrome, Firefox, Edge, Safari. También puede abrir archivos HTML guardados en la computadora, sin necesidad de conexión a internet.</dd>
-
-    <dt>El Generador (<code>generador_escritos.html</code>)</dt>
-    <dd>Una herramienta hecha en HTML que funciona en el navegador. Permite armar el escrito de forma visual — sin tocar código — y descarga los dos archivos necesarios al terminar.</dd>
-
-    <dt>Script / Code.gs</dt>
-    <dd>Un "script" es un conjunto de instrucciones escritas en un lenguaje que la computadora ejecuta automáticamente. En este caso, <code>Code.gs</code> es el script que recibe las respuestas de los alumnos, las corrige y las guarda en la planilla. Vive dentro de Google, no en nuestra computadora.</dd>
+    <dd>Un archivo de texto con extensión <code>.html</code> que el navegador sabe cómo mostrar como una página web. Es el formato de la actividad digital y del Generador. No necesita instalarse ni compilarse: se abre directamente con doble clic, como un documento Word, pero en el navegador.</dd>
 
     <dt>Google Apps Script</dt>
-    <dd>Una plataforma de Google que permite escribir pequeños programas (scripts) vinculados a las herramientas de Google (Sheets, Docs, Forms, etc.). Es gratuita y viene incluida en cualquier cuenta de Google.</dd>
+    <dd>Un entorno de programación integrado en Google Drive que permite crear scripts que interactúan con Google Sheets, Gmail, Calendar y otros servicios de Google. En este sistema es el puente entre la actividad del alumno y la planilla de respuestas.</dd>
 
-    <dt>Aplicación web / Web App</dt>
-    <dd>Cuando el script se "publica", Google le asigna una dirección web (URL) a través de la cual puede recibir información. Esa URL es la que conecta el escrito con la planilla: cada vez que un alumno envía sus respuestas, el escrito llama a esa dirección y el script hace el resto.</dd>
+    <dt>El Generador (<code>generador_escritos.html</code>)</dt>
+    <dd>Una herramienta hecha en HTML que funciona en el navegador. Permite armar la actividad de forma visual — sin tocar código — y descarga los dos archivos necesarios al terminar.</dd>
+
+    <dt>Web App / Aplicación web</dt>
+    <dd>Cuando el script se "publica", Google le asigna una dirección web (URL) a través de la cual puede recibir información. Esa URL es la que conecta la actividad con la planilla: cada vez que un alumno envía sus respuestas, la actividad llama a esa dirección y el script hace el resto.</dd>
 
     <dt>URL</dt>
-    <dd>La dirección de una página web, como <code>https://www.google.com</code>. En este sistema se usa la URL del Web App (el script publicado) para que el escrito sepa a dónde enviar las respuestas.</dd>
+    <dd>La dirección de una página web, como <code>https://www.google.com</code>. En este sistema se usa la URL del Web App (el script publicado) para que la actividad sepa a dónde enviar las respuestas.</dd>
 
     <dt>Implementar (un script)</dt>
-    <dd>"Implementar" en el contexto de Apps Script significa publicar el script para que funcione como una aplicación web accesible desde internet. Es el equivalente a "poner en marcha" el script. Solo hace falta hacerlo una vez por escrito (o cuando se cambia algo en el script).</dd>
+    <dd>"Implementar" en el contexto de Apps Script significa publicar el script para que funcione como una aplicación web accesible desde internet. Es el equivalente a "poner en marcha" el script. Solo hace falta hacerlo una vez por actividad (o cuando se cambia algo en el script).</dd>
 
     <dt>GitHub</dt>
-    <dd>Un sitio web donde se pueden guardar y compartir archivos de texto, código y páginas web. Es gratuito y ampliamente usado. En este sistema lo usamos para publicar el escrito en internet.</dd>
+    <dd>Un sitio web donde se pueden guardar y compartir archivos de texto, código y páginas web. Es gratuito y ampliamente usado. En este sistema lo usamos para publicar la actividad en internet.</dd>
 
     <dt>GitHub Pages</dt>
-    <dd>Un servicio gratuito de GitHub que convierte los archivos de un repositorio en una página web accesible con una URL pública. Es la forma más sencilla de publicar el escrito para que los alumnos puedan acceder desde cualquier dispositivo con internet.</dd>
+    <dd>Un servicio gratuito de GitHub que convierte los archivos de un repositorio en una página web accesible con una URL pública. Es la forma más sencilla de publicar la actividad para que los alumnos puedan acceder desde cualquier dispositivo con internet.</dd>
 
     <dt>Repositorio</dt>
-    <dd>Una "carpeta" dentro de GitHub donde se guardan los archivos de un proyecto. Cada escrito puede tener su propio repositorio, o varios escritos pueden convivir en uno.</dd>
+    <dd>Una "carpeta" dentro de GitHub donde se guardan los archivos de un proyecto. Cada actividad puede tener su propio repositorio, o varias actividades pueden convivir en uno.</dd>
 
-    <dt>Commit</dt>
-    <dd>La acción de confirmar y guardar cambios en un repositorio de GitHub. Es similar a hacer clic en "Guardar" en un documento, pero queda registrado con fecha y descripción.</dd>
+    <dt>JSONP</dt>
+    <dd>Una técnica que permite a una página web enviar datos a un servidor en otro dominio. En este sistema la actividad la usa para enviar las respuestas al script de Google sin errores de seguridad del navegador.</dd>
 
     <dt>localStorage</dt>
-    <dd>Un pequeño espacio de memoria que el navegador reserva para cada página web. En este sistema se usa para recordar si un alumno ya envió el escrito: si lo intenta abrir de nuevo en el mismo navegador y dispositivo, ve el mensaje "Escrito enviado" en lugar de las preguntas. No es un sistema de seguridad absoluto (borrando los datos del navegador se puede reiniciar), pero evita el doble envío accidental.</dd>
+    <dd>Un pequeño espacio de memoria que el navegador reserva para cada página web. En este sistema se usa para recordar si un alumno ya envió la actividad: si la intenta abrir de nuevo en el mismo navegador y dispositivo, ve el mensaje "Actividad enviada" en lugar de las preguntas. No es un sistema de seguridad absoluto (borrando los datos del navegador se puede reiniciar), pero evita el doble envío accidental.</dd>
 
     <dt>Clave localStorage</dt>
-    <dd>Un nombre interno que identifica a cada escrito dentro del navegador. Si dos escritos distintos usan el mismo nombre, el navegador los confunde y puede mostrar "ya enviado" al alumno que hizo el primero. Por eso cada escrito necesita una clave única, por ejemplo <code>mate_fracciones_2026</code>.</dd>
+    <dd>Un nombre interno que identifica a cada actividad dentro del navegador. Si dos actividades distintas usan el mismo nombre, el navegador las confunde y puede mostrar "ya enviada" al alumno que hizo la primera. Por eso cada actividad necesita una clave única, por ejemplo <code>logica_fracciones_2026</code>.</dd>
 
     <dt>Pantalla completa forzada</dt>
-    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo el escrito. En este sistema se activa al comenzar el examen y, si el alumno la cierra (por ejemplo, para abrir otra pestaña), el escrito se envía automáticamente con lo que haya contestado hasta ese momento.</dd>
+    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. En este sistema se activa al comenzar el examen y, si el alumno la cierra (por ejemplo, para abrir otra pestaña), la actividad se envía automáticamente con lo que haya contestado hasta ese momento.</dd>
 
     <dt>Autocontenido</dt>
-    <dd>Un archivo que lleva todo adentro: estilos, lógica, preguntas. No depende de otros archivos ni de conexión a internet para mostrarse correctamente. El escrito generado es autocontenido, por eso funciona igual si se comparte por correo, pendrive o GitHub Pages.</dd>
+    <dd>Un archivo que lleva todo adentro: estilos, lógica, preguntas. No depende de otros archivos ni de conexión a internet para mostrarse correctamente. La actividad generada es autocontenida, por eso funciona igual si se comparte por correo, pendrive o GitHub Pages.</dd>
 
-    <dt>Publicar el escrito</dt>
-    <dd>Subirlo a un servidor web para que tenga una URL accesible desde cualquier dispositivo. La opción más usada aquí es GitHub Pages, pero también puede publicarse en Netlify, Vercel, el servidor del centro educativo, o simplemente repartirse como archivo.</dd>
-
+    <dt>Publicar la actividad</dt>
+    <dd>Subirla a un servidor web para que tenga una URL accesible desde cualquier dispositivo. La opción más usada aquí es GitHub Pages, pero también puede publicarse en Netlify, Vercel, el servidor del centro educativo, o simplemente repartirse como archivo.</dd>
   </dl>
 
-  <div class="panel-nav"><button class="prev">← Anterior</button><button disabled>Siguiente →</button></div>
+  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
 </section>
 
-<footer>Herramienta creada por Prof. Elizabeth Izquierdo con asistencia de IA · 2026</footer>
-
-</div>
 <script>
-var order = ["arquitectura","generador","preguntas","planilla","webapp","url","descargar","github","probar","glosario"];
+var TABS = ['arquitectura','generador','preguntas','planilla','webapp','url','descargar','github','glosario'];
 
 function activate(id, scroll){
-  order.forEach(function(key){
-    document.getElementById('panel-'+key).classList.toggle('active', key===id);
+  TABS.forEach(function(t){
+    var btn = document.querySelector('[data-tab="'+t+'"]');
+    var panel = document.getElementById('panel-'+t);
+    if(btn) btn.classList.toggle('active', t===id);
+    if(panel) panel.classList.toggle('active', t===id);
   });
-  document.querySelectorAll('.tab-btn').forEach(function(btn){
-    btn.classList.toggle('active', btn.getAttribute('data-tab')===id);
-  });
-  try{history.replaceState(null,'','#'+id);}catch(e){}
   if(scroll !== false){
     var tabsEl = document.querySelector('.tabs');
     window.scrollTo({top: tabsEl ? tabsEl.offsetTop - 16 : 0, behavior:'instant'});
@@ -634,40 +643,41 @@ function activate(id, scroll){
 }
 
 document.querySelectorAll('.tab-btn').forEach(function(btn){
-  btn.addEventListener('click',function(){activate(btn.getAttribute('data-tab'));});
-});
-document.querySelectorAll('.panel-nav .next').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var current=order.indexOf(btn.closest('.panel').id.replace('panel-',''));
-    if(current<order.length-1) activate(order[current+1]);
-  });
-});
-document.querySelectorAll('.panel-nav .prev').forEach(function(btn){
-  btn.addEventListener('click',function(){
-    var current=order.indexOf(btn.closest('.panel').id.replace('panel-',''));
-    if(current>0) activate(order[current-1]);
+  btn.addEventListener('click', function(){
+    activate(btn.dataset.tab, true);
   });
 });
 
-var initial='arquitectura';
-try{var h=(location.hash||'').replace('#','');if(order.indexOf(h)!==-1)initial=h;}catch(e){}
-// Si se abre directo en la primera pestaña, no hacer scroll (mostrar la intro arriba).
-// Si viene con un hash a otra pestaña, sí hacer scroll para centrar el contenido.
-activate(initial, initial !== 'arquitectura');
+document.querySelectorAll('.panel-nav .next').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var panel = btn.closest('.panel');
+    var id = panel.id.replace('panel-','');
+    var idx = TABS.indexOf(id);
+    if(idx < TABS.length - 1) activate(TABS[idx+1], true);
+  });
+});
+
+document.querySelectorAll('.panel-nav .prev').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var panel = btn.closest('.panel');
+    var id = panel.id.replace('panel-','');
+    var idx = TABS.indexOf(id);
+    if(idx > 0) activate(TABS[idx-1], true);
+  });
+});
 
 function copyBox(btn){
   var pre = btn.closest('.filebox').querySelector('pre');
   if(!pre) return;
   navigator.clipboard.writeText(pre.textContent).then(function(){
-    btn.textContent='¡Copiado!'; btn.classList.add('copied');
-    setTimeout(function(){ btn.textContent='Copiar'; btn.classList.remove('copied'); }, 2000);
-  }).catch(function(){
-    var ta=document.createElement('textarea'); ta.value=pre.textContent;
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
-    btn.textContent='¡Copiado!'; btn.classList.add('copied');
-    setTimeout(function(){ btn.textContent='Copiar'; btn.classList.remove('copied'); }, 2000);
+    btn.textContent = '¡Copiado!';
+    setTimeout(function(){ btn.textContent = 'Copiar'; }, 2000);
   });
 }
+
+var initial = (location.hash||'').replace('#','');
+if(TABS.indexOf(initial) < 0) initial = 'arquitectura';
+activate(initial, initial !== 'arquitectura');
 </script>
 </body>
 </html>
