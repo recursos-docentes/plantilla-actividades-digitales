@@ -150,6 +150,7 @@ textarea{resize:vertical;min-height:68px}
         <div class="import-panel" id="import-panel">
           <label>Pegá el JSON generado por la IA:</label>
           <textarea id="import-json" placeholder='[&#10;  {"type":"single","text":"¿Cuál es...?","opts":["Opción A","Opción B","Opción C","Opción D"],"correct":"a"},&#10;  {"type":"tf","text":"El cero es par.","correct":"true"},&#10;  {"type":"open","text":"Explicar con un ejemplo..."}&#10;]'></textarea>
+          <div id="import-err" style="color:#c92a2a;font-size:12px;margin-top:6px;display:none"></div>
           <div class="import-actions">
             <label class="import-mode">Modo: <select id="import-mode"><option value="append">Agregar a las existentes</option><option value="replace">Reemplazar todo</option></select></label>
             <button class="btn-import-cancel" onclick="toggleImport()">Cancelar</button>
@@ -664,12 +665,35 @@ function toggleImport(){
   if(open){ setTimeout(function(){ document.getElementById('import-json').focus(); },60); }
 }
 
+function importErr(msg){
+  var el=document.getElementById('import-err');
+  if(el){ el.textContent='⚠ '+msg; el.style.display='block'; }
+}
+function importErrClear(){
+  var el=document.getElementById('import-err');
+  if(el){ el.textContent=''; el.style.display='none'; }
+}
+
 function doImport(){
+  importErrClear();
   var raw=document.getElementById('import-json').value.trim();
   var mode=document.getElementById('import-mode').value;
-  var arr;
-  try{ arr=JSON.parse(raw); }catch(e){ showAlert('JSON inválido. Verificar que el bloque esté completo y sin errores.','warn'); return; }
-  if(!Array.isArray(arr)||arr.length===0){ showAlert('El JSON debe ser un array con al menos una pregunta.','warn'); return; }
+  if(!raw){ importErr('Pegá el JSON antes de importar.'); return; }
+  // Strip bloques de código markdown (```json ... ```)
+  raw = raw.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
+  // Normalizar corchetes escapados que algunos modelos de IA generan (\[ → [ y \] → ])
+  raw = raw.split('\\[').join('[').split('\\]').join(']');
+  var parsed;
+  try{ parsed=JSON.parse(raw); }catch(e){ importErr('JSON inválido: '+e.message+'. Verificar que el bloque esté completo y sin errores.'); return; }
+  // Aceptar objeto con clave que sea array (ej: {"preguntas":[...]})
+  var arr = parsed;
+  if(!Array.isArray(arr)){
+    var keys=Object.keys(parsed||{});
+    for(var k=0;k<keys.length;k++){
+      if(Array.isArray(parsed[keys[k]])){ arr=parsed[keys[k]]; break; }
+    }
+  }
+  if(!Array.isArray(arr)||arr.length===0){ importErr('El JSON debe ser un array de preguntas (o un objeto con una clave que contenga el array).'); return; }
   var valid=['single','tf','open','match','fill'];
   var loaded=0, skipped=0;
   if(mode==='replace'){ questions=[]; qCounter=0; }
@@ -686,10 +710,11 @@ function doImport(){
     });
     loaded++;
   });
+  if(loaded===0){ importErr('Ninguna pregunta importada. Verificar que los tipos sean: single, tf, open, match, fill.'); return; }
   document.getElementById('import-json').value='';
   toggleImport();
   var msg='✓ '+loaded+' pregunta'+(loaded!==1?'s':'')+' importada'+(loaded!==1?'s':'')+'.';
-  if(skipped) msg+=' '+skipped+' omitida'+(skipped!==1?'s':'')+' (tipo inválido).';
+  if(skipped) msg+=' '+skipped+' omitida'+(skipped!==1?'s':'')+' (tipo no reconocido).';
   showAlert(msg,'ok');
 }
 
