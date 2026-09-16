@@ -507,7 +507,7 @@ Reglas:
 
   <div class="callout tip">
     <span class="tag">Reiniciar el anti-doble-envío para seguir probando</span>
-    Si se quiere volver a hacer la actividad desde el mismo navegador (para probar), hay que abrir las <strong>herramientas de desarrollo</strong> (F12) → pestaña <strong>Application</strong> → <strong>Local Storage</strong> → encontrar la clave de la actividad (por ejemplo <code>logica_conjuntos_2026</code>) → eliminarla. Recargando la página, la actividad vuelve a la pantalla de inicio.
+    Si se quiere volver a hacer la actividad desde el mismo navegador (para probar): presionar <strong>Fn + F12</strong> (en algunos teclados alcanza con F12 solo) para abrir las herramientas de desarrollo → hacer clic en la pestaña <strong>Consola</strong> → escribir <code>localStorage.clear()</code> y presionar Enter → recargar la página. La actividad vuelve a la pantalla de inicio.
   </div>
 
   <div class="callout tip">
@@ -648,8 +648,8 @@ function activate(id, scroll){
     if(id === 'arquitectura'){
       window.scrollTo({top: 0, behavior:'instant'});
     } else {
-      var tabsEl = document.querySelector('.tabs');
-      window.scrollTo({top: tabsEl ? tabsEl.offsetTop - 16 : 0, behavior:'instant'});
+      var hdr = document.querySelector('header');
+      window.scrollTo({top: hdr ? hdr.offsetHeight : 0, behavior:'instant'});
     }
   }
 }
