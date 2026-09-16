@@ -209,11 +209,13 @@ function beginQuiz(){
   if(!v){
     var se = document.getElementById('serr');
     if(se) se.textContent = '⚠ Ingresar el nombre y apellido antes de comenzar.';
-    if(el) el.focus();
+    if(el){ el.style.borderColor='var(--red)'; el.focus(); }
     return;
   }
   studentName = v; quizStarted = true;
-  requestFS(); renderQuiz(); startTimer();
+  try{ requestFS(); }catch(e){}
+  try{ renderQuiz(); }catch(err){ alert('Error al cargar el quiz: ' + err.message); return; }
+  startTimer();
 }
 
 function startTimer(){
@@ -291,13 +293,8 @@ function renderQuiz(){
   if(SHUFFLE_QUESTIONS) questions = shuffleArr(questions);
   if(SHUFFLE_OPTIONS){
     questions.forEach(function(q){
-      if(q.type === 'single'){
-        var ltrs = ['a','b','c','d'];
-        var order = shuffleArr([0,1,2,3]);
-        var newOpts = order.map(function(i){ return q.opts[i]; });
-        var oldIdx = ltrs.indexOf(q.correct);
-        q.correct = ltrs[order.indexOf(oldIdx)];
-        q.opts = newOpts;
+      if(q.type === 'single' && q.options && q.options.length > 1){
+        q.options = shuffleArr(q.options);
       }
     });
   }
@@ -608,12 +605,15 @@ function isFS(){ return !!(document.fullscreenElement || document.webkitFullscre
 function requestFS(){
   var el = document.documentElement;
   var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
-  if(fn) fn.call(el).catch(function(){});
+  try{ if(fn) fn.call(el); }catch(e){}
 }
 
 function onFsChange(){
   if(!quizStarted || quizFinished || locked) return;
-  if(!isFS()) performSubmit(buildPayload());
+  if(!isFS()){
+    var sm = document.getElementById('smsg');
+    if(sm){ sm.textContent = '⚠ Se cerró la pantalla completa.'; sm.style.color='var(--red)'; }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════
