@@ -223,14 +223,19 @@ footer span{display:inline-block;margin:0 6px}
 <!-- ═══════════════════════════════════  3 ══ -->
 <section class="panel" id="panel-preguntas">
   <h2><span class="n">3</span>Cargar las preguntas</h2>
-  <p class="sub">Cinco tipos disponibles, cada uno con su panel de edición.</p>
+  <p class="sub">Seis tipos disponibles, cada uno con su panel de edición.</p>
 
   <table>
     <tr><th>Tipo</th><th>Cuándo usarlo</th><th>Corrección</th></tr>
     <tr>
       <td><strong>Opción múltiple</strong></td>
-      <td>4 opciones, una correcta. Bueno para conceptos y definiciones.</td>
+      <td>4 opciones, una sola correcta. Bueno para conceptos y definiciones.</td>
       <td>Automática — se elige la letra correcta en el panel.</td>
+    </tr>
+    <tr>
+      <td><strong>Múltiple respuesta</strong></td>
+      <td>4 opciones donde pueden ser correctas una o varias. El alumno marca todas las que corresponden con casillas de verificación.</td>
+      <td>Automática (todo o nada) — se marcan en el panel las letras correctas; el alumno debe seleccionarlas todas y ninguna de las incorrectas para obtener el puntaje.</td>
     </tr>
     <tr>
       <td><strong>V / F</strong></td>
@@ -254,6 +259,11 @@ footer span{display:inline-block;margin:0 6px}
     </tr>
   </table>
 
+  <div class="callout info">
+    <span class="tag">Agregar una imagen a una pregunta</span>
+    Cada pregunta tiene un botón <strong>📷 Imagen</strong>. Al hacer clic se abre el selector de archivos; la imagen se convierte automáticamente a formato digital y queda embebida en el HTML generado, sin necesidad de subirla a ningún servidor. La actividad sigue siendo un único archivo autocontenido. Para quitarla, usar la <strong>✕</strong> que aparece junto a la miniatura.
+  </div>
+
   <div class="callout tip">
     <span class="tag">Generar preguntas con IA e importarlas de golpe</span>
     El Generador incluye un botón <strong>↓ Importar desde JSON</strong> que carga todas las preguntas a la vez. En lugar de escribirlas una por una, se le pide a la IA que las genere directamente en el formato JSON esperado, se copia el bloque y se pega en el importador.
@@ -276,7 +286,7 @@ footer span{display:inline-block;margin:0 6px}
       <button class="copybtn" onclick="copyBox(this)">Copiar</button>
     </div>
     <pre>Generame un array JSON con preguntas para una actividad digital de [TEMA], para [CURSO].
-Incluir: 4 de opción múltiple, 2 de verdadero/falso, 1 abierta, 1 de emparejar y 1 de banco de palabras.
+Incluir: 3 de opción múltiple, 1 de múltiple respuesta, 2 de verdadero/falso, 1 abierta, 1 de emparejar y 1 de banco de palabras.
 Usar exactamente este formato — sin texto adicional fuera del array:
 
 [
@@ -285,6 +295,12 @@ Usar exactamente este formato — sin texto adicional fuera del array:
     "text": "Enunciado de la pregunta",
     "opts": ["Opción A", "Opción B", "Opción C", "Opción D"],
     "correct": "a"
+  },
+  {
+    "type": "multi",
+    "text": "¿Cuáles de las siguientes son propiedades de los conjuntos? (Seleccionar todas las correctas.)",
+    "opts": ["Propiedad A", "Propiedad B", "Propiedad C", "Propiedad D"],
+    "correct": ["a", "c"]
   },
   {
     "type": "tf",
@@ -312,7 +328,8 @@ Usar exactamente este formato — sin texto adicional fuera del array:
 ]
 
 Reglas:
-- "correct" en opción múltiple: "a", "b", "c" o "d". En V/F: "true" o "false".
+- "correct" en opción múltiple (type "single"): "a", "b", "c" o "d". En V/F: "true" o "false".
+- "correct" en múltiple respuesta (type "multi"): un array con todas las letras correctas, ej: ["a", "c"].
 - "pairs": array de objetos {left, right} con los pares correctos. La columna derecha se muestra desordenada.
 - "fill": las respuestas correctas van entre corchetes en el texto: [así]. "extraWords" son palabras distractoras (opcionales), separadas por coma.
 - Se puede agregar "puntaje": 2 a cualquier pregunta para darle más peso.</pre>
@@ -344,7 +361,7 @@ Reglas:
 
   <div class="callout info">
     <span class="tag">Campos opcionales en el JSON</span>
-    Se puede agregar <code>"puntaje": 2</code> para asignar más peso a una pregunta, y <code>"obligatoria": false</code> para marcarla como opcional. En preguntas de tipo <strong>fill</strong>, <code>"extraWords"</code> agrega palabras distractoras al banco. Si se omiten, el Generador usa los valores por defecto (1 punto, obligatoria, sin distractores).
+    Se puede agregar <code>"puntaje": 2</code> para asignar más peso a una pregunta, y <code>"obligatoria": false</code> para marcarla como opcional. En preguntas de tipo <strong>fill</strong>, <code>"extraWords"</code> agrega palabras distractoras al banco. En preguntas de tipo <strong>multi</strong>, <code>"correct"</code> es un array con todas las letras correctas: <code>["a", "c"]</code>. Si se omiten los opcionales, el Generador usa los valores por defecto (1 punto, obligatoria, sin distractores).
   </div>
 
   <h3>Símbolos matemáticos en preguntas abiertas</h3>
@@ -490,11 +507,16 @@ Reglas:
     <ul style="margin:6px 0 0; padding-left:20px;">
       <li>Todas las preguntas con corrección automática para opción múltiple, V/F, emparejar y banco de palabras</li>
       <li>Pantalla completa forzada al comenzar</li>
-      <li>Auto-envío si el alumno sale de pantalla completa</li>
+      <li>Aviso visible si el alumno sale de pantalla completa</li>
       <li>Anti-doble-envío: si el alumno reabre el archivo ya enviado, ve "Actividad enviada"</li>
       <li>Barra de símbolos matemáticos en preguntas abiertas</li>
       <li>Temporizador configurable</li>
     </ul>
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">iPhone y iPad — pantalla completa</span>
+    En dispositivos iOS (iPhone e iPad), ningún navegador puede forzar la pantalla completa: Apple no lo permite. La actividad funciona con normalidad, pero sin ese modo. Si los alumnos usan celulares Apple, la restricción de pantalla completa no aplica para ellos.
   </div>
 
   <h3>Probar antes de distribuir</h3>
@@ -631,7 +653,8 @@ Reglas:
 
 <footer>
   <strong>Actividades Digitales — Guía del docente</strong>
-  <span>Elizabeth Izquierdo</span>
+  <span>Prof. Elizabeth Izquierdo</span>
+  <span>profe.eliza17@gmail.com</span>
 </footer>
 
 <script>

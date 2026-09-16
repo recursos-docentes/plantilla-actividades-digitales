@@ -38,15 +38,16 @@ El HTML de la actividad **no contiene ninguna respuesta correcta** — todo el c
 
 ## Tipos de pregunta soportados
 
-| Tipo | Qué es |
-|------|--------|
-| `single` | Opción única (radio buttons, una sola correcta) |
-| `tf` | Verdadero / Falso |
-| `open` | Pregunta abierta de desarrollo — no se corrige automáticamente, queda guardada en la planilla para revisión manual |
-| `match` | Emparejar — dos columnas, el estudiante une cada elemento de la izquierda con el correspondiente de la derecha |
-| `fill` | Banco de palabras — el estudiante arrastra palabras del banco para completar los espacios en blanco de un texto |
+| Tipo | Qué es | Corrección |
+|------|--------|------------|
+| `single` | Opción única (radio buttons, una sola correcta) | Automática |
+| `multi` | Múltiple respuesta (checkboxes, pueden ser correctas varias opciones) | Automática — todo o nada: el alumno debe marcar exactamente las correctas |
+| `tf` | Verdadero / Falso | Automática |
+| `open` | Pregunta abierta de desarrollo — el alumno escribe con texto enriquecido y símbolos matemáticos | Manual — queda guardada en la planilla |
+| `match` | Emparejar — dos columnas, el estudiante une cada elemento de la izquierda con el correspondiente de la derecha | Automática con crédito parcial |
+| `fill` | Banco de palabras — el estudiante completa espacios en blanco eligiendo palabras de un banco | Automática con crédito parcial |
 
-Cada pregunta puede marcarse como **opcional** y tiene un puntaje configurable.
+Cada pregunta puede tener una **imagen** opcional (se sube en el Generador y queda embebida en el HTML). Cada pregunta puede marcarse como **opcional** y tiene un puntaje configurable.
 
 ---
 
@@ -94,7 +95,7 @@ Vale la pena documentarlas para no volver a pisar los mismos problemas al adapta
 
 **Un solo intento, con timeout de 15 segundos.** Si no llega respuesta a tiempo, se asume que el envío se disparó correctamente (porque ya se disparó) y se avisa sin mostrar el detalle de corrección, en vez de reintentar en bucle y arriesgarse a mandar la misma respuesta varias veces.
 
-**La pantalla completa no se puede forzar en iOS** (ni Safari ni ningún otro navegador ahí, porque todos usan el motor WebKit de Apple). En esos dispositivos, la actividad funciona sin pantalla completa.
+**La pantalla completa no se puede forzar en iOS** (iPhone ni iPad, en ningún navegador, porque Apple no lo permite). En esos dispositivos la actividad funciona con normalidad, pero sin ese modo de protección.
 
 **El anti-doble-envío usa `localStorage`**, que es por navegador y por origen (dominio). Dos actividades distintas publicadas en el mismo sitio no deben compartir la misma clave de `localStorage` — el Generador lo aclara y permite elegir la clave libremente.
 
@@ -107,3 +108,7 @@ Vale la pena documentarlas para no volver a pisar los mismos problemas al adapta
 El HTML generado usa variables CSS (`:root`) para todos los colores. El Generador ofrece varios temas visuales; para agregar uno nuevo, alcanza con definir el juego de colores y pasarlo como opción en el selector de temas.
 
 Temas incluidos actualmente: papel de examen (claro, tipografía serif), editor de código (oscuro, acento ámbar), y otros.
+
+---
+
+Herramienta creada por **Prof. Elizabeth Izquierdo** con asistencia de IA · 2026 · profe.eliza17@gmail.com

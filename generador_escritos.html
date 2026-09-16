@@ -91,6 +91,13 @@ textarea{resize:vertical;min-height:68px}
 .btn-add-pair:hover{background:var(--acc-bg)}
 /* Banco de palabras */
 .fill-hint{font-size:11.5px;color:var(--muted);background:var(--acc-bg);border:1px dashed var(--acc-border);border-radius:4px;padding:5px 9px;margin-bottom:6px;line-height:1.5}
+/* Imagen por pregunta */
+.img-upload-zone{margin-bottom:10px;display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.img-thumb-wrap{position:relative;display:inline-block}
+.img-thumb{max-height:90px;max-width:180px;border-radius:4px;border:1px solid var(--border);display:block}
+.btn-img-remove{position:absolute;top:-7px;right:-7px;background:#c92a2a;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:18px;text-align:center;padding:0;font-weight:700}
+.btn-img-upload{font-size:12px;color:var(--acc2);background:transparent;border:1px dashed var(--acc-border);border-radius:5px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.btn-img-upload:hover{background:var(--acc-bg)}
 </style>
 </head>
 <body>
@@ -133,6 +140,7 @@ textarea{resize:vertical;min-height:68px}
         <div style="display:flex;gap:20px;margin-top:10px;flex-wrap:wrap">
           <label class="oblig-toggle"><input type="checkbox" id="cfg-shuffle-q"> Orden de preguntas aleatorio</label>
           <label class="oblig-toggle"><input type="checkbox" id="cfg-shuffle-opts"> Opciones de respuesta aleatorias</label>
+          <label class="oblig-toggle"><input type="checkbox" id="cfg-toolbar" checked> Barra de formato en preguntas abiertas</label>
         </div>
       </div>
 
@@ -141,6 +149,7 @@ textarea{resize:vertical;min-height:68px}
         <div class="q-list" id="q-list"></div>
         <div class="add-row">
           <button class="btn-add" onclick="addQuestion('single')">+ Opción múltiple</button>
+          <button class="btn-add" onclick="addQuestion('multi')">+ Múltiple respuesta</button>
           <button class="btn-add" onclick="addQuestion('tf')">+ V / F</button>
           <button class="btn-add" onclick="addQuestion('open')">+ Abierta</button>
           <button class="btn-add" onclick="addQuestion('match')">+ Emparejar</button>
@@ -299,7 +308,7 @@ function renderQuiz(){
       }
     });
   }
-  var typeLabels = { single:'opción única', tf:'verdadero / falso', open:'pregunta abierta', match:'emparejar', fill:'banco de palabras' };
+  var typeLabels = { single:'opción única', multi:'múltiple respuesta', tf:'verdadero / falso', open:'pregunta abierta', match:'emparejar', fill:'banco de palabras' };
   var h = '<div class="quiz-header"><h1>' + escH(QUIZ_SECTION_TITLE) + '</h1><p>' + escH(QUIZ_SECTION_SUB) + '</p></div>';
   questions.forEach(function(q, i){
     var isOpen = q.type === 'open';
@@ -307,9 +316,10 @@ function renderQuiz(){
          '<div class="q-num">Pregunta ' + (i+1) + ' de ' + questions.length + '</div>' +
          '<div class="' + (isOpen ? 'qtype qtype-open' : 'qtype') + '">' + (typeLabels[q.type] || q.type) + '</div>' +
          (q.obligatoria === false ? '<span class="q-optional">opcional</span>' : '') +
-         '<div class="q-text">' + escD(q.text) + '</div>';
+         '<div class="q-text">' + escD(q.text) + '</div>' +
+         (q.img ? '<img src="' + q.img + '" class="q-img" alt="Imagen de la pregunta">' : '');
     if(q.type === 'open'){
-      h += '<div class="open-editor-wrap">' + buildToolbar(q.id) +
+      h += '<div class="open-editor-wrap">' + (SHOW_TOOLBAR ? buildToolbar(q.id) : '') +
            '<div class="open-area" id="open-' + q.id + '" contenteditable="true" data-qid="' + q.id +
            '" data-placeholder="Escribir la respuesta aquí…"></div></div>';
     } else if(q.type === 'single'){
@@ -317,6 +327,15 @@ function renderQuiz(){
       (q.options || []).forEach(function(opt){
         h += '<label class="option" data-qid="' + q.id + '" data-val="' + opt.id + '">' +
              '<input type="radio" name="' + q.id + '" value="' + opt.id + '" />' +
+             '<span class="option-label"><strong>' + opt.id + ')</strong> ' + escH(opt.label) + '</span></label>';
+      });
+      h += '</div>';
+    } else if(q.type === 'multi'){
+      h += '<p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Seleccionar todas las opciones correctas.</p>';
+      h += '<div class="options">';
+      (q.options || []).forEach(function(opt){
+        h += '<label class="option check-opt" data-qid="' + q.id + '" data-val="' + opt.id + '">' +
+             '<input type="checkbox" name="' + q.id + '" value="' + opt.id + '" />' +
              '<span class="option-label"><strong>' + opt.id + ')</strong> ' + escH(opt.label) + '</span></label>';
       });
       h += '</div>';
@@ -410,13 +429,26 @@ function updateFillDisplay(qid){
 }
 
 function attachListeners(){
-  document.querySelectorAll('.option').forEach(function(lbl){
+  document.querySelectorAll('.option:not(.check-opt)').forEach(function(lbl){
     lbl.addEventListener('click', function(){
       if(locked) return;
       state[lbl.dataset.qid] = lbl.dataset.val;
-      document.querySelectorAll('.option[data-qid="' + lbl.dataset.qid + '"]').forEach(function(l){
+      document.querySelectorAll('.option[data-qid="' + lbl.dataset.qid + '"]:not(.check-opt)').forEach(function(l){
         l.classList.toggle('selected', l.dataset.val === lbl.dataset.val);
       });
+    });
+  });
+  document.querySelectorAll('.check-opt').forEach(function(lbl){
+    var inp=lbl.querySelector('input[type="checkbox"]');
+    if(!inp) return;
+    inp.addEventListener('change',function(){
+      if(locked){ inp.checked=!inp.checked; return; }
+      var qid=lbl.dataset.qid;
+      if(!Array.isArray(state[qid])) state[qid]=[];
+      var val=lbl.dataset.val, idx=state[qid].indexOf(val);
+      if(inp.checked){ if(idx<0) state[qid].push(val); }
+      else { if(idx>=0) state[qid].splice(idx,1); }
+      lbl.classList.toggle('selected',inp.checked);
     });
   });
   document.querySelectorAll('.open-area').forEach(function(d){
@@ -497,6 +529,8 @@ function buildPayload(){
       ans[q.id] = JSON.stringify(matchState[q.id] || {});
     } else if(q.type === 'fill'){
       ans[q.id] = (fillState[q.id] || []).join('|||');
+    } else if(q.type === 'multi'){
+      ans[q.id] = Array.isArray(state[q.id]) ? state[q.id].slice().sort().join(',') : '';
     } else { ans[q.id] = state[q.id] || ''; }
   });
   ans.nombre = studentName; ans.timestamp = new Date().toISOString();
@@ -584,6 +618,7 @@ function handleSubmit(){
       var ms = matchState[q.id] || {};
       return Object.keys(ms).length < (q.pairs||[]).length;
     }
+    if(q.type === 'multi') return !Array.isArray(state[q.id]) || state[q.id].length === 0;
     if(q.type === 'fill'){
       var fs = fillState[q.id] || [];
       return fs.some(function(v){ return !v; }) || fs.length < (q.answers||[]).length;
@@ -622,7 +657,7 @@ function onFsChange(){
 // ═══════════════════════════════════════════════════════════════════
 
 var questions = [], qCounter = 0;
-var typeLabel = { single:'Opción múltiple', tf:'Verdadero / Falso', open:'Abierta', match:'Emparejar', fill:'Banco de palabras' };
+var typeLabel = { single:'Opción múltiple', multi:'Múltiple respuesta', tf:'Verdadero / Falso', open:'Abierta', match:'Emparejar', fill:'Banco de palabras' };
 
 var defaultQ = [
   { type:'single', text:'¿Cuántas patas tiene una araña?',
@@ -636,17 +671,22 @@ updateSummary();
 function addQuestion(type, data){
   qCounter++;
   var id = 'q' + qCounter;
-  var q  = { id:id, type:type, text:'', correct: type==='tf'?'true':'a', opts:['','','',''], obligatoria: true, puntaje: 1 };
+  var q  = { id:id, type:type, text:'', correct: type==='tf'?'true':(type==='multi'?['a']:'a'), opts:['','','',''], obligatoria: true, puntaje: 1 };
   if(type === 'match') q.pairs = [{left:'',right:''},{left:'',right:''},{left:'',right:''}];
   if(type === 'fill')  q.extraWords = '';
+  q.img = '';
   if(data){
     q.text = data.text || '';
-    q.correct = data.correct || q.correct;
+    if(type==='multi'){
+      var dc=data.correct||data.correcta;
+      q.correct=Array.isArray(dc)?dc:(dc?[dc]:['a']);
+    } else { q.correct = data.correct || data.correcta || q.correct; }
     if(data.opts) data.opts.forEach(function(o,i){ q.opts[i]=o; });
     if(data.obligatoria === false) q.obligatoria = false;
     if(data.puntaje !== undefined) q.puntaje = parseFloat(data.puntaje) || 1;
     if(data.pairs) q.pairs = data.pairs.map(function(p){ return {left:p.left||'',right:p.right||''}; });
     if(data.extraWords !== undefined) q.extraWords = data.extraWords;
+    if(data.img) q.img = data.img;
   }
   questions.push(q); renderList(); updateSummary();
   setTimeout(function(){ var b=document.getElementById('body-'+id); if(b) b.classList.add('open'); }, 60);
@@ -694,7 +734,7 @@ function doImport(){
     }
   }
   if(!Array.isArray(arr)||arr.length===0){ importErr('El JSON debe ser un array de preguntas (o un objeto con una clave que contenga el array).'); return; }
-  var valid=['single','tf','open','match','fill'];
+  var valid=['single','multi','tf','open','match','fill'];
   var loaded=0, skipped=0;
   if(mode==='replace'){ questions=[]; qCounter=0; }
   arr.forEach(function(item){
@@ -734,6 +774,13 @@ function renderList(){
       extra+='</div><div class="correct-row"><label style="margin:0">Respuesta correcta:</label><select id="cor-'+q.id+'">';
       ['a','b','c','d'].forEach(function(l){ extra+='<option value="'+l+'"'+(q.correct===l?' selected':'')+'>'+l+')</option>'; });
       extra+='</select></div></div>';
+    } else if(q.type==='multi'){
+      var correctArr=Array.isArray(q.correct)?q.correct:['a'];
+      extra='<div style="margin-bottom:6px"><label>Opciones</label><div class="opts-grid">';
+      ['a','b','c','d'].forEach(function(l,i){ extra+='<span class="ltr">'+l+')</span><input type="text" id="opt-'+q.id+'-'+i+'" value="'+esc(q.opts[i]||'')+'" placeholder="Opción '+l+'">'; });
+      extra+='</div><div class="correct-row" style="flex-wrap:wrap;gap:8px"><label style="margin:0">Respuestas correctas:</label>';
+      ['a','b','c','d'].forEach(function(l){ extra+='<label class="oblig-toggle" style="font-size:12px"><input type="checkbox" class="cormulti-'+q.id+'" value="'+l+'"'+(correctArr.indexOf(l)>=0?' checked':'')+'>'+l+')</label>'; });
+      extra+='</div></div>';
     } else if(q.type==='tf'){
       extra='<div class="correct-row" style="margin-bottom:10px"><label style="margin:0">Respuesta correcta:</label><select id="cor-'+q.id+'"><option value="true"'+(q.correct==='true'?' selected':'')+'>✓ Verdadero</option><option value="false"'+(q.correct==='false'?' selected':'')+'>✗ Falso</option></select></div>';
     } else if(q.type==='match'){
@@ -760,6 +807,11 @@ function renderList(){
       '<div class="frow full" style="margin-bottom:10px"><div><label>Enunciado</label>'+
       '<textarea id="txt-'+q.id+'" rows="3">'+esc(q.text)+'</textarea></div></div>'+
       extra+
+      '<div class="img-upload-zone">'+
+      '<input type="file" accept="image/*" id="img-input-'+q.id+'" style="display:none">'+
+      '<button type="button" class="btn-img-upload" onclick="document.getElementById(\'img-input-'+q.id+'\').click()">📷 Imagen</button>'+
+      '<div id="img-preview-'+q.id+'">'+(q.img ? '<div class="img-thumb-wrap"><img class="img-thumb" src="'+q.img+'"><button type="button" class="btn-img-remove" onclick="removeImg(\''+q.id+'\')">✕</button></div>' : '')+'</div>'+
+      '</div>'+
       '<div class="q-actions">'+
       '<label class="oblig-toggle"><input type="checkbox" id="oblig-'+q.id+'"'+(q.obligatoria?' checked':'')+'>Obligatoria</label>'+
       '<label class="pts-label">Puntaje: <input type="number" id="pts-'+q.id+'" value="'+(q.puntaje||1)+'" min="0" step="0.5" class="pts-input"></label>'+
@@ -775,11 +827,40 @@ function attachQ(q){
   setTimeout(function(){
     var t=document.getElementById('txt-'+q.id);
     if(t) t.addEventListener('input',function(){ q.text=t.value; var p=document.getElementById('prev-'+q.id); if(p) p.textContent=q.text.replace(/\n/g,' ').substring(0,55)+(q.text.length>55?'…':''); });
-    if(q.type==='single') for(var i=0;i<4;i++){(function(ii){var e=document.getElementById('opt-'+q.id+'-'+ii);if(e)e.addEventListener('input',function(){q.opts[ii]=e.value;});})(i);}
+    if(q.type==='single'||q.type==='multi') for(var i=0;i<4;i++){(function(ii){var e=document.getElementById('opt-'+q.id+'-'+ii);if(e)e.addEventListener('input',function(){q.opts[ii]=e.value;});})(i);}
     var cor=document.getElementById('cor-'+q.id); if(cor) cor.addEventListener('change',function(){q.correct=cor.value;});
+    if(q.type==='multi'){
+      document.querySelectorAll('.cormulti-'+q.id).forEach(function(cb){
+        cb.addEventListener('change',function(){
+          q.correct=[];
+          document.querySelectorAll('.cormulti-'+q.id).forEach(function(c){ if(c.checked) q.correct.push(c.value); });
+          if(q.correct.length===0) q.correct=['a'];
+        });
+      });
+    }
     var ob=document.getElementById('oblig-'+q.id); if(ob) ob.addEventListener('change',function(){ q.obligatoria=ob.checked; });
     var pts=document.getElementById('pts-'+q.id); if(pts) pts.addEventListener('input',function(){ q.puntaje=parseFloat(pts.value)||1; });
     var ew=document.getElementById('extrawords-'+q.id); if(ew) ew.addEventListener('input',function(){ q.extraWords=ew.value; });
+    var fi=document.getElementById('img-input-'+q.id);
+    if(fi) fi.addEventListener('change',function(){
+      var f=fi.files[0]; if(!f) return;
+      var reader=new FileReader();
+      reader.onload=function(e){
+        var img=new Image();
+        img.onload=function(){
+          var MAX=800, w=img.width, h=img.height;
+          if(w>MAX||h>MAX){ if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;} }
+          var canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          q.img=canvas.toDataURL('image/jpeg',0.85);
+          var prev=document.getElementById('img-preview-'+q.id);
+          if(prev) prev.innerHTML='<div class="img-thumb-wrap"><img class="img-thumb" src="'+q.img+'"><button type="button" class="btn-img-remove" onclick="removeImg(\''+q.id+'\')">✕</button></div>';
+          fi.value='';
+        };
+        img.src=e.target.result;
+      };
+      reader.readAsDataURL(f);
+    });
   },80);
 }
 
@@ -791,6 +872,13 @@ function addPair(qid){
   row.querySelector('.pair-left').focus();
 }
 function removePair(btn){ var row=btn.closest('.pair-row'); if(row) row.remove(); }
+
+function removeImg(id){
+  var q=questions.find(function(q){return q.id===id;});
+  if(q) q.img='';
+  var prev=document.getElementById('img-preview-'+id);
+  if(prev) prev.innerHTML='';
+}
 
 function updateSummary(){
   var c={single:0,tf:0,open:0,match:0,fill:0}; questions.forEach(function(q){if(c[q.type]!==undefined)c[q.type]++;});
@@ -807,8 +895,13 @@ function updateSummary(){
 function syncAll(){
   questions.forEach(function(q){
     var t=document.getElementById('txt-'+q.id); if(t) q.text=t.value;
-    if(q.type==='single') for(var i=0;i<4;i++){var e=document.getElementById('opt-'+q.id+'-'+i);if(e)q.opts[i]=e.value;}
+    if(q.type==='single'||q.type==='multi') for(var i=0;i<4;i++){var e=document.getElementById('opt-'+q.id+'-'+i);if(e)q.opts[i]=e.value;}
     var co=document.getElementById('cor-'+q.id); if(co) q.correct=co.value;
+    if(q.type==='multi'){
+      q.correct=[];
+      document.querySelectorAll('.cormulti-'+q.id).forEach(function(c){ if(c.checked) q.correct.push(c.value); });
+      if(q.correct.length===0) q.correct=['a'];
+    }
     var ob=document.getElementById('oblig-'+q.id); if(ob) q.obligatoria=ob.checked;
     var pts=document.getElementById('pts-'+q.id); if(pts) q.puntaje=parseFloat(pts.value)||1;
     var ew=document.getElementById('extrawords-'+q.id); if(ew) q.extraWords=ew.value;
@@ -831,7 +924,8 @@ function getConfig(){
     filename:  (document.getElementById('cfg-filename').value.trim().replace(/\s/g,'_'))||'escrito',
     url:       document.getElementById('cfg-url').value.trim(),
     shuffleQ:  document.getElementById('cfg-shuffle-q').checked,
-    shuffleOpts: document.getElementById('cfg-shuffle-opts').checked
+    shuffleOpts: document.getElementById('cfg-shuffle-opts').checked,
+    showToolbar: document.getElementById('cfg-toolbar').checked
   };
   if(!cfg.titulo){showAlert('Completar el título del escrito.');return null;}
   if(!cfg.lskey) {showAlert('Completar la clave localStorage.');return null;}
@@ -841,7 +935,8 @@ function getConfig(){
 function buildQArray(){
   return questions.map(function(q){
     var obj={id:q.id,type:q.type,text:q.text,obligatoria:q.obligatoria!==false,puntaje:q.puntaje||1};
-    if(q.type==='single') obj.options=['a','b','c','d'].map(function(l,i){return{id:l,label:q.opts[i]||''};});
+    if(q.img) obj.img=q.img;
+    if(q.type==='single'||q.type==='multi') obj.options=['a','b','c','d'].map(function(l,i){return{id:l,label:q.opts[i]||''};});
     if(q.type==='match') obj.pairs=(q.pairs||[]).filter(function(p){return p.left||p.right;});
     if(q.type==='fill'){
       var answers=[];
@@ -878,6 +973,7 @@ function getQuizJS(cfg, qJson){
     'var MATH_SYMBOLS = [["∈","∉","⊆","⊂","∪","∩","−","△","ᶜ","∅"],["ℕ","ℤ","ℝ","ℚ"],["×","÷","±","√","∑","∏","∞"],["∧","∨","¬","→","↔","∀","∃"],["|A|","⊇","≠","≤","≥"]];\n' +
     'var SHUFFLE_QUESTIONS = ' + (cfg.shuffleQ ? 'true' : 'false') + ';\n' +
     'var SHUFFLE_OPTIONS   = ' + (cfg.shuffleOpts ? 'true' : 'false') + ';\n' +
+    'var SHOW_TOOLBAR      = ' + (cfg.showToolbar ? 'true' : 'false') + ';\n' +
     'var questions = ' + qJson + ';\n' +
     'var QUESTION_POINTS = ' + (function(){ var pts={}; questions.forEach(function(q){ pts[q.id]=q.puntaje||1; }); return JSON.stringify(pts); })() + ';\n' +
     'var QUIZ_TIME_SECS = ' + ((parseInt(cfg.tiempo)||60)*60) + ';\n' +
@@ -930,6 +1026,7 @@ function getQuizCSS(){
     ".splash input[type='text']:focus{border-color:var(--amber)}",
     ".btn-begin{background:var(--amber);color:#fffdf6;border:none;border-radius:6px;font-family:'Lora',Georgia,serif;font-size:15px;font-weight:700;padding:12px 32px;cursor:pointer}",
     '.splash-err{color:var(--red);font-size:13px;min-height:18px}',
+    '.q-img{max-width:100%;max-height:320px;display:block;border-radius:6px;margin:8px 0 14px;border:1px solid var(--border)}',
     '.quiz-header{margin-bottom:32px}',
     '.quiz-header h1{color:var(--amber);font-size:17px;margin-bottom:6px}',
     '.q-optional{display:inline-block;font-size:10.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:1px 8px;margin-bottom:6px;letter-spacing:.04em}',
@@ -946,6 +1043,7 @@ function getQuizCSS(){
     '.option.selected{border-color:var(--amber);background:var(--amber-dim)}',
     '.option.locked{cursor:default}',
     ".option input[type='radio']{margin-top:2px;accent-color:var(--amber);flex-shrink:0}",
+    ".option input[type='checkbox']{margin-top:2px;accent-color:var(--amber);flex-shrink:0}",
     '.option-label{font-size:13.5px;line-height:1.45}',
     '.open-editor-wrap{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--panel);margin-top:4px}',
     '.open-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:6px 10px;background:var(--panel-2);border-bottom:1px solid var(--border);align-items:center}',
@@ -1037,7 +1135,7 @@ function generateHTML(){
 function generateGS(){
   syncAll();
   var cfg=getConfig(); if(!cfg) return;
-  var ids=[],ans={},pts={},pairs={},fills={},hdrs=['Timestamp','Nombre'];
+  var ids=[],ans={},multi={},pts={},pairs={},fills={},hdrs=['Timestamp','Nombre'];
   var qArr = buildQArray();
   qArr.forEach(function(q,i){
     ids.push(q.id);
@@ -1045,6 +1143,11 @@ function generateGS(){
     var preview = (q.text||'').replace(/\[[^\]]*\]/g,'[...]').replace(/\n/g,' ').substring(0,60);
     hdrs.push('P'+(i+1)+' – '+preview);
     if(q.type==='single'||q.type==='tf') ans[q.id]=q.correct||'';
+    if(q.type==='multi'){
+      var src=questions.find(function(qq){return qq.id===q.id;});
+      var c=src?(Array.isArray(src.correct)?src.correct.slice().sort():[src.correct||'a']):['a'];
+      multi[q.id]=c;
+    }
     if(q.type==='match') pairs[q.id]=(q.pairs||[]).map(function(p){return[p.left,p.right];});
     if(q.type==='fill') fills[q.id]=q.answers||[];
   });
@@ -1055,6 +1158,7 @@ function generateGS(){
     'var HEADERS = '+JSON.stringify(hdrs,null,2)+';\n\n'+
     'var QUESTION_IDS = '+JSON.stringify(ids)+';\n\n'+
     'var CORRECT_ANSWERS = '+JSON.stringify(ans,null,2)+';\n\n'+
+    'var CORRECT_MULTI = '+JSON.stringify(multi,null,2)+';\n\n'+
     'var CORRECT_PAIRS = '+JSON.stringify(pairs,null,2)+';\n\n'+
     'var CORRECT_FILLS = '+JSON.stringify(fills,null,2)+';\n\n'+
     'var QUESTION_POINTS = '+JSON.stringify(pts,null,2)+';\n\n'+
@@ -1073,6 +1177,13 @@ function generateGS(){
     '      var ok=String(data[id]||"").trim().toLowerCase()===String(CORRECT_ANSWERS[id]).trim().toLowerCase();\n'+
     '      if(ok){earned+=p;correct++;}\n'+
     '      results[id]=ok?"correcta":"incorrecta";\n'+
+    '    } else if(CORRECT_MULTI[id]){\n'+
+    '      totalPts+=p;\n'+
+    '      var subM=(data[id]||"").split(",").map(function(s){return s.trim();}).filter(Boolean).sort().join(",");\n'+
+    '      var expM=(CORRECT_MULTI[id]||[]).slice().sort().join(",");\n'+
+    '      var okM=subM===expM;\n'+
+    '      if(okM){earned+=p;correct++;}\n'+
+    '      results[id]=okM?"correcta":"incorrecta";\n'+
     '    } else if(CORRECT_PAIRS[id]){\n'+
     '      totalPts+=p;\n'+
     '      var submitted={};\n'+
@@ -1147,8 +1258,8 @@ function buildSwatches(){
 }
 buildSwatches();
 </script>
-<div style="text-align:center;color:#aaa;font-size:11px;padding:20px 0 10px;font-family:system-ui,sans-serif">
-  Herramienta creada por Prof. Elizabeth Izquierdo con asistencia de IA · 2026
+<div style="text-align:center;color:#777;font-size:13px;padding:20px 0 10px;font-family:system-ui,sans-serif">
+  Herramienta creada por Prof. Elizabeth Izquierdo con asistencia de IA · 2026 · profe.eliza17@gmail.com
 </div>
 </body>
 </html>
