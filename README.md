@@ -43,7 +43,7 @@ El HTML de la actividad **no contiene ninguna respuesta correcta** — todo el c
 | `single` | Opción única (radio buttons, una sola correcta) | Automática |
 | `multi` | Múltiple respuesta (checkboxes, pueden ser correctas varias opciones) | Automática — todo o nada: el alumno debe marcar exactamente las correctas |
 | `tf` | Verdadero / Falso | Automática |
-| `open` | Pregunta abierta de desarrollo — el alumno escribe con texto enriquecido y símbolos matemáticos | Manual — queda guardada en la planilla |
+| `open` | Pregunta abierta de desarrollo — el alumno escribe en un editor de texto. La barra de herramientas puede ser **completa** (con símbolos matemáticos, para exactas) o **básica** (solo negrita/cursiva/subrayado, para letras). Se configura por pregunta en el Generador. Por defecto se agrega como opcional con puntaje 0. | Manual — queda guardada en la planilla |
 | `match` | Emparejar — dos columnas, el estudiante une cada elemento de la izquierda con el correspondiente de la derecha | Automática con crédito parcial |
 | `fill` | Banco de palabras — el estudiante completa espacios en blanco eligiendo palabras de un banco | Automática con crédito parcial |
 

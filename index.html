@@ -244,8 +244,8 @@ footer span{display:inline-block;margin:0 6px}
     </tr>
     <tr>
       <td><strong>Abierta</strong></td>
-      <td>Desarrollo, demostración o justificación. El alumno escribe con texto enriquecido y símbolos matemáticos.</td>
-      <td>Manual — el texto queda guardado en la planilla para corregir a mano.</td>
+      <td>Desarrollo, demostración o justificación. El alumno escribe en un editor de texto. Se puede elegir si la barra de herramientas es completa (con símbolos matemáticos) o básica (solo negrita, cursiva y subrayado), según la materia.</td>
+      <td>Manual — el texto queda guardado en la planilla para corregir a mano. Por defecto se agrega como <em>opcional</em> con puntaje 0.</td>
     </tr>
     <tr>
       <td><strong>Emparejar</strong></td>
@@ -361,19 +361,16 @@ Reglas:
 
   <div class="callout info">
     <span class="tag">Campos opcionales en el JSON</span>
-    Se puede agregar <code>"puntaje": 2</code> para asignar más peso a una pregunta, y <code>"obligatoria": false</code> para marcarla como opcional. En preguntas de tipo <strong>fill</strong>, <code>"extraWords"</code> agrega palabras distractoras al banco. En preguntas de tipo <strong>multi</strong>, <code>"correct"</code> es un array con todas las letras correctas: <code>["a", "c"]</code>. Si se omiten los opcionales, el Generador usa los valores por defecto (1 punto, obligatoria, sin distractores).
+    Se puede agregar <code>"puntaje": 2</code> para asignar más peso a una pregunta, y <code>"obligatoria": false</code> para marcarla como opcional. En preguntas de tipo <strong>fill</strong>, <code>"extraWords"</code> agrega palabras distractoras al banco. En preguntas de tipo <strong>multi</strong>, <code>"correct"</code> es un array con todas las letras correctas: <code>["a", "c"]</code>. En preguntas de tipo <strong>open</strong>, <code>"toolbar": "basic"</code> activa la barra simplificada (solo formato); sin ese campo, se usa la barra completa con símbolos matemáticos. Si se omiten los opcionales, el Generador usa los valores por defecto (1 punto, obligatoria excepto en preguntas abiertas que son opcionales con puntaje 0 por defecto, barra completa).
   </div>
 
-  <h3>Símbolos matemáticos en preguntas abiertas</h3>
-  <p>Las preguntas de tipo <strong>Abierta</strong> incluyen automáticamente una barra de herramientas con símbolos matemáticos y formato. El alumno los inserta con un clic, sin necesidad de teclado especial. Los símbolos disponibles cubren distintas áreas:</p>
+  <h3>Barra de herramientas en preguntas abiertas</h3>
+  <p>Cada pregunta de tipo <strong>Abierta</strong> tiene un selector de barra de herramientas con dos opciones:</p>
   <ul>
-    <li><strong>Conjuntos:</strong> ∈ ∉ ⊆ ⊂ ∪ ∩ − △ ᶜ ∅</li>
-    <li><strong>Conjuntos numéricos:</strong> ℕ ℤ ℝ ℚ</li>
-    <li><strong>Comparación:</strong> ≤ ≥ ≠ ≈ ≡</li>
-    <li><strong>Operadores:</strong> × ÷ ± √ ∑ ∏ ∞</li>
-    <li><strong>Lógica:</strong> ∧ ∨ ¬ → ↔ ∀ ∃</li>
-    <li><strong>Formato:</strong> negrita, cursiva, subrayado, tamaño de letra</li>
+    <li><strong>Completa</strong> — incluye formato (negrita, cursiva, subrayado, tamaño) más todos los grupos de símbolos matemáticos. Ideal para matemática, lógica, física, química.</li>
+    <li><strong>Básica</strong> — solo negrita, cursiva, subrayado y tamaño de letra. Recomendada para literatura, lengua, historia o cualquier materia donde los símbolos matemáticos no tienen sentido.</li>
   </ul>
+  <p>Los símbolos matemáticos disponibles en la barra completa cubren: conjuntos (∈ ∉ ⊆ ∪ ∩ ∅…), conjuntos numéricos (ℕ ℤ ℝ ℚ), operadores (× ÷ ± √ ∑ ∞), lógica (∧ ∨ ¬ → ↔ ∀ ∃) y otros (≤ ≥ ≠ |A|…).</p>
 
   <div class="callout warn">
     <span class="tag">Clave localStorage</span>
