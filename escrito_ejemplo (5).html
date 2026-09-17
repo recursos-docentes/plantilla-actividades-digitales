@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escrito de ejemplo</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:light;
+  --bg:#faf2ee;--panel:#fff8f5;--panel-2:#f5ebe3;--border:#e0c8b8;
+  --text:#2c1508;--muted:#7a5a48;--amber:#c2410c;--amber-dim:#c2410c20;
+  --green:#2d6a4f;--green-dim:#2d6a4f15;--red:#c0392b;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Lora',Georgia,serif;font-size:14px;line-height:1.6;min-height:100vh;padding:24px 16px 48px}
+.window{max-width:780px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.titlebar{display:flex;align-items:center;gap:8px;background:var(--panel-2);border-bottom:1px solid var(--border);padding:10px 16px;user-select:none}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.red{background:#ff5f57}.dot.yellow{background:#febc2e}.dot.green{background:#28c840}
+.quiz-timer{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:var(--muted);padding:2px 8px;border-radius:10px;border:1px solid var(--border);background:var(--panel);transition:color .3s,background .3s,border-color .3s}
+.quiz-timer.warn{color:#b45309;background:#fef3c7;border-color:#fcd34d}
+.quiz-timer.danger{color:#fff;background:#dc2626;border-color:#b91c1c;font-weight:700}
+.tab-title{margin-left:10px;font-size:13px;color:var(--muted);flex:1}
+.build-status{font-size:12px;color:var(--muted)}.build-status.ok{color:var(--green)}
+.content{padding:24px 28px 32px}
+.splash{display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 20px 44px;gap:20px}
+.splash h1{font-size:20px;font-weight:700;color:var(--amber);letter-spacing:.02em}
+.splash p{color:var(--muted);font-size:13.5px;max-width:480px;line-height:1.65}
+.splash input[type='text']{width:100%;max-width:380px;background:var(--panel-2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Lora',Georgia,serif;font-size:14px;padding:10px 14px;outline:none;text-align:center;transition:border-color .15s}
+.splash input[type='text']:focus{border-color:var(--amber)}
+.btn-begin{background:var(--amber);color:#fffdf6;border:none;border-radius:6px;font-family:'Lora',Georgia,serif;font-size:15px;font-weight:700;padding:12px 32px;cursor:pointer}
+.splash-err{color:var(--red);font-size:13px;min-height:18px}
+.q-img{max-width:100%;max-height:320px;display:block;border-radius:6px;margin:8px 0 14px;border:1px solid var(--border)}
+.quiz-header{margin-bottom:32px}
+.quiz-header h1{color:var(--amber);font-size:17px;margin-bottom:6px}
+.q-optional{display:inline-block;font-size:10.5px;color:var(--muted);background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:1px 8px;margin-bottom:6px;letter-spacing:.04em}
+.quiz-header p{color:var(--muted);font-size:13px}
+.question{background:var(--panel-2);border:1px solid var(--border);border-radius:8px;padding:20px 22px;margin-bottom:16px}
+.q-num{font-size:11px;color:var(--muted);margin-bottom:4px}
+.qtype{display:inline-block;font-size:11px;color:var(--amber);background:var(--amber-dim);padding:2px 8px;border-radius:4px;margin-bottom:10px}
+.qtype-open{color:var(--green);background:var(--green-dim)}
+.q-text{font-size:14px;margin-bottom:12px;white-space:pre-wrap}
+.options,.tf-row{display:flex;flex-direction:column;gap:8px}
+.tf-row{flex-direction:row;gap:12px}
+.option{display:flex;align-items:flex-start;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 14px;cursor:pointer;transition:border-color .12s,background .12s}
+.option:hover{border-color:var(--amber);background:var(--amber-dim)}
+.option.selected{border-color:var(--amber);background:var(--amber-dim)}
+.option.locked{cursor:default}
+.option input[type='radio']{margin-top:2px;accent-color:var(--amber);flex-shrink:0}
+.option input[type='checkbox']{margin-top:2px;accent-color:var(--amber);flex-shrink:0}
+.option-label{font-size:13.5px;line-height:1.45}
+.open-editor-wrap{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--panel);margin-top:4px}
+.open-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:6px 10px;background:var(--panel-2);border-bottom:1px solid var(--border);align-items:center}
+.tb-sep{width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0}
+.tb-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-right:2px}
+.tb-btn{font-family:'Lora',Georgia,serif;font-size:13px;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:3px 8px;border-radius:4px;cursor:pointer;line-height:1.3;white-space:nowrap;transition:background .1s,border-color .1s}
+.tb-btn:hover{background:var(--amber-dim);border-color:var(--amber);color:var(--amber)}
+.tb-btn.fmt{font-size:12px;min-width:28px;text-align:center}
+.tb-select{font-family:'Lora',Georgia,serif;font-size:12px;background:var(--panel);border:1px solid var(--border);color:var(--text);padding:3px 6px;border-radius:4px;cursor:pointer;line-height:1.3;height:26px}
+.tb-select:hover{border-color:var(--amber)}
+.open-area{min-height:100px;padding:12px 14px;outline:none;font-family:'Lora',Georgia,serif;font-size:14px;line-height:1.65;color:var(--text);word-break:break-word}
+.open-area:empty::before{content:attr(data-placeholder);color:var(--muted);pointer-events:none}
+.open-area:focus{background:rgba(155,35,53,.03)}
+.quiz-footer{margin-top:28px;display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.status-msg{font-size:12px;color:var(--muted);align-self:flex-start}
+.btn-submit{background:var(--amber);color:#fffdf6;border:none;border-radius:6px;font-family:'Lora',Georgia,serif;font-size:14px;font-weight:600;padding:10px 26px;cursor:pointer}
+.btn-submit:hover{opacity:.88}.btn-submit:disabled{opacity:.4;cursor:default}
+.thanks{text-align:center;padding:48px 24px}
+.thanks h2{color:var(--green);font-size:22px;margin-bottom:8px}
+.thanks p{color:var(--muted);font-size:14px}
+.grade-box{margin:28px auto 0;max-width:560px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;text-align:left;overflow:hidden}
+.grade-title{background:var(--panel-2);border-bottom:1px solid var(--border);padding:8px 16px;font-size:12px;color:var(--amber)}
+.grade-table{width:100%;border-collapse:collapse;font-size:13px}
+.grade-table td{padding:7px 16px;border-bottom:1px solid var(--border)}
+.grade-table tr:last-child td{border-bottom:none}
+.grade-ok{color:var(--green)}.grade-err{color:var(--red)}.grade-partial{color:var(--amber);font-size:12px}
+.grade-score{padding:10px 16px;font-size:14px}.grade-score strong{color:var(--amber)}
+.grade-open{padding:6px 16px 12px;font-size:12px;color:var(--muted)}
+.match-wrap{margin-top:4px}
+.match-hint{font-size:12px;color:var(--muted);margin-bottom:10px}
+.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.match-col{display:flex;flex-direction:column;gap:8px}
+.match-item{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:9px 14px;cursor:pointer;font-size:13.5px;text-align:left;transition:border-color .12s,background .12s;color:var(--text);font-family:inherit}
+.match-item:hover{border-color:var(--amber);background:var(--amber-dim)}
+.match-selected{border-color:var(--amber)!important;background:var(--amber-dim)!important}
+.match-paired{border-color:var(--green)!important;background:var(--green-dim)!important;color:var(--green)}
+.match-used{opacity:.35;cursor:default!important}
+.match-badge{font-size:11px;color:var(--green);font-style:italic}
+.fill-text{font-size:15px;line-height:2.4;margin-bottom:12px}
+.fill-blank{display:inline-block;min-width:70px;border-bottom:2px solid var(--amber);padding:0 6px;cursor:pointer;color:var(--muted);text-align:center;transition:border-color .12s,color .12s;border-radius:2px 2px 0 0}
+.fill-blank:hover{background:var(--amber-dim)}
+.fill-blank.filled{color:var(--green);border-color:var(--green);font-weight:600}
+.fill-blank.fill-selected{background:var(--amber-dim);border-color:var(--amber)}
+.word-bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;background:var(--panel-2);border:1px solid var(--border);border-radius:6px;margin-top:4px}
+.word-btn{padding:5px 14px;border:1px solid var(--amber);background:var(--panel);color:var(--amber);border-radius:20px;cursor:pointer;font-size:13.5px;font-family:inherit;transition:background .12s,opacity .12s}
+.word-btn:hover:not(.used){background:var(--amber-dim)}
+.word-btn.used{opacity:.3;cursor:default}
+@media(max-width:520px){body{padding:0}.window{border-radius:0}.match-cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="window">
+  <div class="titlebar">
+    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+    <span class="tab-title" id="title-tab">Escrito de ejemplo</span>
+    <span class="quiz-timer" id="quiz-timer">⏱ 60:00</span>
+    <span class="build-status" id="build-status">● en progreso</span>
+  </div>
+  <div class="content" id="main-content"></div>
+</div>
+
+<script>
+var SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxikfdyTljOfJj9sVY7FLemtJfMR_sa26s2Ihbm_zB-Y-lCGV20bvzcpNfJUWFpJk1J/exec";
+var LS_KEY           = "escrito_ejemplo222_2026";
+var QUIZ_HEADER      = "Escrito de ejemplo";
+var QUIZ_SUBTITLE    = "Ingresar el nombre y apellido para comenzar. El cuestionario se abre en pantalla completa.";
+var QUIZ_SECTION_TITLE = "// Materia — Escrito de ejemplo";
+var QUIZ_SECTION_SUB   = "Responder con el procedimiento completo donde se solicite. Tiempo: 60 minutos.";
+var MATH_SYMBOLS = [["∈","∉","⊆","⊂","∪","∩","−","△","ᶜ","∅"],["ℕ","ℤ","ℝ","ℚ"],["×","÷","±","√","∑","∏","∞"],["∧","∨","¬","→","↔","∀","∃"],["|A|","⊇","≠","≤","≥"]];
+var SHUFFLE_QUESTIONS = true;
+var SHUFFLE_OPTIONS   = true;
+var SHOW_TOOLBAR      = true;
+var questions = [
+  {
+    "id": "q4",
+    "type": "single",
+    "text": "Si A = {x | x es un número par positivo menor que 10}, ¿cuál es la representación correcta de A por extensión?",
+    "obligatoria": true,
+    "puntaje": 1,
+    "options": [
+      {
+        "id": "a",
+        "label": "A = {2, 4, 6, 8}"
+      },
+      {
+        "id": "b",
+        "label": "A = {1, 3, 5, 7, 9}"
+      },
+      {
+        "id": "c",
+        "label": "A = {2, 4, 6, 8, 10}"
+      },
+      {
+        "id": "d",
+        "label": "A = {0, 2, 4, 6, 8}"
+      }
+    ]
+  },
+  {
+    "id": "q5",
+    "type": "single",
+    "text": "Dados los conjuntos A = {1, 2, 3} y B = {3, 4, 5}, ¿cuál es la intersección (A ∩ B)?",
+    "obligatoria": true,
+    "puntaje": 1,
+    "options": [
+      {
+        "id": "a",
+        "label": "A ∩ B = {1, 2, 3, 4, 5}"
+      },
+      {
+        "id": "b",
+        "label": "A ∩ B = {3}"
+      },
+      {
+        "id": "c",
+        "label": "A ∩ B = {1, 2}"
+      },
+      {
+        "id": "d",
+        "label": "A ∩ B = ∅"
+      }
+    ]
+  },
+  {
+    "id": "q6",
+    "type": "single",
+    "text": "Si el cardinal del conjunto A es |A| = 4, ¿cuántos elementos tiene su conjunto potencia P(A)?",
+    "obligatoria": true,
+    "puntaje": 1,
+    "options": [
+      {
+        "id": "a",
+        "label": "8"
+      },
+      {
+        "id": "b",
+        "label": "12"
+      },
+      {
+        "id": "c",
+        "label": "16"
+      },
+      {
+        "id": "d",
+        "label": "4"
+      }
+    ]
+  },
+  {
+    "id": "q7",
+    "type": "multi",
+    "text": "Si A = {1, 2, 3, 4} y B = {3, 4, 5, 6}, ¿cuáles de las siguientes afirmaciones son correctas? (Seleccionar todas las correctas.)",
+    "obligatoria": true,
+    "puntaje": 2,
+    "options": [
+      {
+        "id": "a",
+        "label": "A ∪ B = {1, 2, 3, 4, 5, 6}"
+      },
+      {
+        "id": "b",
+        "label": "A - B = {1, 2}"
+      },
+      {
+        "id": "c",
+        "label": "A ∩ B = {1, 2, 5, 6}"
+      },
+      {
+        "id": "d",
+        "label": "B - A = {5, 6}"
+      }
+    ]
+  },
+  {
+    "id": "q8",
+    "type": "multi",
+    "text": "Sean A y B dos conjuntos disjuntos. ¿Cuáles de las siguientes relaciones se cumplen siempre?",
+    "obligatoria": true,
+    "puntaje": 1,
+    "options": [
+      {
+        "id": "a",
+        "label": "A ∩ B = ∅"
+      },
+      {
+        "id": "b",
+        "label": "|A ∪ B| = |A| + |B|"
+      },
+      {
+        "id": "c",
+        "label": "A - B = ∅"
+      },
+      {
+        "id": "d",
+        "label": "A ⊆ B"
+      }
+    ]
+  },
+  {
+    "id": "q9",
+    "type": "multi",
+    "text": "¿Cuáles de los siguientes conjuntos están definidos por comprensión?",
+    "obligatoria": true,
+    "puntaje": 1,
+    "options": [
+      {
+        "id": "a",
+        "label": "A = {x ∈ ℕ | x es primo y x < 20}"
+      },
+      {
+        "id": "b",
+        "label": "B = {2, 3, 5, 7, 11, 13, 17, 19}"
+      },
+      {
+        "id": "c",
+        "label": "C = {y | y es una vocal de la palabra 'matemática'}"
+      },
+      {
+        "id": "d",
+        "label": "D = {a, e, i, o, u}"
+      }
+    ]
+  },
+  {
+    "id": "q10",
+    "type": "tf",
+    "text": "Si A ⊆ B, entonces la intersección A ∩ B es igual al conjunto A.",
+    "obligatoria": true,
+    "puntaje": 1
+  },
+  {
+    "id": "q11",
+    "type": "tf",
+    "text": "El conjunto vacío (∅) es un subconjunto de cualquier conjunto A.",
+    "obligatoria": true,
+    "puntaje": 1
+  },
+  {
+    "id": "q12",
+    "type": "match",
+    "text": "Relacionar cada operación o concepto de conjuntos con su definición matemática correspondiente:",
+    "obligatoria": true,
+    "puntaje": 2,
+    "pairs": [
+      {
+        "left": "Unión (A ∪ B)",
+        "right": "{x | x ∈ A o x ∈ B}"
+      },
+      {
+        "left": "Intersección (A ∩ B)",
+        "right": "{x | x ∈ A y x ∈ B}"
+      },
+      {
+        "left": "Diferencia (A - B)",
+        "right": "{x | x ∈ A y x ∉ B}"
+      },
+      {
+        "left": "Complemento (A')",
+        "right": "{x ∈ U | x ∉ A}"
+      }
+    ]
+  },
+  {
+    "id": "q13",
+    "type": "fill",
+    "text": "La [unión] de dos conjuntos A y B contiene a todos los elementos que pertenecen a A, a B o a ambos. Por otro lado, dos conjuntos son [disjuntos] si su intersección es el [conjunto vacío].",
+    "obligatoria": true,
+    "puntaje": 1,
+    "answers": [
+      "unión",
+      "disjuntos",
+      "conjunto vacío"
+    ],
+    "bank": [
+      "unión",
+      "disjuntos",
+      "pertenencia",
+      "cardinal",
+      "subconjunto",
+      "conjunto vacío"
+    ]
+  }
+];
+var QUESTION_POINTS = {"q4":1,"q5":1,"q6":1,"q7":2,"q8":1,"q9":1,"q10":1,"q11":1,"q12":2,"q13":1};
+var QUIZ_TIME_SECS = 3600;
+var state = {}, locked = false, quizFinished = false, quizStarted = false, studentName = "";
+var quizTimer = null, timeLeft = QUIZ_TIME_SECS;
+var matchState = {}, matchSel = {}, fillState = {}, fillSel = {};
+
+function escH(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function escD(s){ return escH(s).replace(/\n/g,'<br>'); }
+
+function renderSplash(){
+  document.getElementById('main-content').innerHTML =
+    '<div class="splash">' +
+    '<h1>' + escH(QUIZ_HEADER) + '</h1>' +
+    '<p>' + escH(QUIZ_SUBTITLE) + '</p>' +
+    '<input type="text" id="sname" placeholder="Nombre y apellido" autocomplete="off" spellcheck="false" />' +
+    '<div class="splash-err" id="serr"></div>' +
+    '<button class="btn-begin" onclick="beginQuiz()">Comenzar</button>' +
+    '</div>';
+  var sn = document.getElementById('sname');
+  if(sn) sn.addEventListener('keydown', function(e){ if(e.key==='Enter') beginQuiz(); });
+}
+
+function beginQuiz(){
+  var el = document.getElementById('sname');
+  var v  = el ? el.value.trim() : '';
+  if(!v){
+    var se = document.getElementById('serr');
+    if(se) se.textContent = '⚠ Ingresar el nombre y apellido antes de comenzar.';
+    if(el){ el.style.borderColor='var(--red)'; el.focus(); }
+    return;
+  }
+  studentName = v; quizStarted = true;
+  try{ requestFS(); }catch(e){}
+  try{ renderQuiz(); }catch(err){ alert('Error al cargar el quiz: ' + err.message); return; }
+  startTimer();
+}
+
+function startTimer(){
+  var el = document.getElementById('quiz-timer');
+  function tick(){
+    if(quizFinished){ clearInterval(quizTimer); return; }
+    timeLeft--;
+    if(timeLeft <= 0){
+      clearInterval(quizTimer);
+      if(el){ el.textContent = '⏱ 0:00'; el.className = 'quiz-timer danger'; }
+      if(!quizFinished) performSubmit(buildPayload());
+      return;
+    }
+    var m = Math.floor(timeLeft/60);
+    var s = timeLeft % 60;
+    if(el){
+      el.textContent = '⏱ ' + m + ':' + (s<10?'0':'') + s;
+      el.className = 'quiz-timer' + (timeLeft<=60?' danger':timeLeft<=300?' warn':'');
+    }
+  }
+  tick();
+  quizTimer = setInterval(tick, 1000);
+}
+
+function buildToolbar(qid, toolbarType){
+  var groupLabels = ['Conjuntos', 'ℕ ℤ ℝ ℚ', 'Operadores', 'Lógica', 'Otros'];
+  var h = '<div class="open-toolbar">';
+  h += '<span class="tb-label">Formato</span>';
+  h += '<button type="button" class="tb-btn fmt" onclick="fmtCmd(\'' + qid + '\',\'bold\')"><b>B</b></button>';
+  h += '<button type="button" class="tb-btn fmt" onclick="fmtCmd(\'' + qid + '\',\'italic\')"><i>I</i></button>';
+  h += '<button type="button" class="tb-btn fmt" onclick="fmtCmd(\'' + qid + '\',\'underline\')" style="text-decoration:underline">S</button>';
+  h += '<select class="tb-select" onchange="setSz(\'' + qid + '\',this.value);this.value=\'\'"><option value="">Tamaño</option><option value="2">Pequeño</option><option value="3">Normal</option><option value="4">Grande</option><option value="5">Muy grande</option></select>';
+  if(toolbarType !== 'basic'){
+    h += '<div class="tb-sep"></div>';
+    MATH_SYMBOLS.forEach(function(grp, gi){
+      h += '<span class="tb-label">' + groupLabels[gi] + '</span>';
+      grp.forEach(function(sym){
+        h += '<button type="button" class="tb-btn" onclick="insSym(\'' + qid + '\',\'' + sym + '\')">' + sym + '</button>';
+      });
+      if(gi < MATH_SYMBOLS.length - 1) h += '<div class="tb-sep"></div>';
+    });
+  }
+  return h + '</div>';
+}
+
+function fmtCmd(qid, cmd){
+  var a = document.getElementById('open-' + qid);
+  if(a){ a.focus(); document.execCommand(cmd, false, null); }
+}
+
+function setSz(qid, sz){
+  var a = document.getElementById('open-' + qid);
+  if(a && sz){ a.focus(); document.execCommand('fontSize', false, sz); }
+}
+
+function insSym(qid, sym){
+  var a = document.getElementById('open-' + qid);
+  if(!a) return;
+  a.focus();
+  var sel = window.getSelection();
+  if(sel && sel.rangeCount){
+    var r = sel.getRangeAt(0);
+    r.deleteContents();
+    var t = document.createTextNode(sym);
+    r.insertNode(t); r.setStartAfter(t); r.setEndAfter(t);
+    sel.removeAllRanges(); sel.addRange(r);
+  } else { a.textContent += sym; }
+  a.dispatchEvent(new Event('input'));
+}
+
+function shuffleArr(arr){
+  var a=arr.slice();
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+  return a;
+}
+
+function updateMatchDisplay(qid){
+  var sel = matchSel[qid];
+  document.querySelectorAll('.match-left[data-qid="'+qid+'"]').forEach(function(btn){
+    var val = btn.dataset.val;
+    var paired = matchState[qid] && matchState[qid][val] !== undefined;
+    btn.classList.toggle('match-selected', sel === val && !paired);
+    btn.classList.toggle('match-paired', paired);
+    var badge = btn.querySelector('.match-badge');
+    if(badge) badge.textContent = paired ? ' → ' + matchState[qid][val] : '';
+  });
+  document.querySelectorAll('.match-right[data-qid="'+qid+'"]').forEach(function(btn){
+    var val = btn.dataset.val;
+    var used = matchState[qid] && Object.keys(matchState[qid]).some(function(k){ return matchState[qid][k] === val; });
+    btn.classList.toggle('match-used', used);
+  });
+}
+
+function updateFillDisplay(qid){
+  var fills = fillState[qid] || [];
+  var sel = fillSel[qid];
+  document.querySelectorAll('.fill-blank[data-qid="'+qid+'"]').forEach(function(sp){
+    var idx = parseInt(sp.dataset.idx);
+    var val = fills[idx] || '';
+    sp.textContent = val || '___';
+    sp.classList.toggle('filled', !!val);
+    sp.classList.toggle('fill-selected', sel === idx);
+  });
+  var usedWords = {};
+  fills.forEach(function(w){ if(w) usedWords[w] = (usedWords[w]||0)+1; });
+  var wordCount = {};
+  document.querySelectorAll('.word-btn[data-qid="'+qid+'"]').forEach(function(btn){
+    var w = btn.dataset.word;
+    wordCount[w] = (wordCount[w]||0)+1;
+    var used = (usedWords[w]||0) >= wordCount[w];
+    btn.classList.toggle('used', used);
+    btn.disabled = used;
+  });
+}
+
+function renderQuiz(){
+  if(SHUFFLE_QUESTIONS) questions = shuffleArr(questions);
+  if(SHUFFLE_OPTIONS){
+    questions.forEach(function(q){
+      if(q.type === 'single' && q.options && q.options.length > 1){
+        q.options = shuffleArr(q.options);
+      }
+    });
+  }
+  var typeLabels = { single:'opción única', multi:'múltiple respuesta', tf:'verdadero / falso', open:'pregunta abierta', match:'emparejar', fill:'banco de palabras' };
+  var h = '<div class="quiz-header"><h1>' + escH(QUIZ_SECTION_TITLE) + '</h1><p>' + escH(QUIZ_SECTION_SUB) + '</p></div>';
+  questions.forEach(function(q, i){
+    var isOpen = q.type === 'open';
+    h += '<div class="question">' +
+         '<div class="q-num">Pregunta ' + (i+1) + ' de ' + questions.length + '</div>' +
+         '<div class="' + (isOpen ? 'qtype qtype-open' : 'qtype') + '">' + (typeLabels[q.type] || q.type) + '</div>' +
+         (q.obligatoria === false ? '<span class="q-optional">opcional</span>' : '') +
+         '<div class="q-text">' + escD(q.text) + '</div>' +
+         (q.img ? '<img src="' + q.img + '" class="q-img" alt="Imagen de la pregunta">' : '');
+    if(q.type === 'open'){
+      h += '<div class="open-editor-wrap">' + (SHOW_TOOLBAR ? buildToolbar(q.id, q.toolbar) : '') +
+           '<div class="open-area" id="open-' + q.id + '" contenteditable="true" data-qid="' + q.id +
+           '" data-placeholder="Escribir la respuesta aquí…"></div></div>';
+    } else if(q.type === 'single'){
+      h += '<div class="options">';
+      (q.options || []).forEach(function(opt){
+        h += '<label class="option" data-qid="' + q.id + '" data-val="' + opt.id + '">' +
+             '<input type="radio" name="' + q.id + '" value="' + opt.id + '" />' +
+             '<span class="option-label"><strong>' + opt.id + ')</strong> ' + escH(opt.label) + '</span></label>';
+      });
+      h += '</div>';
+    } else if(q.type === 'multi'){
+      h += '<p style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Seleccionar todas las opciones correctas.</p>';
+      h += '<div class="options">';
+      (q.options || []).forEach(function(opt){
+        h += '<label class="option check-opt" data-qid="' + q.id + '" data-val="' + opt.id + '">' +
+             '<input type="checkbox" name="' + q.id + '" value="' + opt.id + '" />' +
+             '<span class="option-label"><strong>' + opt.id + ')</strong> ' + escH(opt.label) + '</span></label>';
+      });
+      h += '</div>';
+    } else if(q.type === 'tf'){
+      h += '<div class="tf-row">' +
+           '<label class="option" data-qid="' + q.id + '" data-val="true">' +
+           '<input type="radio" name="' + q.id + '" value="true" />' +
+           '<span class="option-label">✓ Verdadero</span></label>' +
+           '<label class="option" data-qid="' + q.id + '" data-val="false">' +
+           '<input type="radio" name="' + q.id + '" value="false" />' +
+           '<span class="option-label">✗ Falso</span></label></div>';
+    } else if(q.type === 'match'){
+      matchState[q.id] = {}; matchSel[q.id] = null;
+      var rights = shuffleArr((q.pairs||[]).map(function(p){ return p.right; }));
+      h += '<div class="match-wrap"><p class="match-hint">Hacer clic en un elemento de la izquierda y luego en el elemento correspondiente de la derecha.</p>';
+      h += '<div class="match-cols">';
+      h += '<div class="match-col">';
+      (q.pairs||[]).forEach(function(p,pi){
+        h += '<button type="button" class="match-item match-left" data-qid="' + q.id + '" data-val="' + escH(p.left) + '">' + escH(p.left) + '<span class="match-badge"></span></button>';
+      });
+      h += '</div><div class="match-col">';
+      rights.forEach(function(r){
+        h += '<button type="button" class="match-item match-right" data-qid="' + q.id + '" data-val="' + escH(r) + '">' + escH(r) + '</button>';
+      });
+      h += '</div></div></div>';
+    } else if(q.type === 'fill'){
+      fillState[q.id] = (q.answers||[]).map(function(){ return ''; });
+      fillSel[q.id] = -1;
+      var parts = (q.text||'').split(/\[([^\]]+)\]/g);
+      var blankIdx = 0;
+      h += '<div class="fill-text" id="fill-text-' + q.id + '">';
+      parts.forEach(function(p,pi){
+        if(pi % 2 === 0){ h += escH(p); }
+        else {
+          h += '<span class="fill-blank" data-qid="' + q.id + '" data-idx="' + blankIdx + '" id="fb-' + q.id + '-' + blankIdx + '">___</span>';
+          blankIdx++;
+        }
+      });
+      h += '</div>';
+      h += '<div class="word-bank" id="wb-' + q.id + '">';
+      (q.bank||[]).forEach(function(w,wi){
+        h += '<button type="button" class="word-btn" data-qid="' + q.id + '" data-word="' + escH(w) + '" data-widx="' + wi + '">' + escH(w) + '</button>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  });
+  h += '<div class="quiz-footer"><div class="status-msg" id="smsg"></div>' +
+       '<button class="btn-submit" id="bsub" onclick="handleSubmit()">Enviar respuestas →</button></div>';
+  document.getElementById('main-content').innerHTML = h;
+  attachListeners();
+}
+
+function attachListeners(){
+  document.querySelectorAll('.option:not(.check-opt)').forEach(function(lbl){
+    lbl.addEventListener('click', function(){
+      if(locked) return;
+      state[lbl.dataset.qid] = lbl.dataset.val;
+      document.querySelectorAll('.option[data-qid="' + lbl.dataset.qid + '"]:not(.check-opt)').forEach(function(l){
+        l.classList.toggle('selected', l.dataset.val === lbl.dataset.val);
+      });
+    });
+  });
+  document.querySelectorAll('.check-opt').forEach(function(lbl){
+    var inp=lbl.querySelector('input[type="checkbox"]');
+    if(!inp) return;
+    inp.addEventListener('change',function(){
+      if(locked){ inp.checked=!inp.checked; return; }
+      var qid=lbl.dataset.qid;
+      if(!Array.isArray(state[qid])) state[qid]=[];
+      var val=lbl.dataset.val, idx=state[qid].indexOf(val);
+      if(inp.checked){ if(idx<0) state[qid].push(val); }
+      else { if(idx>=0) state[qid].splice(idx,1); }
+      lbl.classList.toggle('selected',inp.checked);
+    });
+  });
+  document.querySelectorAll('.open-area').forEach(function(d){
+    d.addEventListener('input', function(){ state[d.dataset.qid] = d.innerText; });
+  });
+  // Emparejar
+  document.querySelectorAll('.match-left').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(locked) return;
+      var qid = btn.dataset.qid, val = btn.dataset.val;
+      if(!matchState[qid]) matchState[qid] = {};
+      if(matchState[qid][val] !== undefined){
+        delete matchState[qid][val]; matchSel[qid] = null;
+      } else if(matchSel[qid] === val){
+        matchSel[qid] = null;
+      } else {
+        matchSel[qid] = val;
+      }
+      updateMatchDisplay(qid);
+    });
+  });
+  document.querySelectorAll('.match-right').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(locked) return;
+      var qid = btn.dataset.qid, val = btn.dataset.val;
+      if(!matchState[qid]) matchState[qid] = {};
+      if(!matchSel[qid]){
+        var prevLeft = Object.keys(matchState[qid]).find(function(k){ return matchState[qid][k]===val; });
+        if(prevLeft){ delete matchState[qid][prevLeft]; updateMatchDisplay(qid); }
+        return;
+      }
+      var prevLeft = Object.keys(matchState[qid]).find(function(k){ return matchState[qid][k]===val; });
+      if(prevLeft) delete matchState[qid][prevLeft];
+      matchState[qid][matchSel[qid]] = val;
+      matchSel[qid] = null;
+      updateMatchDisplay(qid);
+    });
+  });
+  // Banco de palabras
+  document.querySelectorAll('.fill-blank').forEach(function(sp){
+    sp.addEventListener('click', function(){
+      if(locked) return;
+      var qid = sp.dataset.qid, idx = parseInt(sp.dataset.idx);
+      if(!fillState[qid]) fillState[qid] = [];
+      if(fillState[qid][idx]){
+        fillState[qid][idx] = '';
+        fillSel[qid] = idx;
+      } else {
+        fillSel[qid] = (fillSel[qid] === idx ? -1 : idx);
+      }
+      updateFillDisplay(qid);
+    });
+  });
+  document.querySelectorAll('.word-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(locked || btn.disabled) return;
+      var qid = btn.dataset.qid, word = btn.dataset.word;
+      if(!fillState[qid]) fillState[qid] = [];
+      var idx = fillSel[qid];
+      if(idx === undefined || idx < 0){
+        idx = fillState[qid].indexOf('');
+        if(idx < 0) idx = 0;
+      }
+      fillState[qid][idx] = word;
+      fillSel[qid] = -1;
+      updateFillDisplay(qid);
+    });
+  });
+}
+
+function buildPayload(){
+  var ans = {};
+  questions.forEach(function(q){
+    if(q.type === 'open'){
+      var d = document.getElementById('open-' + q.id);
+      ans[q.id] = d ? d.innerText : (state[q.id] || '');
+    } else if(q.type === 'match'){
+      ans[q.id] = JSON.stringify(matchState[q.id] || {});
+    } else if(q.type === 'fill'){
+      ans[q.id] = (fillState[q.id] || []).join('|||');
+    } else if(q.type === 'multi'){
+      ans[q.id] = Array.isArray(state[q.id]) ? state[q.id].slice().sort().join(',') : '';
+    } else { ans[q.id] = state[q.id] || ''; }
+  });
+  ans.nombre = studentName; ans.timestamp = new Date().toISOString();
+  return ans;
+}
+
+function lockAll(){
+  locked = true;
+  document.querySelectorAll('input,textarea').forEach(function(el){ el.disabled = true; });
+  document.querySelectorAll('.option').forEach(function(el){ el.classList.add('locked'); });
+  document.querySelectorAll('.open-area').forEach(function(el){ el.setAttribute('contenteditable','false'); });
+  document.querySelectorAll('.tb-btn').forEach(function(el){ el.disabled = true; });
+  document.querySelectorAll('.match-item,.word-btn,.fill-blank').forEach(function(el){ el.disabled = true; el.style.cursor='default'; });
+}
+
+function renderThanks(g){
+  var gh = '';
+  if(g && g.results){
+    var rows = '';
+    var earnedPts = 0, totalPts = 0;
+    questions.forEach(function(q){
+      var r = g.results[q.id]; if(!r) return;
+      var pts = (QUESTION_POINTS && QUESTION_POINTS[q.id]) ? QUESTION_POINTS[q.id] : 1;
+      if(q.type === 'open') return;
+      totalPts += pts;
+      var lbl = q.text.replace(/\[[^\]]*\]/g,'[...]');
+      lbl = lbl.length > 60 ? lbl.substring(0,60) + '…' : lbl;
+      var ptsLabel = pts !== 1 ? ' <span style="font-size:11px;color:var(--muted)">(' + pts + ' pt' + (pts===1?'':'s') + ')</span>' : '';
+      var icon, cls;
+      if(r === 'correcta'){ icon='✓'; cls='grade-ok'; earnedPts+=pts; }
+      else if(r.indexOf(':') > 0){
+        var rparts = r.split(':'), detail = rparts[1], fparts = detail.split('/');
+        var got=parseFloat(fparts[0]),tot=parseFloat(fparts[1])||1;
+        var ratio=got/tot; earnedPts+=pts*ratio;
+        icon=detail; cls='grade-partial';
+      } else { icon='✗'; cls='grade-err'; }
+      rows += '<tr><td>' + escH(lbl) + ptsLabel + '</td><td class="' + cls + '">' + icon + '</td></tr>';
+    });
+    var dispEarned = g.earned !== undefined ? g.earned : earnedPts;
+    var dispTotal  = g.totalPts !== undefined ? g.totalPts : totalPts;
+    var fmt = function(n){ return n % 1 === 0 ? n : parseFloat(n.toFixed(2)); };
+    var scoreStr = dispTotal > 0
+      ? fmt(dispEarned) + '/' + fmt(dispTotal) + ' pts'
+      : g.correct + '/' + g.total;
+    gh = '<div class="grade-box"><div class="grade-title">// Autocorrección</div>' +
+         '<table class="grade-table"><tbody>' + rows + '</tbody></table>' +
+         '<div class="grade-score">Resultado automático: <strong>' + scoreStr + '</strong></div>' +
+         (questions.some(function(q){return q.type==='open';}) ? '<div class="grade-open">Las preguntas abiertas se corrigen manualmente.</div>' : '') +
+         '</div>';
+  }
+  document.getElementById('main-content').innerHTML =
+    '<div class="thanks"><h2>✓ Escrito enviado</h2><p>Las respuestas fueron registradas.</p>' + gh + '</div>';
+  var bs = document.getElementById('build-status');
+  if(bs){ bs.textContent = '● enviado'; bs.className = 'build-status ok'; }
+  quizFinished = true;
+}
+
+function performSubmit(payload){
+  if(quizFinished || locked) return;
+  quizFinished = true; lockAll();
+  var btn = document.getElementById('bsub'); if(btn){ btn.disabled = true; btn.textContent = 'Enviando…'; }
+  var cb = '_cb_' + Date.now(), sc = null, tm = null;
+  function cleanup(){ clearTimeout(tm); delete window[cb]; if(sc && sc.parentNode) sc.parentNode.removeChild(sc); }
+  window[cb] = function(data){
+    cleanup(); try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} renderThanks(data);
+  };
+  tm = setTimeout(function(){
+    cleanup(); try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} renderThanks(null);
+  }, 15000);
+  sc = document.createElement('script');
+  sc.onerror = function(){ cleanup(); try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} renderThanks(null); };
+  sc.src = SHEET_WEBAPP_URL + '?callback=' + cb + '&data=' + encodeURIComponent(JSON.stringify(payload));
+  document.head.appendChild(sc);
+}
+
+function handleSubmit(){
+  if(locked || quizFinished) return;
+  var pendientes = questions.filter(function(q){
+    if(q.obligatoria === false) return false;
+    if(q.type === 'open'){
+      var d = document.getElementById('open-' + q.id);
+      return !d || !d.innerText.trim();
+    }
+    if(q.type === 'match'){
+      var ms = matchState[q.id] || {};
+      return Object.keys(ms).length < (q.pairs||[]).length;
+    }
+    if(q.type === 'multi') return !Array.isArray(state[q.id]) || state[q.id].length === 0;
+    if(q.type === 'fill'){
+      var fs = fillState[q.id] || [];
+      return fs.some(function(v){ return !v; }) || fs.length < (q.answers||[]).length;
+    }
+    return !state[q.id];
+  });
+  if(pendientes.length){
+    var sm = document.getElementById('smsg');
+    if(sm){
+      sm.textContent = '⚠ Hay ' + pendientes.length + ' pregunta' + (pendientes.length > 1 ? 's obligatorias' : ' obligatoria') + ' sin responder.';
+      sm.style.color = 'var(--red)';
+    }
+    return;
+  }
+  performSubmit(buildPayload());
+}
+
+function isFS(){ return !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement); }
+
+function requestFS(){
+  var el = document.documentElement;
+  var fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen;
+  try{ if(fn) fn.call(el); }catch(e){}
+}
+
+function onFsChange(){
+  if(!quizStarted || quizFinished || locked) return;
+  if(!isFS()){
+    var sm = document.getElementById('smsg');
+    if(sm){ sm.textContent = '⚠ Se cerró la pantalla completa.'; sm.style.color='var(--red)'; }
+  }
+}
+
+document.title = QUIZ_HEADER;
+var _tt = document.getElementById("title-tab"); if(_tt) _tt.textContent = QUIZ_HEADER;
+document.addEventListener("fullscreenchange",       onFsChange);
+document.addEventListener("webkitfullscreenchange", onFsChange);
+document.addEventListener("mozfullscreenchange",    onFsChange);
+try{
+  if(localStorage.getItem(LS_KEY) === "1"){ renderThanks(null); }
+  else { renderSplash(); }
+} catch(e){ renderSplash(); }
+
+</script>
+</body>
+</html>
