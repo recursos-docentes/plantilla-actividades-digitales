@@ -584,7 +584,9 @@ function renderThanks(g){
          '</div>';
   }
   document.getElementById('main-content').innerHTML =
-    '<div class="thanks"><h2>✓ Escrito enviado</h2><p>Las respuestas fueron registradas.</p>' + gh + '</div>';
+    '<div class="thanks"><h2>✓ Escrito enviado</h2><p>Las respuestas fueron registradas.</p>' + gh +
+    (!gh ? '<p style="font-size:12px;color:var(--muted);margin-top:14px">No fue posible mostrar la corrección automática en este momento.<br>El docente puede consultar los resultados directamente en la planilla.</p>' : '') +
+    '</div>';
   var bs = document.getElementById('build-status');
   if(bs){ bs.textContent = '● enviado'; bs.className = 'build-status ok'; }
   quizFinished = true;
@@ -601,10 +603,11 @@ function performSubmit(payload){
   };
   tm = setTimeout(function(){
     cleanup(); try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} renderThanks(null);
-  }, 15000);
+  }, 30000);
   sc = document.createElement('script');
   sc.onerror = function(){ cleanup(); try{ localStorage.setItem(LS_KEY,'1'); }catch(e){} renderThanks(null); };
-  sc.src = SHEET_WEBAPP_URL + '?callback=' + cb + '&data=' + encodeURIComponent(JSON.stringify(payload));
+  var sep = SHEET_WEBAPP_URL.indexOf('?') >= 0 ? '&' : '?';
+  sc.src = SHEET_WEBAPP_URL + sep + 'callback=' + cb + '&data=' + encodeURIComponent(JSON.stringify(payload));
   document.head.appendChild(sc);
 }
 
@@ -1152,7 +1155,7 @@ function generateGS(){
   qArr.forEach(function(q,i){
     ids.push(q.id);
     pts[q.id] = q.puntaje || 1;
-    var preview = (q.text||'').replace(/\[[^\]]*\]/g,'[...]').replace(/\n/g,' ').substring(0,60);
+    var preview = (q.text||'').replace(/\[[^\]]*\]/g,'[...]').replace(/\n/g,' ').substring(0,120);
     hdrs.push('P'+(i+1)+' – '+preview);
     if(q.type==='single'||q.type==='tf') ans[q.id]=q.correct||'';
     if(q.type==='multi'){
@@ -1176,8 +1179,9 @@ function generateGS(){
     'var QUESTION_POINTS = '+JSON.stringify(pts,null,2)+';\n\n'+
     'function doGet(e){\n'+
     '  var cb=e.parameter.callback||"callback";\n'+
+    '  try{\n'+
     '  var data={};\n'+
-    '  try{data=JSON.parse(decodeURIComponent(e.parameter.data||"{}"));}catch(err){}\n\n'+
+    '  try{data=JSON.parse(e.parameter.data||"{}");}catch(err){}\n\n'+
     '  var ss=SpreadsheetApp.getActiveSpreadsheet();\n'+
     '  var sheet=ss.getSheetByName(SHEET_NAME);\n'+
     '  if(!sheet){sheet=ss.insertSheet(SHEET_NAME);sheet.appendRow(HEADERS);}\n\n'+
@@ -1225,6 +1229,11 @@ function generateGS(){
     '  return ContentService\n'+
     '    .createTextOutput(cb+"("+JSON.stringify(payload)+")")\n'+
     '    .setMimeType(ContentService.MimeType.JAVASCRIPT);\n'+
+    '  } catch(ex){\n'+
+    '    return ContentService\n'+
+    '      .createTextOutput(cb+\'({"ok":false,"error":\'+JSON.stringify(String(ex))+\'})\')\n'+
+    '      .setMimeType(ContentService.MimeType.JAVASCRIPT);\n'+
+    '  }\n'+
     '}\n';
   download('Code.gs', gs, 'text/plain');
   showAlert('✓ Code.gs descargado.', 'ok');
