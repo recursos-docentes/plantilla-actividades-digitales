@@ -2,11 +2,13 @@
 
 Herramienta para crear actividades interactivas con corrección automática vía Google Apps Script. Produce un HTML autocontenido que los estudiantes abren en el navegador, responden y envían — las respuestas llegan a una planilla de Google Sheets y el estudiante ve su corrección al instante.
 
+📖 **[Guía de uso — Actividades Interactivas](https://recursos-docentes.github.io/plantilla-actividades-digitales/)**
+
 ---
 
 ## Uso rápido
 
-1. Abrir `generador_escritos.html` en el navegador (doble clic o arrastrar).
+1. Abrir `generador_actividad.html` en el navegador (doble clic o arrastrar).
 2. Completar los 4 pasos del asistente.
 3. Publicar el HTML generado en GitHub Pages o CREA.
 
