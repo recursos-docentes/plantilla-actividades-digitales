@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generador de Actividades Digitales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --acc:#1e3a8a; --acc2:#3b5bdb; --acc-bg:#e8ecfd; --acc-border:#b0bef8;
+  --ok:#2d6a4f; --ok-bg:#eafaf4;
+  --warn:#9b2335; --warn-bg:#fdf0f2;
+  --bg:#f0ece2; --card:#fffdf6; --card2:#f5f1e8;
+  --border:#d9cdb7; --text:#2c2117; --muted:#7a6e5a;
+  --serif:'Lora',Georgia,serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height:1.58;min-height:100vh;font-size:16px}
+
+/* HEADER */
+.gen-header{background:var(--acc);color:#fff;padding:14px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px #0003}
+.gen-header-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.gen-logo{font-size:17px;font-weight:700;color:#fff;margin:0;letter-spacing:.01em}
+.wizard-nav{display:flex;gap:4px;flex-wrap:wrap}
+.wn-step{display:flex;align-items:center;gap:7px;padding:5px 12px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.65);transition:all .15s;white-space:nowrap;font-family:var(--serif)}
+.wn-num{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.wn-step.active{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.5);color:#fff}
+.wn-step.active .wn-num{background:#fff;color:var(--acc)}
+.wn-step.done{color:#a5c8ff;border-color:rgba(165,200,255,.35)}
+.wn-step.done .wn-num{background:#a5c8ff;color:var(--acc)}
+
+/* MAIN */
+.gen-main{max-width:800px;margin:0 auto;padding:28px 18px 80px}
+.wiz-section{display:none}
+.wiz-section.active{display:block}
+.sec-title{font-size:21px;font-weight:700;margin:0 0 3px;color:var(--acc)}
+.sec-sub{color:var(--muted);font-size:15px;margin:0 0 22px}
+
+/* FIELDS */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:15px;padding:9px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,91,219,.12)}
+.field textarea{resize:vertical;min-height:72px}
+.field .hint{font-size:13px;color:var(--muted);margin-top:4px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.grid-2{grid-template-columns:1fr}}
+@media(max-width:600px){
+  /* Header */
+  .gen-header{padding:10px 14px}
+  .gen-header-top{gap:8px;margin-bottom:6px}
+  .gen-logo{font-size:14px}
+  /* Wizard nav: mostrar solo número + nombre abreviado */
+  .wizard-nav{gap:3px;width:100%}
+  .wn-step{padding:4px 8px;font-size:12px;flex:1;justify-content:center;min-width:0}
+  .wn-step span.wn-label{display:none}
+  /* Main padding */
+  .gen-main{padding:18px 12px 70px}
+  .sec-title{font-size:17px}
+  .sec-sub{font-size:13px;margin-bottom:14px}
+  /* Buttons */
+  .btn{font-size:13px;padding:8px 13px}
+  .btn-sm{font-size:12px;padding:4px 9px}
+  .step-nav{flex-direction:column;gap:8px}
+  .step-nav .btn{justify-content:center;width:100%}
+  /* Q toolbar: botones más compactos */
+  .q-toolbar{gap:5px;padding:10px}
+  .q-toolbar .btn{font-size:12px;padding:6px 9px}
+  /* TF row: apilar en móvil (para tfse con 3 opciones) */
+  .tf-row{flex-direction:column;gap:6px}
+  .tf-opt{font-size:13px;padding:8px 12px}
+  /* Pair row */
+  .pair-row{grid-template-columns:1fr 14px 1fr 24px;gap:4px}
+  /* Inst list */
+  .inst-list li{font-size:13px;padding:9px 12px 9px 38px}
+  /* Download grid */
+  .dl-grid{grid-template-columns:1fr}
+  /* Callouts */
+  .callout{font-size:13px;padding:11px 13px}
+  /* Fields */
+  .field input[type=text],.field input[type=number],.field textarea,.field select{font-size:14px}
+  .inp-inline,.enunciado-ta{font-size:14px}
+}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;border-radius:6px;font-family:var(--serif);font-size:15px;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;text-decoration:none}
+.btn-primary{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn-primary:hover{background:var(--acc2);border-color:var(--acc2)}
+.btn-sec{background:var(--card);border-color:var(--border);color:var(--text)}
+.btn-sec:hover{border-color:var(--acc);color:var(--acc)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--muted);padding:3px 7px}
+.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:var(--warn-bg);border-color:#e8b4bc;color:var(--warn)}
+.btn-danger:hover{background:#f8d7da}
+.btn-green{background:var(--ok-bg);border-color:#a3d9b8;color:var(--ok)}
+.btn-green:hover{background:#d4f0e3}
+.btn-sm{padding:5px 11px;font-size:14px}
+.step-nav{display:flex;justify-content:space-between;margin-top:28px;padding-top:18px;border-top:1px solid var(--border)}
+
+/* CALLOUT */
+.callout{border-radius:8px;padding:14px 16px;font-size:15px;margin:14px 0}
+.callout.warn{background:var(--warn-bg);border:1px solid #e8b4bc;color:var(--warn)}
+.callout.info{background:var(--acc-bg);border:1px solid var(--acc-border);color:var(--acc)}
+.callout.tip{background:var(--ok-bg);border:1px solid #a3d9b8;color:var(--ok)}
+.callout strong{display:block;margin-bottom:3px;font-size:14px;font-weight:700}
+
+/* Q TOOLBAR */
+.q-toolbar{display:flex;flex-wrap:wrap;gap:7px;padding:13px;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:16px}
+.q-toolbar-label{font-size:13px;font-weight:700;color:var(--muted);width:100%;margin-bottom:2px;text-transform:uppercase;letter-spacing:.05em}
+
+/* Q CARD */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden}
+.q-card-hd{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--acc-bg);border-bottom:1px solid var(--acc-border)}
+.q-num{font-weight:700;font-size:15px;color:var(--acc);min-width:28px}
+.q-badge{font-size:12px;padding:3px 9px;border-radius:999px;background:#fff;color:var(--acc);border:1px solid var(--acc-border);font-weight:700}
+.q-acts{margin-left:auto;display:flex;gap:3px}
+.q-card-body{padding:13px}
+
+/* INLINE INPUTS */
+.inp-inline{background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:15px;padding:7px 10px;outline:none;width:100%;transition:border-color .15s}
+.inp-inline:focus{border-color:var(--acc)}
+.enunciado-ta{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:15px;padding:9px 11px;outline:none;resize:vertical;min-height:60px}
+.enunciado-ta:focus{border-color:var(--acc)}
+
+/* OPT ROWS */
+.opt-row{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.opt-row input[type=radio],.opt-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--acc);cursor:pointer;flex-shrink:0}
+.opt-letter{font-size:11px;font-weight:700;color:var(--muted);width:14px;text-align:center;flex-shrink:0}
+
+/* PAIRS */
+.pair-row{display:grid;grid-template-columns:1fr 18px 1fr 26px;gap:5px;align-items:center;margin-bottom:7px}
+.pair-arrow{text-align:center;color:var(--muted);font-size:13px}
+
+/* TF */
+.tf-row{display:flex;gap:10px;margin-top:5px}
+.tf-opt{display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--card2);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:15px;transition:border-color .15s}
+.tf-opt:hover{border-color:var(--acc)}
+
+/* POINTS */
+.pts-row{display:flex;align-items:center;gap:7px;margin-top:10px;padding-top:9px;border-top:1px solid var(--border);font-size:13px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.pts-row input{width:55px;background:var(--card2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--serif);font-size:14px;padding:5px 8px;outline:none;text-align:center}
+
+/* IMG */
+.img-row{margin-top:7px}
+.img-thumb{max-height:56px;border-radius:5px;border:1px solid var(--border);vertical-align:middle}
+
+/* IMPORT */
+.import-panel{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px}
+.import-ta{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:monospace;font-size:14px;padding:9px;outline:none;min-height:140px;resize:vertical;margin-bottom:9px}
+.import-ta:focus{border-color:var(--acc)}
+
+/* EMPTY */
+.empty-state{text-align:center;padding:36px 18px;color:var(--muted);font-size:15px;border:2px dashed var(--border);border-radius:8px}
+
+/* STEP 3 */
+.inst-block{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:18px}
+.inst-list{list-style:none;padding:0;margin:0;counter-reset:inst}
+.inst-list li{counter-increment:inst;padding:11px 15px 11px 46px;position:relative;border-bottom:1px solid var(--border);font-size:15px;color:var(--muted)}
+.inst-list li:last-child{border-bottom:none}
+.inst-list li::before{content:counter(inst);position:absolute;left:11px;top:10px;width:19px;height:19px;background:var(--acc-bg);border:1px solid var(--acc-border);border-radius:50%;font-size:10px;font-weight:700;color:var(--acc);display:flex;align-items:center;justify-content:center;line-height:1;text-align:center}
+.inst-list li strong{color:var(--text)}
+
+/* STEP 4 */
+.dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+@media(max-width:480px){.dl-grid{grid-template-columns:1fr}}
+
+/* SYMBOL TOOLBAR */
+.sym-toggle{font-size:13px;color:var(--muted);background:none;border:1px dashed var(--border);border-radius:6px;padding:4px 10px;cursor:pointer;margin-top:4px;transition:all .15s;font-family:var(--serif)}
+.sym-toggle:hover{border-color:var(--acc);color:var(--acc)}
+.sym-panel{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:12px;display:none}
+.sym-panel.open{display:block}
+.sym-group{margin-bottom:10px}
+.sym-group-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px;display:block}
+.sym-btn{font-size:15px;padding:3px 8px;background:var(--card);border:1px solid var(--border);border-radius:5px;cursor:pointer;color:var(--text);margin:2px;font-family:inherit;line-height:1.4;transition:border-color .12s}
+.sym-btn:hover{border-color:var(--acc);color:var(--acc)}
+.sym-hint{font-size:11px;color:var(--muted);margin-bottom:8px;font-style:italic}
+
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+
+<header class="gen-header">
+  <div class="gen-header-top">
+    <p class="gen-logo">⚙ Generador de Actividades Digitales</p>
+    <nav class="wizard-nav">
+      <div class="wn-step active" onclick="goStep(1)"><span class="wn-num">1</span><span class="wn-label"> Configuración</span></div>
+      <div class="wn-step" onclick="goStep(2)"><span class="wn-num">2</span><span class="wn-label"> Preguntas</span></div>
+      <div class="wn-step" onclick="goStep(3)"><span class="wn-num">3</span><span class="wn-label"> Planilla</span></div>
+      <div class="wn-step" onclick="goStep(4)"><span class="wn-num">4</span><span class="wn-label"> Descargar</span></div>
+    </nav>
+  </div>
+</header>
+
+<main class="gen-main">
+
+  <!-- ── PASO 1: CONFIGURACIÓN ─────────────────────────────── -->
+  <section class="wiz-section active" id="sec1">
+    <p class="sec-title">Configuración de la actividad</p>
+    <p class="sec-sub">Completar los datos generales de la actividad.</p>
+
+    <div class="field">
+      <label>Título</label>
+      <input type="text" id="cfg-title" placeholder="Ej: Actividad — Teoría de Conjuntos">
+    </div>
+    <div class="field">
+      <label>Materia</label>
+      <input type="text" id="cfg-subject" placeholder="Ej: Lógica y Métodos Discretos">
+    </div>
+    <div class="field">
+      <label>Instrucción inicial para el estudiante</label>
+      <textarea id="cfg-inst" rows="3">Responder todas las preguntas. Al finalizar, hacer clic en Enviar.</textarea>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Tiempo límite (minutos)</label>
+        <input type="number" id="cfg-timer" value="0" min="0">
+        <div class="hint">0 = sin límite de tiempo</div>
+      </div>
+      <div class="field">
+        <label>Clave de sesión (localStorage)</label>
+        <input type="text" id="cfg-key" placeholder="conjuntos_2026_g1">
+        <div class="hint">Usar una clave distinta para cada actividad</div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <span></span>
+      <button class="btn btn-primary" onclick="goStep(2)">Siguiente: Preguntas →</button>
+    </div>
+  </section>
+
+  <!-- ── PASO 2: PREGUNTAS ─────────────────────────────────── -->
+  <section class="wiz-section" id="sec2">
+    <p class="sec-title">Preguntas</p>
+    <p class="sec-sub">Agregar preguntas una a una o importar desde JSON.</p>
+
+    <div class="q-toolbar">
+      <span class="q-toolbar-label">Agregar pregunta:</span>
+      <button class="btn btn-sec btn-sm" onclick="addQ('single')">Opción única</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('multi')">Múltiple respuesta</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('tf')">V / F</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('tfse')">V / F / Sin Evidencia</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('open')">Abierta</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('match')">Emparejar</button>
+      <button class="btn btn-sec btn-sm" onclick="addQ('fill')">Banco de palabras</button>
+      <button class="btn btn-green btn-sm" onclick="toggleImport()">↓ Importar JSON</button>
+      <button class="sym-toggle" onclick="toggleSymbols()">🔬 Símbolos científicos</button>
+    </div>
+
+    <div class="sym-panel" id="sym-panel">
+      <p class="sym-hint">Hacer clic en el enunciado de una pregunta para activarlo, luego seleccionar el símbolo a insertar.</p>
+      <div class="sym-group">
+        <span class="sym-group-lbl">Superíndices</span>
+        <button class="sym-btn" onclick="insertSym('⁰')">⁰</button>
+        <button class="sym-btn" onclick="insertSym('¹')">¹</button>
+        <button class="sym-btn" onclick="insertSym('²')">²</button>
+        <button class="sym-btn" onclick="insertSym('³')">³</button>
+        <button class="sym-btn" onclick="insertSym('⁴')">⁴</button>
+        <button class="sym-btn" onclick="insertSym('⁵')">⁵</button>
+        <button class="sym-btn" onclick="insertSym('⁶')">⁶</button>
+        <button class="sym-btn" onclick="insertSym('⁷')">⁷</button>
+        <button class="sym-btn" onclick="insertSym('⁸')">⁸</button>
+        <button class="sym-btn" onclick="insertSym('⁹')">⁹</button>
+        <button class="sym-btn" onclick="insertSym('⁺')">⁺</button>
+        <button class="sym-btn" onclick="insertSym('⁻')">⁻</button>
+        <button class="sym-btn" onclick="insertSym('ⁿ')">ⁿ</button>
+      </div>
+      <div class="sym-group">
+        <span class="sym-group-lbl">Subíndices</span>
+        <button class="sym-btn" onclick="insertSym('₀')">₀</button>
+        <button class="sym-btn" onclick="insertSym('₁')">₁</button>
+        <button class="sym-btn" onclick="insertSym('₂')">₂</button>
+        <button class="sym-btn" onclick="insertSym('₃')">₃</button>
+        <button class="sym-btn" onclick="insertSym('₄')">₄</button>
+        <button class="sym-btn" onclick="insertSym('₅')">₅</button>
+        <button class="sym-btn" onclick="insertSym('₆')">₆</button>
+        <button class="sym-btn" onclick="insertSym('₇')">₇</button>
+        <button class="sym-btn" onclick="insertSym('₈')">₈</button>
+        <button class="sym-btn" onclick="insertSym('₉')">₉</button>
+        <button class="sym-btn" onclick="insertSym('₊')">₊</button>
+        <button class="sym-btn" onclick="insertSym('₋')">₋</button>
+      </div>
+      <div class="sym-group">
+        <span class="sym-group-lbl">Letras griegas</span>
+        <button class="sym-btn" onclick="insertSym('α')">α</button>
+        <button class="sym-btn" onclick="insertSym('β')">β</button>
+        <button class="sym-btn" onclick="insertSym('γ')">γ</button>
+        <button class="sym-btn" onclick="insertSym('δ')">δ</button>
+        <button class="sym-btn" onclick="insertSym('ε')">ε</button>
+        <button class="sym-btn" onclick="insertSym('θ')">θ</button>
+        <button class="sym-btn" onclick="insertSym('λ')">λ</button>
+        <button class="sym-btn" onclick="insertSym('μ')">μ</button>
+        <button class="sym-btn" onclick="insertSym('π')">π</button>
+        <button class="sym-btn" onclick="insertSym('σ')">σ</button>
+        <button class="sym-btn" onclick="insertSym('ω')">ω</button>
+        <button class="sym-btn" onclick="insertSym('Δ')">Δ</button>
+        <button class="sym-btn" onclick="insertSym('Σ')">Σ</button>
+        <button class="sym-btn" onclick="insertSym('Φ')">Φ</button>
+        <button class="sym-btn" onclick="insertSym('Ω')">Ω</button>
+      </div>
+      <div class="sym-group">
+        <span class="sym-group-lbl">Química / Física / Matemática</span>
+        <button class="sym-btn" onclick="insertSym('→')">→</button>
+        <button class="sym-btn" onclick="insertSym('⇌')">⇌</button>
+        <button class="sym-btn" onclick="insertSym('↑')">↑</button>
+        <button class="sym-btn" onclick="insertSym('↓')">↓</button>
+        <button class="sym-btn" onclick="insertSym('°')">°</button>
+        <button class="sym-btn" onclick="insertSym('±')">±</button>
+        <button class="sym-btn" onclick="insertSym('×')">×</button>
+        <button class="sym-btn" onclick="insertSym('÷')">÷</button>
+        <button class="sym-btn" onclick="insertSym('≈')">≈</button>
+        <button class="sym-btn" onclick="insertSym('≠')">≠</button>
+        <button class="sym-btn" onclick="insertSym('≤')">≤</button>
+        <button class="sym-btn" onclick="insertSym('≥')">≥</button>
+        <button class="sym-btn" onclick="insertSym('√')">√</button>
+        <button class="sym-btn" onclick="insertSym('∞')">∞</button>
+        <button class="sym-btn" onclick="insertSym('∑')">∑</button>
+        <button class="sym-btn" onclick="insertSym('∫')">∫</button>
+        <button class="sym-btn" onclick="insertSym('∂')">∂</button>
+        <button class="sym-btn" onclick="insertSym('½')">½</button>
+        <button class="sym-btn" onclick="insertSym('¼')">¼</button>
+        <button class="sym-btn" onclick="insertSym('¾')">¾</button>
+      </div>
+    </div>
+
+    <div class="import-panel" id="import-panel" style="display:none">
+      <div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:7px;text-transform:uppercase;letter-spacing:.06em">JSON de preguntas</div>
+      <textarea class="import-ta" id="import-json" placeholder='[{"type":"single","text":"...","opts":["A","B","C","D"],"correct":"a"},{"type":"match","text":"...","pairs":[{"left":"...","right":"..."}],"puntaje":2}]'></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary btn-sm" onclick="doImport()">Importar</button>
+        <button class="btn btn-sec btn-sm" onclick="toggleImport()">Cancelar</button>
+      </div>
+    </div>
+
+    <div id="q-list">
+      <div class="empty-state">Sin preguntas. Usar los botones de arriba o importar desde JSON.</div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-sec" onclick="goStep(1)">← Configuración</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Siguiente: Planilla →</button>
+    </div>
+  </section>
+
+  <!-- ── PASO 3: PLANILLA ──────────────────────────────────── -->
+  <section class="wiz-section" id="sec3">
+    <p class="sec-title">Conectar con la planilla de Google</p>
+    <p class="sec-sub">Seguir los pasos en orden. Primero descargar el Code.gs y luego configurar Apps Script.</p>
+
+    <div class="inst-block">
+      <ol class="inst-list">
+        <li style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">Descargar el archivo <strong>Code.gs</strong>: <button class="btn btn-sec btn-sm" onclick="downloadCodeGS()" style="flex-shrink:0">⬇ Descargar Code.gs</button></li>
+        <li>Abrir <strong>Google Drive</strong> y crear una planilla nueva (Google Sheets). <em style="color:var(--warn);font-style:normal">⚠ En caso de tener más de una cuenta de Google, abrir Google Drive en una <strong>ventana de incógnito</strong> (Ctrl+Shift+N) — de lo contrario Apps Script puede no abrirse correctamente.</em></li>
+        <li>En la planilla, ir a <strong>Extensiones → Apps Script</strong>.</li>
+        <li>Borrar todo el contenido del editor, <strong>pegar</strong> el contenido del archivo Code.gs y guardar (<kbd>Ctrl+S</kbd>).</li>
+        <li>Ir a <strong>Implementar → Nueva implementación</strong>.</li>
+        <li>Tipo: <strong>Aplicación web</strong>. Ejecutar como: yo. Quién tiene acceso: <strong>Cualquier usuario</strong>. Hacer clic en <strong>Implementar</strong>.</li>
+        <li>Copiar la <strong>URL de la aplicación web</strong> y pegarla en el campo de abajo.</li>
+      </ol>
+    </div>
+
+    <div class="field">
+      <label>URL de la aplicación web (Apps Script)</label>
+      <input type="text" id="cfg-url" placeholder="https://script.google.com/macros/s/…/exec">
+    </div>
+
+    <div class="callout warn">
+      <strong>⚠ Arranque en frío — primer envío del día</strong>
+      La primera vez que alguien envía en el día, Apps Script puede tardar hasta 30 segundos en responder. El primer estudiante puede recibir la actividad pero no ver la corrección inmediata. Para evitarlo: abrir la URL de la aplicación web en el navegador 2 o 3 minutos antes de iniciar la actividad (esto "calienta" el servidor).
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-sec" onclick="goStep(2)">← Preguntas</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Siguiente: Descargar →</button>
+    </div>
+  </section>
+
+  <!-- ── PASO 4: DESCARGAR ─────────────────────────────────── -->
+  <section class="wiz-section" id="sec4">
+    <p class="sec-title">Descargar la actividad</p>
+    <p class="sec-sub">El archivo HTML está listo para publicar.</p>
+
+    <div class="callout tip">
+      <strong>✔ Todo listo</strong>
+      El archivo HTML contiene todas las preguntas y se conecta a la planilla configurada. No funciona si se abre directamente desde la computadora — necesita estar en un servidor web.
+    </div>
+
+    <div style="margin:20px 0">
+      <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="downloadHTML()">⬇ Descargar actividad HTML</button>
+    </div>
+
+    <div class="dl-grid">
+      <div class="callout info" style="margin:0">
+        <strong>Opción A — GitHub Pages</strong>
+        <span style="font-size:12px;display:block;margin-top:2px">Subir el archivo al repositorio y activar GitHub Pages en Configuración → Pages.</span>
+      </div>
+      <div class="callout info" style="margin:0">
+        <strong>Opción B — CREA</strong>
+        <span style="font-size:12px;display:block;margin-top:2px">Comprimir el HTML en un .zip y cargarlo en Recursos como <em>Paquete de contenido web</em>.</span>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-sec" onclick="goStep(3)">← Planilla</button>
+      <span></span>
+    </div>
+  </section>
+
+</main>
+
+<footer style="background:var(--acc);color:rgba(255,255,255,.8);text-align:center;padding:16px;font-size:13px;font-family:var(--serif)">
+  Recurso creado por <strong style="color:#fff">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ESTADO
+// ═══════════════════════════════════════════════════════
+var questions = [];
+var qCounter  = 0;
+var TYPE_LABELS = {single:'Opción única',multi:'Múltiple resp.',tf:'V / F',tfse:'V / F / Sin Evidencia',open:'Abierta',match:'Emparejar',fill:'Banco de palabras'};
+
+// ═══════════════════════════════════════════════════════
+//  WIZARD
+// ═══════════════════════════════════════════════════════
+function goStep(n) {
+  document.querySelectorAll('.wiz-section').forEach(function(s,i){ s.classList.toggle('active', i+1 === n); });
+  document.querySelectorAll('.wn-step').forEach(function(d,i){
+    var sn = i+1;
+    d.classList.toggle('active', sn === n);
+    d.classList.toggle('done', sn < n);
+    if (sn === n) d.classList.remove('done');
+  });
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════════════════
+//  GESTIÓN DE PREGUNTAS
+// ═══════════════════════════════════════════════════════
+function addQ(type) {
+  qCounter++;
+  questions.push({
+    id: 'q'+qCounter, type: type,
+    text: '',
+    opts:  (type==='single'||type==='multi') ? ['','','',''] : [],
+    correct: type==='single' ? 'a' : (type==='tf'||type==='tfse') ? 'true' : type==='multi' ? ['a'] : null,
+    pairs: type==='match' ? [{left:'',right:''},{left:'',right:''},{left:'',right:''}] : [],
+    fillText: '', extraWords: '', image: null, points: 1
+  });
+  renderAll();
+}
+
+function removeQ(id)      { questions = questions.filter(function(q){return q.id!==id;}); renderAll(); }
+function setQText(id,v)   { gq(id).text = v; }
+function setOpt(id,i,v)   { gq(id).opts[i] = v; }
+function setPoints(id,v)  { gq(id).points = Math.max(1,parseInt(v)||1); }
+function setFillText(id,v){ gq(id).fillText = v; }
+function setExtra(id,v)   { gq(id).extraWords = v; }
+function setPair(id,pi,s,v){ gq(id).pairs[pi][s] = v; }
+function addPair(id)       { gq(id).pairs.push({left:'',right:''}); renderAll(); }
+function removePair(id,pi) { gq(id).pairs.splice(pi,1); renderAll(); }
+function gq(id)            { return questions.find(function(q){return q.id===id;}); }
+
+function setCorrectSingle(id,v) { gq(id).correct = v; }
+function setCorrectMulti(id,v,checked) {
+  var q = gq(id);
+  if (!Array.isArray(q.correct)) q.correct = [];
+  if (checked) { if (!q.correct.includes(v)) q.correct.push(v); }
+  else { q.correct = q.correct.filter(function(x){return x!==v;}); }
+  q.correct.sort();
+}
+function moveQ(id,dir) {
+  var i = questions.findIndex(function(q){return q.id===id;}), j=i+dir;
+  if (j<0||j>=questions.length) return;
+  var t=questions[i]; questions[i]=questions[j]; questions[j]=t; renderAll();
+}
+function loadImage(id,input) {
+  var f=input.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(e){gq(id).image=e.target.result; renderAll();};
+  r.readAsDataURL(f);
+}
+function removeImage(id){ gq(id).image=null; renderAll(); }
+
+// ═══════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderAll() {
+  var el = document.getElementById('q-list');
+  if (!questions.length) { el.innerHTML='<div class="empty-state">Sin preguntas. Usar los botones de arriba o importar desde JSON.</div>'; return; }
+  el.innerHTML = questions.map(function(q,i){return card(q,i);}).join('');
+}
+
+function card(q,idx) {
+  var LETS = ['a','b','c','d','e','f'];
+  var body = '';
+
+  if (q.type==='single'||q.type==='multi') {
+    var it = q.type==='single'?'radio':'checkbox';
+    body = '<div>';
+    q.opts.forEach(function(opt,oi){
+      var L=LETS[oi];
+      var chk = q.type==='single' ? (q.correct===L?'checked':'') : (Array.isArray(q.correct)&&q.correct.includes(L)?'checked':'');
+      var chg = q.type==='single'
+        ? 'setCorrectSingle("'+q.id+'","'+L+'")'
+        : 'setCorrectMulti("'+q.id+'","'+L+'",this.checked)';
+      body += '<div class="opt-row">'
+        +'<input type="'+it+'" name="cr_'+q.id+'" value="'+L+'" '+chk+' onchange="'+chg+'" title="Correcta">'
+        +'<span class="opt-letter">'+L+')</span>'
+        +'<input class="inp-inline" type="text" placeholder="Opción '+L.toUpperCase()+'" value="'+esc(opt)+'" oninput="setOpt(\''+q.id+'\','+oi+',this.value)">'
+        +'</div>';
+    });
+    body += '<p style="font-size:11px;color:var(--muted);margin-top:3px">Marcar la/s correcta/s con el botón de la izquierda.</p></div>';
+
+  } else if (q.type==='tf') {
+    body = '<div class="tf-row">'
+      +'<label class="tf-opt"><input type="radio" name="tf_'+q.id+'" value="true" '+(q.correct==='true'?'checked':'')+' onchange="setCorrectSingle(\''+q.id+'\',\'true\')"> Verdadero</label>'
+      +'<label class="tf-opt"><input type="radio" name="tf_'+q.id+'" value="false" '+(q.correct==='false'?'checked':'')+' onchange="setCorrectSingle(\''+q.id+'\',\'false\')"> Falso</label>'
+      +'</div>';
+
+  } else if (q.type==='tfse') {
+    body = '<div class="tf-row">'
+      +'<label class="tf-opt"><input type="radio" name="tf_'+q.id+'" value="true" '+(q.correct==='true'?'checked':'')+' onchange="setCorrectSingle(\''+q.id+'\',\'true\')"> Verdadero</label>'
+      +'<label class="tf-opt"><input type="radio" name="tf_'+q.id+'" value="false" '+(q.correct==='false'?'checked':'')+' onchange="setCorrectSingle(\''+q.id+'\',\'false\')"> Falso</label>'
+      +'<label class="tf-opt"><input type="radio" name="tf_'+q.id+'" value="se" '+(q.correct==='se'?'checked':'')+' onchange="setCorrectSingle(\''+q.id+'\',\'se\')"> Sin Evidencia</label>'
+      +'</div>';
+
+  } else if (q.type==='open') {
+    body = '<p style="font-size:12px;color:var(--muted);padding:7px 10px;background:var(--panel-2);border-radius:6px">Respuesta libre — sin corrección automática. Revisar en la planilla.</p>';
+
+  } else if (q.type==='match') {
+    body = '<div><div style="display:grid;grid-template-columns:1fr 18px 1fr 26px;gap:5px;margin-bottom:5px">'
+      +'<span style="font-size:10px;font-family:var(--mono);color:var(--muted)">COLUMNA IZQ.</span><span></span>'
+      +'<span style="font-size:10px;font-family:var(--mono);color:var(--muted)">COLUMNA DER. (CORRECTA)</span><span></span></div>';
+    q.pairs.forEach(function(p,pi){
+      body += '<div class="pair-row">'
+        +'<input class="inp-inline" type="text" placeholder="Elemento izquierda" value="'+esc(p.left)+'" oninput="setPair(\''+q.id+'\','+pi+',\'left\',this.value)">'
+        +'<div class="pair-arrow">↔</div>'
+        +'<input class="inp-inline" type="text" placeholder="Elemento derecha" value="'+esc(p.right)+'" oninput="setPair(\''+q.id+'\','+pi+',\'right\',this.value)">'
+        +'<button class="btn btn-ghost btn-sm" onclick="removePair(\''+q.id+'\','+pi+')" style="color:var(--red)">✕</button>'
+        +'</div>';
+    });
+    body += '<button class="btn btn-ghost btn-sm" onclick="addPair(\''+q.id+'\')" style="margin-top:3px">+ Par</button></div>';
+
+  } else if (q.type==='fill') {
+    body = '<div>'
+      +'<div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:5px">TEXTO — poner las respuestas correctas entre [corchetes]</div>'
+      +'<textarea class="enunciado-ta" rows="4" oninput="setFillText(\''+q.id+'\',this.value)" placeholder="Los conjuntos [unitarios] tienen un solo elemento...">'
+      +esc(q.fillText)+'</textarea>'
+      +'<div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin:8px 0 4px">PALABRAS DISTRACTORAS (opcional, separadas por coma)</div>'
+      +'<input class="inp-inline" type="text" placeholder="subconjunto, complemento" value="'+esc(q.extraWords)+'" oninput="setExtra(\''+q.id+'\',this.value)">'
+      +'</div>';
+  }
+
+  // imagen
+  var imgHtml = q.image
+    ? '<div class="img-row"><img src="'+q.image+'" class="img-thumb"> <button class="btn btn-ghost btn-sm" onclick="removeImage(\''+q.id+'\')" style="color:var(--red)">✕ quitar</button></div>'
+    : '<div class="img-row"><button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'img_'+q.id+'\').click()" style="color:var(--muted)">📷 imagen</button><input type="file" id="img_'+q.id+'" accept="image/*" onchange="loadImage(\''+q.id+'\',this)"></div>';
+
+  // enunciado (no para fill — ya tiene su propio campo)
+  var enunciadoHtml = q.type!=='fill'
+    ? '<div style="margin-bottom:10px"><div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Enunciado</div><textarea class="enunciado-ta" oninput="setQText(\''+q.id+'\',this.value)" rows="2">'+esc(q.text)+'</textarea></div>'
+    : '';
+
+  return '<div class="q-card" id="qcard_'+q.id+'">'
+    +'<div class="q-card-hd"><span class="q-num">P'+(idx+1)+'</span><span class="q-badge">'+TYPE_LABELS[q.type]+'</span>'
+    +'<div class="q-acts">'
+    +'<button class="btn btn-ghost btn-sm" onclick="moveQ(\''+q.id+'\',-1)" title="Subir">↑</button>'
+    +'<button class="btn btn-ghost btn-sm" onclick="moveQ(\''+q.id+'\',1)" title="Bajar">↓</button>'
+    +'<button class="btn btn-danger btn-sm" onclick="removeQ(\''+q.id+'\')">✕</button>'
+    +'</div></div>'
+    +'<div class="q-card-body">'
+    +enunciadoHtml
+    +imgHtml
+    +'<div style="margin-top:10px">'+body+'</div>'
+    +'<div class="pts-row"><span>Puntaje:</span><input type="number" value="'+q.points+'" min="1" max="20" onchange="setPoints(\''+q.id+'\',this.value)"><span>punto(s)</span></div>'
+    +'</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════
+//  IMPORTAR JSON
+// ═══════════════════════════════════════════════════════
+function toggleImport() {
+  var p=document.getElementById('import-panel');
+  p.style.display = p.style.display==='none'?'block':'none';
+}
+
+function doImport() {
+  var raw=document.getElementById('import-json').value.trim(), data;
+  try { data=JSON.parse(raw); } catch(e) { alert('JSON inválido: '+e.message); return; }
+  if (!Array.isArray(data)) { alert('El JSON debe ser un array [...].'); return; }
+  var imported=0;
+  data.forEach(function(it) {
+    if (!TYPE_LABELS[it.type]) return;
+    qCounter++;
+    var q={
+      id:'q'+qCounter, type:it.type,
+      text: it.text||'',
+      opts: it.opts ? it.opts.slice() : [],
+      correct: it.correct!==undefined ? it.correct : ((it.type==='tf'||it.type==='tfse')?'true':it.type==='single'?'a':[]),
+      pairs: it.pairs ? it.pairs.map(function(p){return {left:p.left||'',right:p.right||''};}) : [],
+      fillText: it.type==='fill' ? (it.text||'') : '',
+      extraWords: it.extraWords||'',
+      image: null,
+      points: it.puntaje||it.points||1
+    };
+    questions.push(q); imported++;
+  });
+  renderAll();
+  toggleImport();
+  document.getElementById('import-json').value='';
+  if (imported) alert('Se importaron '+imported+' pregunta(s) correctamente.');
+  else alert('No se importó ninguna pregunta. Verificar los tipos: single, multi, tf, tfse, open, match, fill.');
+}
+
+// ═══════════════════════════════════════════════════════
+//  GENERAR CODE.GS
+// ═══════════════════════════════════════════════════════
+function buildCodeGS() {
+  var ids=questions.map(function(q){return q.id;}),
+      singles={}, multis={}, pairs={}, fills={}, pts={};
+  questions.forEach(function(q){
+    pts[q.id]=parseInt(q.points)||1;
+    if (q.type==='single'||q.type==='tf'||q.type==='tfse') singles[q.id]=q.correct;
+    else if (q.type==='multi') multis[q.id]=(Array.isArray(q.correct)?q.correct:[]).slice().sort();
+    else if (q.type==='match') pairs[q.id]=q.pairs.map(function(p){return [p.left,p.right];});
+    else if (q.type==='fill') {
+      var ans=[],re=/\[([^\]]+)\]/g,m;
+      while((m=re.exec(q.fillText))!==null) ans.push(m[1]);
+      fills[q.id]=ans;
+    }
+  });
+  return '// Code.gs — generado por el Generador de Actividades Digitales\n'
+    +'// 1. Pegar este código en Google Apps Script (borrar el contenido anterior)\n'
+    +'// 2. Implementar → Nueva implementación → Aplicación web → Cualquier usuario\n\n'
+    +'var SHEET_NAME="Respuestas";\n'
+    +'var QUESTION_IDS='+JSON.stringify(ids)+';\n'
+    +'var CORRECT_ANSWERS='+JSON.stringify(singles)+';\n'
+    +'var CORRECT_MULTI='+JSON.stringify(multis)+';\n'
+    +'var CORRECT_PAIRS='+JSON.stringify(pairs)+';\n'
+    +'var CORRECT_FILLS='+JSON.stringify(fills)+';\n'
+    +'var QUESTION_POINTS='+JSON.stringify(pts)+';\n\n'
+    +GS_FN;
+}
+
+var GS_FN=[
+'function doGet(e){',
+'  try{',
+'    var p=e.parameter,cb=p.callback||"cb";',
+'    var data=JSON.parse(decodeURIComponent(p.data||"{}"));',
+'    var ss=SpreadsheetApp.getActiveSpreadsheet();',
+'    var sh=ss.getSheetByName(SHEET_NAME);',
+'    if(!sh){',
+'      sh=ss.insertSheet(SHEET_NAME);',
+'      var hdrs=["Timestamp","Nombre"];',
+'      QUESTION_IDS.forEach(function(id){hdrs.push(id);});',
+'      hdrs.push("Correctas","Total","Puntos obtenidos","Puntos totales","Salidas pantalla");',
+'      sh.appendRow(hdrs);',
+'    }',
+'    var row=[new Date(),data.nombre||""];',
+'    QUESTION_IDS.forEach(function(id){var v=data[id];row.push(Array.isArray(v)?JSON.stringify(v):(v||""));});',
+'    var correct=0,totalQ=0,earned=0,totalPts=0,details={};',
+'    QUESTION_IDS.forEach(function(id){',
+'      var pt=QUESTION_POINTS[id]||1; totalPts+=pt; totalQ++;',
+'      var ans=data[id];',
+'      if(CORRECT_ANSWERS[id]!==undefined){',
+'        var ok=String(ans)===String(CORRECT_ANSWERS[id]);',
+'        if(ok){correct++;earned+=pt;} details[id]={correct:ok,earned:ok?pt:0,max:pt};',
+'      }else if(CORRECT_MULTI[id]){',
+'        var exp=CORRECT_MULTI[id].slice().sort().join(",");',
+'        var got=(Array.isArray(ans)?ans.slice().sort():[]).join(",");',
+'        var ok=exp===got; if(ok){correct++;earned+=pt;}',
+'        details[id]={correct:ok,earned:ok?pt:0,max:pt};',
+'      }else if(CORRECT_PAIRS[id]){',
+'        var ep=CORRECT_PAIRS[id],gp=Array.isArray(ans)?ans:[],pc=0;',
+'        ep.forEach(function(e){gp.forEach(function(g){if(Array.isArray(g)&&g[0]===e[0]&&g[1]===e[1])pc++;});});',
+'        var r=ep.length>0?pc/ep.length:0,pe=Math.round(pt*r*10)/10,ok=pc===ep.length;',
+'        if(ok)correct++; earned+=pe;',
+'        details[id]={correct:ok,earned:pe,max:pt,partial:!ok&&pc>0};',
+'      }else if(CORRECT_FILLS[id]){',
+'        var ef=CORRECT_FILLS[id],gf=Array.isArray(ans)?ans:[],fc=0;',
+'        ef.forEach(function(w,i){if(gf[i]&&gf[i].trim().toLowerCase()===w.trim().toLowerCase())fc++;});',
+'        var r=ef.length>0?fc/ef.length:0,fe=Math.round(pt*r*10)/10,ok=fc===ef.length;',
+'        if(ok)correct++; earned+=fe;',
+'        details[id]={correct:ok,earned:fe,max:pt,partial:!ok&&fc>0};',
+'      }',
+'    });',
+'    row.push(correct,totalQ,earned,totalPts,data.fsExits||0);',
+'    sh.appendRow(row);',
+'    var res={ok:true,correct:correct,total:totalQ,earned:earned,totalPts:totalPts,details:details};',
+'    return ContentService.createTextOutput(cb+"("+JSON.stringify(res)+")").setMimeType(ContentService.MimeType.JAVASCRIPT);',
+'  }catch(err){',
+'    var cb2=(e&&e.parameter&&e.parameter.callback)||"cb";',
+'    return ContentService.createTextOutput(cb2+"({\\"ok\\":false,\\"error\\":\\""+err.message+"\\"})")'+
+'      .setMimeType(ContentService.MimeType.JAVASCRIPT);',
+'  }',
+'}'
+].join('\n');
+
+// ═══════════════════════════════════════════════════════
+//  GENERAR HTML DE ACTIVIDAD
+// ═══════════════════════════════════════════════════════
+function buildActivityHTML() {
+  var title   = document.getElementById('cfg-title').value   || 'Actividad';
+  var subject = document.getElementById('cfg-subject').value || '';
+  var inst    = document.getElementById('cfg-inst').value    || 'Responder todas las preguntas y enviar al finalizar.';
+  var timer   = parseInt(document.getElementById('cfg-timer').value) || 0;
+  var lsKey   = document.getElementById('cfg-key').value     || 'act_'+Date.now();
+  var url     = document.getElementById('cfg-url').value     || '';
+
+  var qHTML = questions.map(function(q,i){return qHTMLBlock(q,i+1);}).join('\n');
+  var qMeta = JSON.stringify(questions.map(function(q){
+    var o={id:q.id,type:q.type,pts:parseInt(q.points)||1};
+    if (q.type==='fill'){
+      var a=[],re=/\[([^\]]+)\]/g,m;
+      while((m=re.exec(q.fillText))!==null) a.push(m[1]);
+      o.fillAnswers=a;
+    }
+    return o;
+  }));
+
+  return '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
+    +'<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
+    +'<title>'+esc(title)+'</title>\n'
+    +'<style>\n'+ACT_CSS+'\n</style>\n</head>\n<body>\n'
+    +actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta)
+    +'\n</body>\n</html>';
+}
+
+function qHTMLBlock(q,num) {
+  var LETS=['a','b','c','d','e','f'];
+  var ptLbl = q.points>1 ? q.points+' pts' : '1 pt';
+
+  var imgH = q.image ? '<img src="'+q.image+'" style="max-width:100%;border-radius:8px;margin-bottom:10px;display:block">' : '';
+  var textH;
+  if (q.type==='fill') {
+    var bi=0;
+    textH = esc(q.fillText).replace(/\[([^\]]+)\]/g,function(_,w){
+      return '<span class="blank" data-idx="'+(bi++)+'" data-answer="'+esc(w)+'" onclick="fillBlank(this)">______</span>';
+    });
+  } else {
+    textH = esc(q.text).replace(/\n/g,'<br>');
+  }
+
+  var ansH='';
+  if (q.type==='single') {
+    ansH='<div class="opts">';
+    q.opts.forEach(function(o,oi){
+      if(!o.trim())return;
+      ansH+='<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="'+LETS[oi]+'"><span>'+LETS[oi]+') '+esc(o)+'</span></label>';
+    });
+    ansH+='</div>';
+  } else if (q.type==='multi') {
+    ansH='<p class="multi-note">Seleccionar todas las correctas.</p><div class="opts">';
+    q.opts.forEach(function(o,oi){
+      if(!o.trim())return;
+      ansH+='<label class="opt-lbl"><input type="checkbox" name="'+q.id+'" value="'+LETS[oi]+'"><span>'+LETS[oi]+') '+esc(o)+'</span></label>';
+    });
+    ansH+='</div>';
+  } else if (q.type==='tf') {
+    ansH='<div class="opts">'
+      +'<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="true"><span>Verdadero</span></label>'
+      +'<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="false"><span>Falso</span></label>'
+      +'</div>';
+  } else if (q.type==='tfse') {
+    ansH='<div class="opts">'
+      +'<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="true"><span>Verdadero</span></label>'
+      +'<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="false"><span>Falso</span></label>'
+      +'<label class="opt-lbl"><input type="radio" name="'+q.id+'" value="se"><span>Sin Evidencia</span></label>'
+      +'</div>';
+  } else if (q.type==='open') {
+    ansH='<textarea class="open-ta" name="'+q.id+'" rows="4" placeholder="Escribir la respuesta aquí..."></textarea>';
+  } else if (q.type==='match') {
+    var rights=q.pairs.map(function(p){return p.right;}).filter(Boolean);
+    var shuf=rights.slice().sort(function(){return Math.random()-.5;});
+    ansH='<div class="match-wrap">';
+    q.pairs.forEach(function(p,pi){
+      if(!p.left)return;
+      ansH+='<div class="match-row"><div class="m-left">'+esc(p.left)+'</div>'
+        +'<div class="m-sel"><select name="match_'+q.id+'_'+pi+'" data-left="'+esc(p.left)+'">'
+        +'<option value="">— elegir —</option>';
+      shuf.forEach(function(r){ansH+='<option value="'+esc(r)+'">'+esc(r)+'</option>';});
+      ansH+='</select></div></div>';
+    });
+    ansH+='</div>';
+  } else if (q.type==='fill') {
+    var allW=[];
+    var re2=/\[([^\]]+)\]/g,m2;
+    while((m2=re2.exec(q.fillText))!==null) allW.push(m2[1]);
+    if(q.extraWords) q.extraWords.split(',').forEach(function(w){var t=w.trim();if(t)allW.push(t);});
+    allW=allW.sort(function(){return Math.random()-.5;});
+    ansH='<div class="bank" id="bank_'+q.id+'">';
+    allW.forEach(function(w){ansH+='<button class="bword" onclick="useBankWord(this,\''+q.id+'\')" data-word="'+esc(w)+'">'+esc(w)+'</button>';});
+    ansH+='</div><button class="clear-btn" onclick="clearFill(\''+q.id+'\')">↺ Limpiar</button>';
+  }
+
+  return '<div class="qblk" id="qb_'+q.id+'" data-qid="'+q.id+'" data-type="'+q.type+'">'
+    +'<div class="qtop"><span class="qn">Pregunta '+num+'</span><span class="qpts">'+ptLbl+'</span></div>'
+    +imgH
+    +'<div class="qtext">'+textH+'</div>'
+    +'<div class="qans">'+ansH+'</div>'
+    +'</div>';
+}
+
+function actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta) {
+  var timerHdr = timer>0
+    ? '<div id="tmr" class="tmr">'+String(timer).padStart(2,'0')+':00</div>'
+    : '<div></div>';
+  var timerNote = timer>0
+    ? '<p class="start-tmr">⏱ Tiempo: '+timer+' minuto'+(timer>1?'s':'')+'</p>'
+    : '';
+
+  return '<!-- OVERLAY PANTALLA COMPLETA -->\n'
+  +'<div id="fs-overlay">\n'
+  +'  <div class="fs-icon">🔒</div>\n'
+  +'  <div class="fs-title">Saliste de pantalla completa</div>\n'
+  +'  <p class="fs-msg">Durante la evaluación es obligatorio permanecer en pantalla completa. Hacer clic en el botón para continuar. La salida queda registrada.</p>\n'
+  +'  <button class="fs-btn" onclick="volverFS()">↩ Volver a pantalla completa</button>\n'
+  +'  <p class="fs-count" id="fs-exit-count"></p>\n'
+  +'</div>\n\n'
+  +'<!-- INICIO -->\n'
+  +'<div id="s-start" class="scr">\n'
+  +'  <div class="start-card">\n'
+  +'    <div class="start-sub">'+esc(subject)+'</div>\n'
+  +'    <h1 class="start-h1">'+esc(title)+'</h1>\n'
+  +'    <p class="start-inst">'+esc(inst)+'</p>\n'
+  +timerNote
+  +'    <div class="start-fld"><label>Nombre completo</label><input type="text" id="inp-nombre" placeholder="Apellido, Nombre"></div>\n'
+  +'    <button class="btn-start" onclick="iniciar()">Comenzar →</button>\n'
+  +'  </div>\n</div>\n\n'
+  +'<!-- QUIZ -->\n'
+  +'<div id="s-quiz" class="scr" style="display:none">\n'
+  +'  <div class="qhdr"><div class="qhdr-title">'+esc(title)+'</div>'+timerHdr+'<div id="nbadge" class="nbadge"></div></div>\n'
+  +'  <div class="qbody">\n'+qHTML+'\n'
+  +'    <div class="submit-area">\n'
+  +'      <button class="btn-enviar" id="btn-enviar" onclick="enviar()">Enviar actividad</button>\n'
+  +'      <p class="submit-hint">Revisar todas las respuestas antes de enviar.</p>\n'
+  +'    </div>\n  </div>\n</div>\n\n'
+  +'<!-- ENVIANDO -->\n'
+  +'<div id="s-wait" class="scr" style="display:none">\n'
+  +'  <div class="wait-card"><div class="spin"></div><p>Enviando respuestas...</p><p class="wait-sub">Puede tardar hasta 30 segundos.</p></div>\n'
+  +'</div>\n\n'
+  +'<!-- RESULTADO -->\n'
+  +'<div id="s-result" class="scr" style="display:none">\n'
+  +'  <div class="res-card">\n'
+  +'    <div class="res-check">✓</div>\n'
+  +'    <h2 class="res-title">Actividad enviada</h2>\n'
+  +'    <div id="res-score" class="res-score"></div>\n'
+  +'    <div id="res-details"></div>\n'
+  +'    <p class="res-note">Las respuestas fueron registradas en la planilla del docente.</p>\n'
+  +'  </div>\n</div>\n\n'
+  +'<script>\n'
+  +'var WEB_URL='+JSON.stringify(url)+';\n'
+  +'var LS_KEY='+JSON.stringify(lsKey)+';\n'
+  +'var TIMER_MIN='+timer+';\n'
+  +'var QMETA='+qMeta+';\n'
+  +ACT_JS
+  +'\n<\/script>';
+}
+
+// ── Estilos de la actividad (HTML del estudiante) ──────────
+var ACT_CSS=[
+'*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}',
+'body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2e;min-height:100vh}',
+'.scr{min-height:100vh}',
+'/* ─ inicio ─ */',
+'#s-start{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e);padding:24px}',
+'.start-card{background:#fff;border-radius:16px;padding:36px 30px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}',
+'.start-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7aa2f7;margin-bottom:8px}',
+'.start-h1{font-size:clamp(18px,4vw,26px);font-weight:800;margin-bottom:10px;line-height:1.2}',
+'.start-inst{font-size:13px;color:#555;margin-bottom:8px;line-height:1.6}',
+'.start-tmr{font-size:13px;color:#f2a154;font-weight:700;margin-bottom:14px}',
+'.start-fld{margin:18px 0}',
+'.start-fld label{display:block;font-size:11px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}',
+'.start-fld input{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:10px 13px;font-size:15px;outline:none;transition:border .15s}',
+'.start-fld input:focus{border-color:#7aa2f7}',
+'.btn-start{width:100%;background:#1a1a2e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer}',
+'.btn-start:hover{opacity:.85}',
+'/* ─ quiz ─ */',
+'.qhdr{position:sticky;top:0;z-index:50;background:#1a1a2e;color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}',
+'.qhdr-title{font-size:13px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+'.tmr{font-size:17px;font-weight:800;font-family:monospace;color:#f2a154}',
+'.tmr.warn{color:#f87171;animation:pulse 1s infinite}',
+'@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}',
+'.nbadge{font-size:11px;color:#9497ab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}',
+'.qbody{max-width:700px;margin:0 auto;padding:20px 14px 60px}',
+'.qblk{background:#fff;border-radius:12px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}',
+'.qblk.q-ok{border-left:4px solid #7bd88f}',
+'.qblk.q-par{border-left:4px solid #f2a154}',
+'.qblk.q-wrong{border-left:4px solid #f87171}',
+'.qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}',
+'.qn{font-size:11px;font-weight:700;color:#7aa2f7;text-transform:uppercase;letter-spacing:.06em}',
+'.qpts{font-size:10px;font-weight:600;color:#aaa;background:#f5f5f5;padding:2px 7px;border-radius:999px}',
+'.qtext{font-size:14.5px;line-height:1.65;margin-bottom:13px}',
+'/* opciones */',
+'.opts{display:flex;flex-direction:column;gap:7px}',
+'.opt-lbl{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13.5px}',
+'.opt-lbl:hover{border-color:#7aa2f7;background:#f0f4ff}',
+'.opt-lbl input{margin-top:2px;accent-color:#7aa2f7;flex-shrink:0}',
+'.opt-lbl.wrong{border-color:#f87171!important;background:#fff0f0!important}',
+'.multi-note{font-size:11px;color:#aaa;margin-bottom:7px}',
+'/* abierta */',
+'.open-ta{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:9px;font-size:13px;outline:none;resize:vertical;font-family:inherit;transition:border .15s}',
+'.open-ta:focus{border-color:#7aa2f7}',
+'/* emparejar */',
+'.match-wrap{display:flex;flex-direction:column;gap:7px}',
+'.match-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}',
+'.m-left{font-size:13px;padding:8px 11px;background:#f5f7ff;border-radius:7px;border:1.5px solid #e0e0e0}',
+'.m-sel select{width:100%;border:1.5px solid #e0e0e0;border-radius:7px;padding:7px 9px;font-size:12.5px;outline:none;background:#fff;cursor:pointer}',
+'.m-sel select:focus{border-color:#7aa2f7}',
+'.m-sel select.wrong{border-color:#f87171;background:#fff0f0}',
+'@media(max-width:500px){.match-row{grid-template-columns:1fr}.m-left{margin-bottom:4px}}',
+'/* fill */',
+'.qtext .blank{display:inline-block;min-width:80px;border-bottom:2px solid #7aa2f7;color:#7aa2f7;font-weight:700;padding:0 4px;cursor:pointer;text-align:center;transition:all .15s}',
+'.qtext .blank.filled{color:#1a1a2e;border-bottom-color:#1a1a2e}',
+'.qtext .blank.ok-b{border-bottom-color:#7bd88f;color:#2d7a4f}',
+'.qtext .blank.err-b{border-bottom-color:#f87171;color:#c0392b}',
+'.bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;padding-top:10px}',
+'.bword{padding:5px 11px;border:1.5px solid #7aa2f7;border-radius:999px;background:#f0f4ff;color:#1a1a2e;font-size:12.5px;cursor:pointer;transition:all .15s}',
+'.bword:hover:not(:disabled){background:#7aa2f7;color:#fff}',
+'.bword.sel{background:#7aa2f7;color:#fff}',
+'.bword:disabled{opacity:.25;cursor:default}',
+'.clear-btn{background:none;border:none;color:#aaa;font-size:11px;cursor:pointer;text-decoration:underline;margin-top:3px}',
+'/* enviar */',
+'.submit-area{text-align:center;padding:22px 0}',
+'.btn-enviar{background:#1a1a2e;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:14px;font-weight:700;cursor:pointer}',
+'.btn-enviar:hover:not(:disabled){opacity:.85}',
+'.btn-enviar:disabled{opacity:.35;cursor:not-allowed}',
+'.submit-hint{font-size:11px;color:#aaa;margin-top:7px}',
+'/* enviando */',
+'#s-wait{display:flex;align-items:center;justify-content:center;background:#f0f2f7}',
+'.wait-card{text-align:center;padding:40px;color:#555}',
+'.spin{width:38px;height:38px;border:4px solid #e0e0e0;border-top-color:#7aa2f7;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 18px}',
+'@keyframes sp{to{transform:rotate(360deg)}}',
+'.wait-sub{font-size:12px;color:#aaa;margin-top:7px}',
+'/* resultado */',
+'#s-result{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e);padding:24px}',
+'.res-card{background:#fff;border-radius:16px;padding:36px 30px;max-width:520px;width:100%;text-align:center}',
+'.res-check{font-size:44px;color:#7bd88f;margin-bottom:6px}',
+'.res-title{font-size:20px;font-weight:800;margin-bottom:14px}',
+'.res-score{font-size:40px;font-weight:900;margin-bottom:4px}',
+'.res-score span{font-size:18px;color:#777;font-weight:400}',
+'.res-details{text-align:left;margin:14px 0;display:flex;flex-direction:column;gap:5px}',
+'.dr{display:flex;justify-content:space-between;align-items:center;padding:7px 11px;border-radius:7px;font-size:13px}',
+'.dr.ok{background:#f0fff4;color:#2d7a4f}',
+'.dr.par{background:#fffbf0;color:#7a6020}',
+'.dr.err{background:#fff0f0;color:#c0392b}',
+'.dr-ic{font-size:14px;flex-shrink:0}',
+'.res-note{font-size:11px;color:#aaa;margin-top:14px}',
+'/* ─ pantalla completa overlay ─ */',
+'#fs-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,10,20,.97);color:#fff;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}',
+'#fs-overlay.show{display:flex}',
+'.fs-icon{font-size:54px;margin-bottom:14px}',
+'.fs-title{font-size:22px;font-weight:800;color:#f87171;margin-bottom:10px}',
+'.fs-msg{font-size:14px;color:#9497ab;max-width:420px;line-height:1.7;margin-bottom:26px}',
+'.fs-btn{background:#7aa2f7;color:#1a1a2e;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .15s}',
+'.fs-btn:hover{opacity:.85}',
+'.fs-count{font-size:12px;color:#f2a154;margin-top:16px;font-weight:700}',
+'/* ─── RESPONSIVE ─── */',
+'@media(max-width:600px){',
+'  #s-start{padding:16px}',
+'  .start-card{padding:24px 18px;border-radius:12px}',
+'  .start-h1{font-size:20px}',
+'  .start-inst{font-size:13px}',
+'  .start-fld input{font-size:16px}',
+'  .btn-start{font-size:14px;padding:12px}',
+'  .qhdr{padding:9px 12px}',
+'  .qhdr-title{font-size:12px}',
+'  .tmr{font-size:15px}',
+'  .nbadge{max-width:90px;font-size:10px}',
+'  .qbody{padding:14px 10px 50px}',
+'  .qblk{padding:13px 12px;border-radius:10px}',
+'  .qn{font-size:10px}',
+'  .qtext{font-size:13.5px;margin-bottom:10px}',
+'  .opt-lbl{font-size:13px;padding:8px 10px}',
+'  .open-ta{font-size:14px}',
+'  .bank{gap:5px}',
+'  .bword{font-size:12px;padding:5px 10px}',
+'  .submit-area{padding:16px 0}',
+'  .btn-enviar{font-size:13px;padding:11px 22px}',
+'  .res-card{padding:24px 16px;border-radius:12px}',
+'  .res-check{font-size:34px}',
+'  .res-title{font-size:17px}',
+'  .res-score{font-size:32px}',
+'  .dr{font-size:12px;padding:6px 9px}',
+'  .fs-title{font-size:18px}',
+'  .fs-msg{font-size:13px}',
+'  .fs-btn{padding:12px 22px;font-size:14px}',
+'}'
+].join('\n');
+
+// ── JavaScript de la actividad (HTML del estudiante) ───────
+var ACT_JS=[
+'var nombre="",timerIv=null,tLeft=TIMER_MIN*60,sent=false,activeWord=null,fsExits=0,fsStarted=false;',
+'',
+'function scr(id){["s-start","s-quiz","s-wait","s-result"].forEach(function(s){var e=document.getElementById(s);if(e)e.style.display=s===id?"block":"none"});}',
+'',
+'/* ── Pantalla completa ── */',
+'function requestFS(){var el=document.documentElement;var p=el.requestFullscreen?el.requestFullscreen():el.webkitRequestFullscreen?el.webkitRequestFullscreen():null;if(p)p.catch(function(){});}',
+'function isFS(){return !!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);}',
+'function handleFSChange(){',
+'  if(sent)return;',
+'  if(isFS()){',
+'    fsStarted=true;',
+'    var ov=document.getElementById("fs-overlay");if(ov)ov.classList.remove("show");',
+'    if(TIMER_MIN>0&&tLeft>0&&!timerIv){updTimer();timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;enviar();}},1000);}',
+'  } else if(fsStarted){',
+'    fsExits++;',
+'    var ov=document.getElementById("fs-overlay");if(ov)ov.classList.add("show");',
+'    var ec=document.getElementById("fs-exit-count");if(ec)ec.textContent="Salida #"+fsExits+" registrada";',
+'    if(timerIv){clearInterval(timerIv);timerIv=null;}',
+'  }',
+'}',
+'function volverFS(){requestFS();}',
+'["fullscreenchange","webkitfullscreenchange","mozfullscreenchange"].forEach(function(ev){document.addEventListener(ev,handleFSChange);});',
+'',
+'',
+'function iniciar(){',
+'  nombre=(document.getElementById("inp-nombre").value||"").trim();',
+'  if(!nombre){alert("Ingresar nombre completo.");return;}',
+'  document.getElementById("nbadge").textContent=nombre;',
+'  scr("s-quiz");',
+'  requestFS();',
+'  if(TIMER_MIN>0){tLeft=TIMER_MIN*60;updTimer();timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;enviar();}},1000);}',
+'}',
+'',
+'function updTimer(){',
+'  var el=document.getElementById("tmr");if(!el)return;',
+'  var m=Math.floor(tLeft/60),s=tLeft%60;',
+'  el.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;',
+'  if(tLeft<=120)el.classList.add("warn");',
+'}',
+'',
+'function useBankWord(btn,qid){',
+'  if(btn.disabled)return;',
+'  document.querySelectorAll(".bword").forEach(function(b){b.classList.remove("sel");});',
+'  activeWord=btn;',
+'  btn.classList.add("sel");',
+'}',
+'',
+'function fillBlank(span){',
+'  if(!activeWord)return;',
+'  var prev=span.dataset.filled;',
+'  if(prev){',
+'    var pb=document.querySelector(".bword[data-word=\\""+prev+"\\"]:disabled");',
+'    if(pb){pb.disabled=false;pb.classList.remove("sel");}',
+'  }',
+'  span.textContent=activeWord.dataset.word;',
+'  span.dataset.filled=activeWord.dataset.word;',
+'  span.classList.add("filled");',
+'  activeWord.disabled=true;activeWord.classList.remove("sel");activeWord=null;',
+'}',
+'',
+'function clearFill(qid){',
+'  var qb=document.getElementById("qb_"+qid);',
+'  qb.querySelectorAll(".blank").forEach(function(b){b.textContent="______";b.dataset.filled="";b.classList.remove("filled","ok-b","err-b");});',
+'  qb.querySelectorAll(".bword").forEach(function(b){b.disabled=false;b.classList.remove("sel");});',
+'  activeWord=null;',
+'}',
+'',
+'function collect(){',
+'  var ans={nombre:nombre,fsExits:fsExits};',
+'  QMETA.forEach(function(q){',
+'    var qb=document.getElementById("qb_"+q.id);if(!qb)return;',
+'    if(q.type==="single"||q.type==="tf"||q.type==="tfse"){',
+'      var r=qb.querySelector("input[type=radio]:checked");ans[q.id]=r?r.value:"";',
+'    }else if(q.type==="multi"){',
+'      var ch=[];qb.querySelectorAll("input[type=checkbox]:checked").forEach(function(c){ch.push(c.value);});ans[q.id]=ch.sort();',
+'    }else if(q.type==="open"){',
+'      var ta=qb.querySelector("textarea");ans[q.id]=ta?ta.value:"";',
+'    }else if(q.type==="match"){',
+'      var pairs=[];',
+'      qb.querySelectorAll(".match-row").forEach(function(row){',
+'        var lft=row.querySelector(".m-left"),sel=row.querySelector("select");',
+'        if(lft&&sel&&sel.value)pairs.push([lft.textContent.trim(),sel.value]);',
+'      });',
+'      ans[q.id]=pairs;',
+'    }else if(q.type==="fill"){',
+'      var ws=[];qb.querySelectorAll(".blank").forEach(function(b){ws.push(b.dataset.filled||"");});ans[q.id]=ws;',
+'    }',
+'  });',
+'  return ans;',
+'}',
+'',
+'function enviar(){',
+'  if(sent)return;',
+'  if(!confirm("¿Enviar la actividad? No se puede modificar después."))return;',
+'  sent=true;',
+'  if(timerIv)clearInterval(timerIv);',
+'  var btn=document.getElementById("btn-enviar");if(btn)btn.disabled=true;',
+'  scr("s-wait");',
+'  var payload=collect();',
+'  try{localStorage.setItem(LS_KEY,JSON.stringify({sent:true,ts:Date.now()}));}catch(e){}',
+'  if(!WEB_URL){setTimeout(function(){showResult(null);},800);return;}',
+'  var cb="cb_"+Date.now();',
+'  var tm=setTimeout(function(){cleanup();showResult(null);},32000);',
+'  window[cb]=function(d){clearTimeout(tm);cleanup();showResult(d);};',
+'  function cleanup(){try{delete window[cb];}catch(e){}var s=document.getElementById("_sc");if(s)s.parentNode.removeChild(s);}',
+'  var sep=WEB_URL.indexOf("?")>=0?"&":"?";',
+'  var sc=document.createElement("script");sc.id="_sc";',
+'  sc.src=WEB_URL+sep+"callback="+cb+"&data="+encodeURIComponent(JSON.stringify(payload));',
+'  document.head.appendChild(sc);',
+'}',
+'',
+'function showResult(data){',
+'  scr("s-result");',
+'  var se=document.getElementById("res-score"),de=document.getElementById("res-details");',
+'  if(!data||!data.ok){',
+'    se.innerHTML="Enviado";',
+'    de.innerHTML=\'<p style="color:#aaa;font-size:13px;text-align:center">Las respuestas fueron registradas. La corrección estará disponible con el docente.</p>\';',
+'    return;',
+'  }',
+'  se.innerHTML=data.earned+"<span> / "+data.totalPts+" puntos</span>";',
+'  var html=\'<div class="res-details">\';',
+'  if(data.details){',
+'    QMETA.forEach(function(q,i){',
+'      var d=data.details[q.id];if(!d)return;',
+'      var cls=d.correct?"ok":(d.partial?"par":"err");',
+'      var ico=d.correct?"✓":(d.partial?"◑":"✗");',
+'      html+=\'<div class="dr \'+cls+\'"><span class="dr-ic">\'+ico+\'</span><span>Pregunta \'+( i+1)+\'</span><span>\'+d.earned+"/"+d.max+" pt</span></div>";',
+'      var qb=document.getElementById("qb_"+q.id);',
+'      if(qb){',
+'        qb.classList.add("q-"+(d.correct?"ok":(d.partial?"par":"wrong")));',
+'        applyFb(qb,q,d);',
+'      }',
+'    });',
+'  }',
+'  html+=\'</div>\';de.innerHTML=html;',
+'}',
+'',
+'function applyFb(qb,q,d){',
+'  if(q.type==="single"||q.type==="tf"||q.type==="tfse"||q.type==="multi"){',
+'    if(!d.correct)qb.querySelectorAll(".opt-lbl").forEach(function(l){var inp=l.querySelector("input");if(inp&&inp.checked)l.classList.add("wrong");});',
+'  }else if(q.type==="match"){',
+'    qb.querySelectorAll(".m-sel select").forEach(function(s){s.disabled=true;if(!d.correct)s.classList.add("wrong");});',
+'  }else if(q.type==="fill"){',
+'    qb.querySelectorAll(".blank").forEach(function(b){',
+'      var f=(b.dataset.filled||"").trim().toLowerCase();',
+'      var a=(b.dataset.answer||"").trim().toLowerCase();',
+'      b.classList.add(f===a?"ok-b":"err-b");',
+'    });',
+'  }',
+'  qb.querySelectorAll("input,textarea,select,button").forEach(function(e){e.disabled=true;});',
+'}'
+].join('\n');
+
+// ═══════════════════════════════════════════════════════
+//  SÍMBOLOS CIENTÍFICOS
+// ═══════════════════════════════════════════════════════
+var _symTarget = null;
+function toggleSymbols() {
+  var p = document.getElementById('sym-panel');
+  p.classList.toggle('open');
+}
+function insertSym(ch) {
+  var el = _symTarget;
+  if (!el || (el.tagName!=='TEXTAREA' && el.tagName!=='INPUT')) return;
+  var s = el.selectionStart, e = el.selectionEnd, v = el.value;
+  el.value = v.slice(0,s) + ch + v.slice(e);
+  el.selectionStart = el.selectionEnd = s + ch.length;
+  el.dispatchEvent(new Event('input', {bubbles:true}));
+  el.focus();
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('q-list').addEventListener('focusin', function(ev) {
+    if (ev.target.tagName==='TEXTAREA' || ev.target.tagName==='INPUT') {
+      _symTarget = ev.target;
+    }
+  });
+});
+
+// ═══════════════════════════════════════════════════════
+//  DESCARGAS
+// ═══════════════════════════════════════════════════════
+function slug(s){ return (s||'actividad').toLowerCase().replace(/[^\w\s]/g,'').replace(/\s+/g,'_').slice(0,40)||'actividad'; }
+
+function dlFile(content,name,mime){
+  var b=new Blob([content],{type:mime}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(a.href);},100);
+}
+
+function downloadCodeGS(){
+  if(!questions.length){alert('Primero agregar preguntas en el Paso 2.');return;}
+  dlFile(buildCodeGS(), slug(document.getElementById('cfg-title').value)+'_Code.gs','text/plain');
+}
+
+function downloadHTML(){
+  if(!questions.length){alert('Agregar al menos una pregunta antes de descargar.');return;}
+  dlFile(buildActivityHTML(), slug(document.getElementById('cfg-title').value)+'.html','text/html');
+}
+</script>
+</body>
+</html>
