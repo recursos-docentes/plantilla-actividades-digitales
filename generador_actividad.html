@@ -159,7 +159,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height
 
 /* MODE PANELS */
 .mode-panels{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
-.mode-panel{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.mode-panel{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
 .mode-panel-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;background:var(--card);transition:background .15s}
 .mode-panel-hd:hover{background:var(--card2)}
 .mode-panel-hd.mp-open{background:var(--acc-bg);border-bottom:1px solid var(--acc-border)}
@@ -260,31 +260,7 @@ input[type=file]{display:none}
     <p class="sec-sub">Cargar manualmente o generar con IA.</p>
 
     <div class="mode-panels">
-      <!-- Panel A: manual -->
-      <div class="mode-panel" id="mp-manual">
-        <div class="mode-panel-hd mp-open" onclick="toggleMode('manual')">
-          <div>
-            <div class="mode-panel-title">✏️ Cargar manualmente</div>
-            <div class="mode-panel-sub">Agregar preguntas una a una con los botones de tipo.</div>
-          </div>
-          <span class="mode-panel-arrow">▶</span>
-        </div>
-        <div class="mode-panel-body mp-open" id="mp-manual-body">
-          <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Seleccionar el tipo de pregunta para agregarla. Cada pregunta se edita, reordena y elimina desde su propio panel.</p>
-          <div style="display:flex;flex-wrap:wrap;gap:7px">
-            <button class="btn btn-sec btn-sm" onclick="addQ('single')">＋ Opción única</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('multi')">＋ Múltiple respuesta</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('tf')">＋ V / F</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('tfse')">＋ V / F / Sin Evidencia</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('open')">＋ Abierta</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('match')">＋ Emparejar</button>
-            <button class="btn btn-sec btn-sm" onclick="addQ('fill')">＋ Banco de palabras</button>
-            <button class="sym-toggle" onclick="toggleSymbols()" style="margin-top:0">🔬 Símbolos científicos</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Panel B: IA -->
+      <!-- Panel IA (arriba, cerrado por defecto) -->
       <div class="mode-panel" id="mp-ia">
         <div class="mode-panel-hd" onclick="toggleMode('ia')">
           <div>
@@ -315,7 +291,7 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
           </div>
         </div>
       </div>
-    </div>
+    </div><!-- /mode-panels -->
 
     <div class="sym-panel" id="sym-panel">
       <p class="sym-hint">Hacer clic en el enunciado de una pregunta para activarlo, luego seleccionar el símbolo a insertar.</p>
@@ -402,7 +378,30 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
     </div>
 
     <div id="q-list">
-      <div class="empty-state">Sin preguntas. Usar los paneles de arriba para agregar manualmente o generar con IA.</div>
+      <div class="empty-state">Sin preguntas. Usar el panel de abajo para agregar o el de arriba para generar con IA.</div>
+    </div>
+
+    <!-- Panel manual (sticky al fondo, abierto por defecto) -->
+    <div class="mode-panel" id="mp-manual" style="position:sticky;bottom:0;z-index:20;margin:0 -18px;border-radius:0;border-left:none;border-right:none;border-bottom:none;box-shadow:0 -4px 16px rgba(0,0,0,.08)">
+      <div class="mode-panel-hd mp-open" onclick="toggleMode('manual')" style="border-radius:0">
+        <div>
+          <div class="mode-panel-title">✏️ Agregar pregunta</div>
+          <div class="mode-panel-sub" id="mp-manual-sub">Seleccionar tipo para agregar</div>
+        </div>
+        <span class="mode-panel-arrow">▶</span>
+      </div>
+      <div class="mode-panel-body mp-open" id="mp-manual-body" style="border-radius:0;padding:12px 18px">
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          <button class="btn btn-sec btn-sm" onclick="addQ('single')">＋ Opción única</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('multi')">＋ Múltiple respuesta</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('tf')">＋ V / F</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('tfse')">＋ V / F / Sin Evidencia</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('open')">＋ Abierta</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('match')">＋ Emparejar</button>
+          <button class="btn btn-sec btn-sm" onclick="addQ('fill')">＋ Banco de palabras</button>
+          <button class="sym-toggle" onclick="toggleSymbols()" style="margin-top:0">🔬 Símbolos</button>
+        </div>
+      </div>
     </div>
 
     <div class="step-nav" style="padding-top:14px">
