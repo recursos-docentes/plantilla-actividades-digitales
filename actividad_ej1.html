@@ -2,26 +2,26 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Actividad-ej1</title>
+<title>Actividad_ej1</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2e;min-height:100vh}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#14532d;min-height:100vh}
 .scr{min-height:100vh}
 /* ─ inicio ─ */
-#s-start{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e);padding:24px}
+#s-start{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#14532d,#052e16);padding:24px}
 .start-card{background:#fff;border-radius:16px;padding:36px 30px;max-width:500px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.start-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7aa2f7;margin-bottom:8px}
+.start-sub{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4ade80;margin-bottom:8px}
 .start-h1{font-size:clamp(18px,4vw,26px);font-weight:800;margin-bottom:10px;line-height:1.2}
 .start-inst{font-size:13px;color:#555;margin-bottom:8px;line-height:1.6}
 .start-tmr{font-size:13px;color:#f2a154;font-weight:700;margin-bottom:14px}
 .start-fld{margin:18px 0}
 .start-fld label{display:block;font-size:11px;font-weight:700;color:#999;margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
 .start-fld input{width:100%;border:2px solid #e0e0e0;border-radius:8px;padding:10px 13px;font-size:15px;outline:none;transition:border .15s}
-.start-fld input:focus{border-color:#7aa2f7}
-.btn-start{width:100%;background:#1a1a2e;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer}
+.start-fld input:focus{border-color:#4ade80}
+.btn-start{width:100%;background:#14532d;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;cursor:pointer}
 .btn-start:hover{opacity:.85}
 /* ─ quiz ─ */
-.qhdr{position:sticky;top:0;z-index:50;background:#1a1a2e;color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.qhdr{position:sticky;top:0;z-index:50;background:#14532d;color:#fff;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px}
 .qhdr-title{font-size:13px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tmr{font-size:17px;font-weight:800;font-family:monospace;color:#f2a154}
 .tmr.warn{color:#f87171;animation:pulse 1s infinite}
@@ -33,52 +33,52 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2
 .qblk.q-par{border-left:4px solid #f2a154}
 .qblk.q-wrong{border-left:4px solid #f87171}
 .qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
-.qn{font-size:11px;font-weight:700;color:#7aa2f7;text-transform:uppercase;letter-spacing:.06em}
+.qn{font-size:11px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.06em}
 .qpts{font-size:10px;font-weight:600;color:#aaa;background:#f5f5f5;padding:2px 7px;border-radius:999px}
 .qtext{font-size:14.5px;line-height:1.65;margin-bottom:13px}
 /* opciones */
 .opts{display:flex;flex-direction:column;gap:7px}
 .opt-lbl{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1.5px solid #e0e0e0;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13.5px}
-.opt-lbl:hover{border-color:#7aa2f7;background:#f0f4ff}
-.opt-lbl input{margin-top:2px;accent-color:#7aa2f7;flex-shrink:0}
+.opt-lbl:hover{border-color:#4ade80;background:#f0fdf4}
+.opt-lbl input{margin-top:2px;accent-color:#4ade80;flex-shrink:0}
 .opt-lbl.wrong{border-color:#f87171!important;background:#fff0f0!important}
 .multi-note{font-size:11px;color:#aaa;margin-bottom:7px}
 /* abierta */
 .open-ta{width:100%;border:1.5px solid #e0e0e0;border-radius:8px;padding:9px;font-size:13px;outline:none;resize:vertical;font-family:inherit;transition:border .15s}
-.open-ta:focus{border-color:#7aa2f7}
+.open-ta:focus{border-color:#4ade80}
 /* emparejar */
 .match-wrap{display:flex;flex-direction:column;gap:7px}
 .match-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;align-items:center}
 .m-left{font-size:13px;padding:8px 11px;background:#f5f7ff;border-radius:7px;border:1.5px solid #e0e0e0}
 .m-sel select{width:100%;border:1.5px solid #e0e0e0;border-radius:7px;padding:7px 9px;font-size:12.5px;outline:none;background:#fff;cursor:pointer}
-.m-sel select:focus{border-color:#7aa2f7}
+.m-sel select:focus{border-color:#4ade80}
 .m-sel select.wrong{border-color:#f87171;background:#fff0f0}
 @media(max-width:500px){.match-row{grid-template-columns:1fr}.m-left{margin-bottom:4px}}
 /* fill */
-.qtext .blank{display:inline-block;min-width:80px;border-bottom:2px solid #7aa2f7;color:#7aa2f7;font-weight:700;padding:0 4px;cursor:pointer;text-align:center;transition:all .15s}
-.qtext .blank.filled{color:#1a1a2e;border-bottom-color:#1a1a2e}
+.qtext .blank{display:inline-block;min-width:80px;border-bottom:2px solid #4ade80;color:#4ade80;font-weight:700;padding:0 4px;cursor:pointer;text-align:center;transition:all .15s}
+.qtext .blank.filled{color:#14532d;border-bottom-color:#14532d}
 .qtext .blank.ok-b{border-bottom-color:#7bd88f;color:#2d7a4f}
 .qtext .blank.err-b{border-bottom-color:#f87171;color:#c0392b}
 .bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px;padding-top:10px}
-.bword{padding:5px 11px;border:1.5px solid #7aa2f7;border-radius:999px;background:#f0f4ff;color:#1a1a2e;font-size:12.5px;cursor:pointer;transition:all .15s}
-.bword:hover:not(:disabled){background:#7aa2f7;color:#fff}
-.bword.sel{background:#7aa2f7;color:#fff}
+.bword{padding:5px 11px;border:1.5px solid #4ade80;border-radius:999px;background:#f0fdf4;color:#14532d;font-size:12.5px;cursor:pointer;transition:all .15s}
+.bword:hover:not(:disabled){background:#4ade80;color:#fff}
+.bword.sel{background:#4ade80;color:#fff}
 .bword:disabled{opacity:.25;cursor:default}
 .clear-btn{background:none;border:none;color:#aaa;font-size:11px;cursor:pointer;text-decoration:underline;margin-top:3px}
 /* enviar */
 .submit-area{text-align:center;padding:22px 0}
-.btn-enviar{background:#1a1a2e;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-enviar{background:#14532d;color:#fff;border:none;border-radius:10px;padding:13px 30px;font-size:14px;font-weight:700;cursor:pointer}
 .btn-enviar:hover:not(:disabled){opacity:.85}
 .btn-enviar:disabled{opacity:.35;cursor:not-allowed}
 .submit-hint{font-size:11px;color:#aaa;margin-top:7px}
 /* enviando */
 #s-wait{display:flex;align-items:center;justify-content:center;background:#f0f2f7}
 .wait-card{text-align:center;padding:40px;color:#555}
-.spin{width:38px;height:38px;border:4px solid #e0e0e0;border-top-color:#7aa2f7;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 18px}
+.spin{width:38px;height:38px;border:4px solid #e0e0e0;border-top-color:#4ade80;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto 18px}
 @keyframes sp{to{transform:rotate(360deg)}}
 .wait-sub{font-size:12px;color:#aaa;margin-top:7px}
 /* resultado */
-#s-result{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a1a2e,#16213e);padding:24px}
+#s-result{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#14532d,#052e16);padding:24px}
 .res-card{background:#fff;border-radius:16px;padding:36px 30px;max-width:520px;width:100%;text-align:center}
 .res-check{font-size:44px;color:#7bd88f;margin-bottom:6px}
 .res-title{font-size:20px;font-weight:800;margin-bottom:14px}
@@ -97,7 +97,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2
 .fs-icon{font-size:54px;margin-bottom:14px}
 .fs-title{font-size:22px;font-weight:800;color:#f87171;margin-bottom:10px}
 .fs-msg{font-size:14px;color:#9497ab;max-width:420px;line-height:1.7;margin-bottom:26px}
-.fs-btn{background:#7aa2f7;color:#1a1a2e;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .15s}
+.fs-btn{background:#4ade80;color:#14532d;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:800;cursor:pointer;transition:opacity .15s}
 .fs-btn:hover{opacity:.85}
 .fs-count{font-size:12px;color:#f2a154;margin-top:16px;font-weight:700}
 /* ─── RESPONSIVE ─── */
@@ -146,8 +146,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2
 <!-- INICIO -->
 <div id="s-start" class="scr">
   <div class="start-card">
-    <div class="start-sub">Materia ej1</div>
-    <h1 class="start-h1">Actividad-ej1</h1>
+    <div class="start-sub">Materia_ej1</div>
+    <h1 class="start-h1">Actividad_ej1</h1>
     <p class="start-inst">Responder todas las preguntas. Al finalizar, hacer clic en Enviar.</p>
     <div class="start-fld"><label>Nombre completo</label><input type="text" id="inp-nombre" placeholder="Apellido, Nombre"></div>
     <button class="btn-start" onclick="iniciar()">Comenzar →</button>
@@ -156,11 +156,11 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2
 
 <!-- QUIZ -->
 <div id="s-quiz" class="scr" style="display:none">
-  <div class="qhdr"><div class="qhdr-title">Actividad-ej1</div><div></div><div id="nbadge" class="nbadge"></div></div>
+  <div class="qhdr"><div class="qhdr-title">Actividad_ej1</div><div></div><div id="nbadge" class="nbadge"></div></div>
   <div class="qbody">
-<div class="qblk" id="qb_q3" data-qid="q3" data-type="multi" data-required="1" data-answered="0"><div class="qtop"><span class="qn">Pregunta 1<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span></span><span class="qpts">2 pts</span></div><div class="qtext">Marca dos colores del arcoiris</div><div class="qans"><p class="multi-note">Seleccionar todas las correctas.</p><div class="opts"><label class="opt-lbl"><input type="checkbox" name="q3" value="a"><span>1) azul</span></label><label class="opt-lbl"><input type="checkbox" name="q3" value="c"><span>2) negro</span></label><label class="opt-lbl"><input type="checkbox" name="q3" value="d"><span>3) marrón</span></label><label class="opt-lbl"><input type="checkbox" name="q3" value="b"><span>4) rojo</span></label></div></div></div>
-<div class="qblk" id="qb_q1" data-qid="q1" data-type="fill" data-required="1" data-answered="0"><div class="qtop"><span class="qn">Pregunta 2<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span></span><span class="qpts">1 pt</span></div><div class="qtext">Las arañas tiene <span class="blank" data-idx="0" data-answer="6" onclick="fillBlank(this)">______</span> patas</div><div class="qans"><div class="bank" id="bank_q1"><button class="bword" onclick="useBankWord(this,'q1')" data-word="6">6</button><button class="bword" onclick="useBankWord(this,'q1')" data-word="6">6</button><button class="bword" onclick="useBankWord(this,'q1')" data-word="8">8</button><button class="bword" onclick="useBankWord(this,'q1')" data-word="10">10</button></div><button class="clear-btn" onclick="clearFill('q1')">↺ Limpiar</button></div></div>
-<div class="qblk" id="qb_q2" data-qid="q2" data-type="multi" data-answered="0"><div class="qtop"><span class="qn">Pregunta 3</span><span class="qpts">1 pt</span></div><div class="qtext">2 + 2 es</div><div class="qans"><p class="multi-note">Seleccionar todas las correctas.</p><div class="opts"><label class="opt-lbl"><input type="checkbox" name="q2" value="b"><span>1) 5</span></label><label class="opt-lbl"><input type="checkbox" name="q2" value="a"><span>2) 4</span></label><label class="opt-lbl"><input type="checkbox" name="q2" value="c"><span>3) 6</span></label><label class="opt-lbl"><input type="checkbox" name="q2" value="d"><span>4) 7</span></label></div></div></div>
+<div class="qblk" id="qb_q1" data-qid="q1" data-type="single" data-required="1" data-answered="0"><div class="qtop"><span class="qn">Pregunta 1<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span></span><span class="qpts">1 pt</span></div><div class="qtext">pregunta opcion única</div><div class="qans"><div class="opts"><label class="opt-lbl"><input type="radio" name="q1" value="a"><span>1) a</span></label><label class="opt-lbl"><input type="radio" name="q1" value="b"><span>2) b</span></label><label class="opt-lbl"><input type="radio" name="q1" value="c"><span>3) c</span></label><label class="opt-lbl"><input type="radio" name="q1" value="d"><span>4) d</span></label></div></div></div>
+<div class="qblk" id="qb_q3" data-qid="q3" data-type="open" data-required="1" data-answered="0"><div class="qtop"><span class="qn">Pregunta 2<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span></span><span class="qpts">2 pts</span></div><div class="qtext">Qué es la herencia en Java</div><div class="qans"><textarea class="open-ta" name="q3" rows="4" placeholder="Escribir la respuesta aquí..."></textarea></div></div>
+<div class="qblk" id="qb_q2" data-qid="q2" data-type="tf" data-required="1" data-answered="0"><div class="qtop"><span class="qn">Pregunta 3<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span></span><span class="qpts">1 pt</span></div><div class="qtext">Todos los peces son mamiferos</div><div class="qans"><div class="opts"><label class="opt-lbl"><input type="radio" name="q2" value="true"><span>Verdadero</span></label><label class="opt-lbl"><input type="radio" name="q2" value="false"><span>Falso</span></label></div></div></div>
     <div class="submit-area">
       <button class="btn-enviar" id="btn-enviar" onclick="enviar()">Enviar actividad</button>
       <p class="submit-hint">Revisar todas las respuestas antes de enviar.</p>
@@ -185,10 +185,10 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:#f0f2f7;color:#1a1a2
 </div>
 
 <script>
-var WEB_URL="https://script.google.com/macros/s/AKfycbzW1fuPbi3F6vRAzh0Fau-8-wGYA7lNY9MM6NzXE3-SEToNpndZLkH3pZjqpnUz-QAm2w/exec";
-var LS_KEY="ej1-2026";
+var WEB_URL="https://script.google.com/macros/s/AKfycbznTg4dRc7VnouYVTBbV4xS6w38jABWJubww7YIuNrJvCMsG6eKH94A5YiwwFegazftog/exec";
+var LS_KEY="ej1_2026b";
 var TIMER_MIN=0;
-var QMETA=[{"id":"q3","type":"multi","pts":2,"required":true},{"id":"q1","type":"fill","pts":1,"required":true,"fillAnswers":["6"]},{"id":"q2","type":"multi","pts":1,"required":false}];
+var QMETA=[{"id":"q1","type":"single","pts":1,"required":true},{"id":"q3","type":"open","pts":2,"required":true},{"id":"q2","type":"tf","pts":1,"required":true}];
 var nombre="",timerIv=null,tLeft=TIMER_MIN*60,sent=false,activeWord=null,fsExits=0,fsStarted=false;
 
 function scr(id){["s-start","s-quiz","s-wait","s-result"].forEach(function(s){var e=document.getElementById(s);if(e)e.style.display=s===id?"block":"none"});}
@@ -305,7 +305,7 @@ function enviar(){
   });
   if(missing.length){
     missing[0].scrollIntoView({behavior:"smooth",block:"center"});
-    alert("Hay +missing.length+' pregunta'+(missing.length>1?"s":"")+' obligatoria'+(missing.length>1?"s":"")+' sin responder (marcadas con *).");
+    alert("Hay " + missing.length + " pregunta(s) obligatoria(s) sin responder. Están marcadas con * en rojo.");
     return;
   }
   if(!confirm("¿Enviar la actividad? No se puede modificar después."))return;
