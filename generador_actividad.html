@@ -399,16 +399,50 @@ input[type=file]{display:none}
       <button class="btn btn-primary" style="font-size:14px;padding:11px 22px" onclick="downloadHTML()">⬇ Descargar actividad HTML</button>
     </div>
 
-    <div class="dl-grid">
-      <div class="callout info" style="margin:0">
-        <strong>Opción A — GitHub Pages</strong>
-        <span style="font-size:12px;display:block;margin-top:2px">Subir el archivo al repositorio y activar GitHub Pages en Configuración → Pages.</span>
+    <div style="display:flex;flex-direction:column;gap:10px;margin:20px 0">
+
+      <!-- Opción A — CREA -->
+      <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <button onclick="toggleOpt('optA')" style="width:100%;background:var(--card);border:none;padding:14px 18px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--serif);color:var(--text)">
+          <span><strong style="color:var(--acc)">Opción A — CREA</strong> <span style="font-size:13px;color:var(--muted);margin-left:8px">Comprimir el HTML en un .zip y cargarlo en Recursos.</span></span>
+          <span id="optA-ico" style="font-size:18px;color:var(--muted);transition:transform .2s">▸</span>
+        </button>
+        <div id="optA" style="display:none;padding:16px 18px 18px;border-top:1px solid var(--border);background:var(--panel)">
+          <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--text)">
+            <li><strong>Comprimir el HTML en un .zip</strong><br>Hacer clic derecho sobre el archivo HTML descargado → <strong>Comprimir / Enviar a → Carpeta comprimida</strong>. El .zip debe contener solo ese archivo.</li>
+            <li><strong>Subir a CREA como Paquete de contenido web</strong><br>En el curso de CREA: <strong>Recursos → Agregar recurso → Paquete de contenido web</strong>. Seleccionar el .zip y guardar.</li>
+            <li><strong>Compartir el recurso con los alumnos</strong><br>Los alumnos acceden desde la plataforma. CREA sirve el archivo desde su servidor, por lo que el envío a la planilla funciona correctamente.</li>
+          </ol>
+        </div>
       </div>
-      <div class="callout info" style="margin:0">
-        <strong>Opción B — CREA</strong>
-        <span style="font-size:12px;display:block;margin-top:2px">Comprimir el HTML en un .zip y cargarlo en Recursos como <em>Paquete de contenido web</em>.</span>
+
+      <!-- Opción B — GitHub Pages -->
+      <div style="border:1px solid var(--border);border-radius:10px;overflow:hidden">
+        <button onclick="toggleOpt('optB')" style="width:100%;background:var(--card);border:none;padding:14px 18px;text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--serif);color:var(--text)">
+          <span><strong style="color:var(--acc)">Opción B — GitHub Pages</strong> <span style="font-size:13px;color:var(--muted);margin-left:8px">URL pública y gratuita. Recomendado si ya se usa.</span></span>
+          <span id="optB-ico" style="font-size:18px;color:var(--muted);transition:transform .2s">▸</span>
+        </button>
+        <div id="optB" style="display:none;padding:16px 18px 18px;border-top:1px solid var(--border);background:var(--panel)">
+          <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--text)">
+            <li><strong>Crear o usar un repositorio</strong><br>En <a href="https://github.com" target="_blank" rel="noopener">github.com</a>: <strong>New repository</strong>. Darle un nombre relacionado con la actividad (ej. <em>ActividadConjuntos</em>). Dejarlo público.</li>
+            <li><strong>Activar GitHub Pages</strong><br>En el repositorio: <strong>Settings → Pages → Branch: main → Save</strong>. GitHub Pages queda habilitado para ese repositorio.</li>
+            <li><strong>Subir el archivo HTML</strong><br><strong>Add file → Upload files</strong> → subir el archivo descargado → <strong>Commit changes</strong>.</li>
+            <li><strong>Obtener y compartir la URL</strong><br>La URL tiene el formato <code>https://USUARIO.github.io/REPO/actividad.html</code>. Compartirla por Classroom, correo o cualquier otro medio. Los alumnos la abren desde cualquier dispositivo.</li>
+          </ol>
+        </div>
       </div>
+
     </div>
+
+    <script>
+    function toggleOpt(id){
+      var el=document.getElementById(id);
+      var ico=document.getElementById(id+'-ico');
+      var open=el.style.display==='block';
+      el.style.display=open?'none':'block';
+      ico.style.transform=open?'':'rotate(90deg)';
+    }
+    </script>
 
     <div class="step-nav">
       <button class="btn btn-sec" onclick="goStep(3)">← Planilla</button>
