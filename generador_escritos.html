@@ -47,6 +47,42 @@ body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height
 .field .hint{font-size:13px;color:var(--muted);margin-top:4px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:480px){.grid-2{grid-template-columns:1fr}}
+@media(max-width:600px){
+  /* Header */
+  .gen-header{padding:10px 14px}
+  .gen-header-top{gap:8px;margin-bottom:6px}
+  .gen-logo{font-size:14px}
+  /* Wizard nav: mostrar solo número + nombre abreviado */
+  .wizard-nav{gap:3px;width:100%}
+  .wn-step{padding:4px 8px;font-size:12px;flex:1;justify-content:center;min-width:0}
+  .wn-step span.wn-label{display:none}
+  /* Main padding */
+  .gen-main{padding:18px 12px 70px}
+  .sec-title{font-size:17px}
+  .sec-sub{font-size:13px;margin-bottom:14px}
+  /* Buttons */
+  .btn{font-size:13px;padding:8px 13px}
+  .btn-sm{font-size:12px;padding:4px 9px}
+  .step-nav{flex-direction:column;gap:8px}
+  .step-nav .btn{justify-content:center;width:100%}
+  /* Q toolbar: botones más compactos */
+  .q-toolbar{gap:5px;padding:10px}
+  .q-toolbar .btn{font-size:12px;padding:6px 9px}
+  /* TF row: apilar en móvil (para tfse con 3 opciones) */
+  .tf-row{flex-direction:column;gap:6px}
+  .tf-opt{font-size:13px;padding:8px 12px}
+  /* Pair row */
+  .pair-row{grid-template-columns:1fr 14px 1fr 24px;gap:4px}
+  /* Inst list */
+  .inst-list li{font-size:13px;padding:9px 12px 9px 38px}
+  /* Download grid */
+  .dl-grid{grid-template-columns:1fr}
+  /* Callouts */
+  .callout{font-size:13px;padding:11px 13px}
+  /* Fields */
+  .field input[type=text],.field input[type=number],.field textarea,.field select{font-size:14px}
+  .inp-inline,.enunciado-ta{font-size:14px}
+}
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 17px;border-radius:6px;font-family:var(--serif);font-size:15px;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;text-decoration:none}
@@ -150,10 +186,10 @@ input[type=file]{display:none}
   <div class="gen-header-top">
     <p class="gen-logo">⚙ Generador de Actividades Digitales</p>
     <nav class="wizard-nav">
-      <div class="wn-step active" onclick="goStep(1)"><span class="wn-num">1</span> Configuración</div>
-      <div class="wn-step" onclick="goStep(2)"><span class="wn-num">2</span> Preguntas</div>
-      <div class="wn-step" onclick="goStep(3)"><span class="wn-num">3</span> Planilla</div>
-      <div class="wn-step" onclick="goStep(4)"><span class="wn-num">4</span> Descargar</div>
+      <div class="wn-step active" onclick="goStep(1)"><span class="wn-num">1</span><span class="wn-label"> Configuración</span></div>
+      <div class="wn-step" onclick="goStep(2)"><span class="wn-num">2</span><span class="wn-label"> Preguntas</span></div>
+      <div class="wn-step" onclick="goStep(3)"><span class="wn-num">3</span><span class="wn-label"> Planilla</span></div>
+      <div class="wn-step" onclick="goStep(4)"><span class="wn-num">4</span><span class="wn-label"> Descargar</span></div>
     </nav>
   </div>
 </header>
