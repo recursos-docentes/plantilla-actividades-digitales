@@ -3,714 +3,735 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cómo armar una actividad digital — Guía v2 (con Generador)</title>
+<title>Plantilla Actividades Digitales — Guía de uso</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f4f6f9;
-  --panel:#ffffff;
-  --panel2:#f0f3f8;
-  --border:#dde2ea;
-  --text:#1a2030;
-  --muted:#6b7a95;
-  --acc:#3b5bdb;
-  --acc-light:#e8ecfd;
-  --acc-border:#b0bef8;
-  --green:#2f9e44;
-  --green-bg:#ebfbee;
-  --amber:#e67700;
-  --amber-bg:#fff3bf;
-  --red:#c92a2a;
-  --red-bg:#fff5f5;
-  --radius:10px;
-  --shadow:0 2px 12px rgba(0,0,0,.08);
-}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh}
-a{color:var(--acc);text-decoration:none}
-a:hover{text-decoration:underline}
-header{background:linear-gradient(135deg,#1e3a8a 0%,#3b5bdb 100%);color:#fff;padding:36px 24px 32px;text-align:center}
-.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-bottom:8px}
-h1{font-size:clamp(22px,4vw,32px);font-weight:700;line-height:1.2;margin-bottom:10px}
-.tagline{font-size:14px;opacity:.85;max-width:620px;margin:0 auto}
-.tabs{display:flex;flex-wrap:wrap;gap:4px;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
-.tab-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid transparent;border-radius:6px;background:transparent;cursor:pointer;font-size:13px;font-family:inherit;color:var(--muted);font-weight:500;transition:all .15s}
-.tab-btn:hover{background:var(--acc-light);color:var(--acc)}
-.tab-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
-.tab-btn .num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.25);font-size:11px;font-weight:700}
-.tab-btn:not(.active) .num{background:var(--border);color:var(--muted)}
-.panel{display:none;max-width:820px;margin:0 auto;padding:32px 24px 40px}
-.panel.active{display:block}
-h2{font-size:22px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:10px}
-h2 .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:var(--acc);color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
-.sub{color:var(--muted);font-size:14px;margin-bottom:22px;margin-top:2px}
-h3{font-size:16px;font-weight:600;margin:24px 0 10px;color:var(--text)}
-p{margin-bottom:12px}
-ul,ol{padding-left:22px;margin-bottom:12px}
-li{margin-bottom:4px}
-table{width:100%;border-collapse:collapse;margin:16px 0 20px;font-size:14px}
-th{background:var(--acc-light);color:var(--acc);font-weight:600;padding:10px 14px;text-align:left;border:1px solid var(--acc-border)}
-td{padding:10px 14px;border:1px solid var(--border);vertical-align:top}
-tr:nth-child(even) td{background:var(--panel2)}
-code{font-family:'JetBrains Mono',monospace;font-size:12.5px;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:1px 5px}
-pre{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
-.callout{border-radius:var(--radius);padding:14px 16px;margin:18px 0;font-size:14px;line-height:1.55}
-.callout .tag{display:inline-block;font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;padding:2px 8px;border-radius:20px}
-.callout.tip{background:var(--acc-light);border-left:4px solid var(--acc)}
-.callout.tip .tag{background:var(--acc);color:#fff}
-.callout.warn{background:var(--amber-bg);border-left:4px solid var(--amber)}
-.callout.warn .tag{background:var(--amber);color:#fff}
-.callout.info{background:var(--green-bg);border-left:4px solid var(--green)}
-.callout.info .tag{background:var(--green);color:#fff}
-.callout.danger{background:var(--red-bg);border-left:4px solid var(--red)}
-.callout.danger .tag{background:var(--red);color:#fff}
-.steps{display:flex;flex-direction:column;gap:0}
-.step{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
-.step:last-child{border-bottom:none}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px}
-.step-body{flex:1}
-.step-body strong{display:block;margin-bottom:4px;font-size:15px}
-.step-body p{margin-bottom:0;font-size:14px;color:var(--muted)}
-.filebox{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:14px 0 18px}
-.filebox .bar{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:var(--panel2);border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--muted)}
-.filebox pre{padding:14px 16px;background:var(--panel);font-size:12px}
-.copybtn{padding:4px 12px;border:1px solid var(--border);border-radius:5px;background:var(--panel);cursor:pointer;font-size:12px;font-family:inherit;color:var(--muted);transition:all .15s}
-.copybtn:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
-.cta{background:var(--acc-light);border:1px solid var(--acc-border);border-radius:var(--radius);padding:20px 22px;margin:24px 0;text-align:center}
-.btn{display:inline-block;background:var(--acc);color:#fff!important;padding:10px 22px;border-radius:7px;font-weight:600;font-size:14px;text-decoration:none;transition:background .15s}
-.btn:hover{background:#2f4abf;text-decoration:none}
-.panel-nav{display:flex;justify-content:space-between;margin-top:32px;padding-top:20px;border-top:1px solid var(--border)}
-.panel-nav button{padding:9px 20px;border:1px solid var(--border);border-radius:7px;background:var(--panel);cursor:pointer;font-size:14px;font-family:inherit;color:var(--muted);font-weight:500;transition:all .15s}
-.panel-nav button:hover{background:var(--acc);color:#fff;border-color:var(--acc)}
-.arch-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 20px}
-.arch-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
-.arch-card .arch-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
-.arch-card .arch-name{font-size:15px;font-weight:600;color:var(--acc);margin-bottom:4px}
-.arch-card p{font-size:13px;color:var(--muted);margin:0}
-dl{margin:12px 0}
-dt{font-weight:600;margin-top:16px;color:var(--text)}
-dd{margin-left:0;color:var(--muted);font-size:14px;margin-top:3px}
-footer{background:linear-gradient(135deg,#1e3a8a 0%,#3b5bdb 100%);color:rgba(255,255,255,.75);text-align:center;padding:22px 16px;font-size:13px;margin-top:40px}
-footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
-footer span{display:inline-block;margin:0 6px}
-@media(max-width:600px){
-  .arch-grid{grid-template-columns:1fr}
-  .tabs{gap:3px}
-  .tab-btn{font-size:12px;padding:6px 10px}
-  .panel{padding:20px 14px 32px}
-}
+  :root {
+    --acc: #1e3a8a;
+    --acc2: #3b5bdb;
+    --acc-bg: #e8ecfd;
+    --acc-border: #b0bef8;
+    --bg: #f0ece2;
+    --card: #fffdf6;
+    --card2: #f5f1e8;
+    --border: #d9cdb7;
+    --text: #2c2117;
+    --muted: #7a6e5a;
+    --warn: #9b2335;
+    --warn-bg: #fdf0f2;
+    --warn-border: #e8b4bc;
+    --info: #1e3a8a;
+    --info-bg: #e8ecfd;
+    --info-border: #b0bef8;
+    --ok: #2d6a4f;
+    --ok-bg: #eafaf4;
+    --ok-border: #a3d9b8;
+    --serif: 'Lora', Georgia, serif;
+    --radius: 8px;
+    --shadow: 0 2px 10px rgba(0,0,0,.07);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--serif); background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.65; }
+  a { color: var(--acc2); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ---- Header ---- */
+  .site-header {
+    background: var(--acc);
+    color: #fff;
+    padding: 36px 24px 28px;
+    text-align: center;
+  }
+  .site-header h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; }
+  .site-header p { opacity: .85; font-size: .95rem; }
+  .badge { display: inline-block; background: rgba(255,255,255,.22); border-radius: 20px; padding: 2px 12px; font-size: .8rem; margin-top: 10px; }
+
+  /* ---- Tabs ---- */
+  .tabs-wrap { background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
+  .tabs { display: flex; overflow-x: auto; scrollbar-width: none; max-width: 960px; margin: 0 auto; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 13px 16px;
+    border: none;
+    background: none;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all .15s;
+    white-space: nowrap;
+    font-family: var(--serif);
+  }
+  .tab-btn:hover { color: var(--acc); }
+  .tab-btn.active { color: var(--acc); border-bottom-color: var(--acc); }
+
+  /* ---- Content ---- */
+  .content { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 6px; color: var(--acc); }
+  h3 { font-size: 1rem; font-weight: 700; margin: 22px 0 8px; color: var(--text); }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 22px; margin-bottom: 14px; }
+  li { margin-bottom: 5px; }
+  strong { font-weight: 700; }
+  code { font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; background: var(--acc-bg); color: var(--acc); border: 1px solid var(--acc-border); padding: 1px 6px; border-radius: 4px; font-size: .88em; }
+
+  .lead { font-size: 1rem; color: var(--muted); margin-bottom: 24px; }
+
+  /* ---- Steps ---- */
+  .steps { display: flex; flex-direction: column; gap: 0; margin: 20px 0; }
+  .step { display: flex; gap: 18px; position: relative; }
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 44px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--acc), transparent);
+    opacity: .25;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--acc);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    margin-top: 2px;
+  }
+  .step-body { flex: 1; padding-bottom: 24px; }
+  .step-body h3 { margin-top: 0; font-size: 1rem; color: var(--acc); }
+
+  /* ---- Cards / callouts ---- */
+  .callout { border-radius: var(--radius); padding: 14px 18px; margin: 16px 0; font-size: .92rem; }
+  .callout.info { background: var(--info-bg); border: 1px solid var(--info-border); color: var(--info); }
+  .callout.warn { background: var(--warn-bg); border: 1px solid var(--warn-border); color: var(--warn); }
+  .callout.ok { background: var(--ok-bg); border: 1px solid var(--ok-border); color: var(--ok); }
+  .callout strong { font-weight: 700; display: block; margin-bottom: 3px; }
+
+  /* ---- Tables ---- */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th { background: var(--acc-bg); padding: 10px 14px; text-align: left; font-weight: 700; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--acc); border-bottom: 1px solid var(--acc-border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--card2); }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: .75rem; font-weight: 600; }
+  .tag.si { background: #eafaf4; color: #2d6a4f; border: 1px solid #a3d9b8; }
+  .tag.no { background: #fdf0f2; color: #9b2335; border: 1px solid #e8b4bc; }
+  .tag.parcial { background: #fef9c3; color: #92400e; border: 1px solid #fcd34d; }
+
+  /* ---- Code block ---- */
+  .code-block {
+    background: #0f1729;
+    color: #c9d1e8;
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    font-size: .82rem;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 16px 0;
+    white-space: pre;
+    border: 1px solid var(--border);
+  }
+  .code-block .cm { color: #6b7080; }
+  .code-block .kw { color: #c792ea; }
+  .code-block .st { color: #c3e88d; }
+  .code-block .nm { color: #82aaff; }
+
+  /* ---- Diag / arch ---- */
+  .arch-grid { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: center; margin: 20px 0; }
+  .arch-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; box-shadow: var(--shadow); }
+  .arch-card .icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .arch-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: 4px; color: var(--acc); }
+  .arch-card p { font-size: .8rem; color: var(--muted); margin: 0; }
+  .arch-arrow { display: flex; align-items: center; justify-content: center; color: var(--acc2); font-size: 1.4rem; }
+
+  /* ---- Symbols preview ---- */
+  .sym-preview { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+  .sym-chip { background: var(--acc-bg); border: 1px solid var(--acc-border); border-radius: 6px; padding: 4px 10px; font-size: 1rem; color: var(--acc); }
+
+  /* ---- Glosario ---- */
+  .glos-item { border-bottom: 1px solid var(--border); padding: 16px 0; }
+  .glos-item:last-child { border-bottom: none; }
+  .glos-term { font-weight: 700; font-size: .95rem; margin-bottom: 4px; color: var(--acc); }
+  .glos-def { color: var(--muted); font-size: .9rem; }
+
+  /* ---- Responsive ---- */
+  @media (max-width: 600px) {
+    .site-header h1 { font-size: 1.4rem; }
+    .tab-btn { padding: 10px 12px; font-size: .8rem; }
+    .arch-arrow { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="eyebrow">Recursos docentes</div>
-  <h1>Cómo armar una actividad digital<br>paso a paso</h1>
-  <p class="tagline">Sin editar código a mano: el Generador produce el HTML de la actividad y el Code.gs listos para descargar y publicar.</p>
+<header class="site-header">
+  <h1>🖥️ Generador de Actividades Interactivas</h1>
+  <p>Actividades con corrección automática vía Google Sheets — Recursos Docentes</p>
 </header>
 
-<div class="tabs" role="tablist">
-  <button class="tab-btn" data-tab="arquitectura"><span class="num">1</span>Arquitectura</button>
-  <button class="tab-btn" data-tab="generador"><span class="num">2</span>El Generador</button>
-  <button class="tab-btn" data-tab="preguntas"><span class="num">3</span>Cargar preguntas</button>
-  <button class="tab-btn" data-tab="planilla"><span class="num">4</span>Planilla y Code.gs</button>
-  <button class="tab-btn" data-tab="webapp"><span class="num">5</span>Publicar Web App</button>
-  <button class="tab-btn" data-tab="url"><span class="num">6</span>Pegar la URL</button>
-  <button class="tab-btn" data-tab="descargar"><span class="num">7</span>Generar la actividad</button>
-  <button class="tab-btn" data-tab="github"><span class="num">8</span>GitHub Pages</button>
-  <button class="tab-btn" data-tab="glosario"><span class="num">9</span>Glosario</button>
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('arquitectura',this)">Arquitectura</button>
+    <button class="tab-btn" onclick="showTab('generador',this)">El Generador</button>
+    <button class="tab-btn" onclick="showTab('preguntas',this)">Tipos de pregunta</button>
+    <button class="tab-btn" onclick="showTab('planilla',this)">Planilla y Code.gs</button>
+    <button class="tab-btn" onclick="showTab('publicar',this)">Publicar Web App</button>
+    <button class="tab-btn" onclick="showTab('url',this)">Pegar la URL</button>
+    <button class="tab-btn" onclick="showTab('actividad',this)">La actividad</button>
+    <button class="tab-btn" onclick="showTab('ghpages',this)">GitHub Pages</button>
+    <button class="tab-btn" onclick="showTab('glosario',this)">Glosario</button>
+  </div>
 </div>
 
-<!-- ═══════════════════════════════════  1 ══ -->
-<section class="panel" id="panel-arquitectura">
-  <h2><span class="n">1</span>¿Cómo funciona el sistema?</h2>
-  <p class="sub">Dos archivos que trabajan juntos: uno que corre en el navegador del alumno, otro que guarda las respuestas en Google Sheets.</p>
+<div class="content">
 
-  <div class="arch-grid">
-    <div class="arch-card">
-      <div class="arch-label">Archivo del alumno</div>
-      <div class="arch-name">actividad.html</div>
-      <p>Se publica en la web (GitHub Pages u otro servicio). El alumno lo abre en el navegador, responde en pantalla completa y envía.</p>
-    </div>
-    <div class="arch-card">
-      <div class="arch-label">Script del docente</div>
-      <div class="arch-name">Code.gs</div>
-      <p>Se pega en Google Apps Script, se publica como Web App. Recibe las respuestas y las guarda en una Google Sheet.</p>
-    </div>
-    <div class="arch-card">
-      <div class="arch-label">Herramienta de armado</div>
-      <div class="arch-name">Generador</div>
-      <p>Un archivo HTML que corre localmente. Permite armar la actividad de forma visual y descarga los dos archivos anteriores listos para usar.</p>
-    </div>
-    <div class="arch-card">
-      <div class="arch-label">Almacenamiento</div>
-      <div class="arch-name">Google Sheets</div>
-      <p>Cada envío agrega una fila nueva con marca de tiempo, nombre del alumno, respuestas y corrección automática.</p>
-    </div>
-  </div>
+  <!-- ===================== ARQUITECTURA ===================== -->
+  <div class="tab-panel active" id="tab-arquitectura">
+    <h2>¿Cómo funciona?</h2>
+    <p class="lead">El sistema tiene tres piezas que trabajan juntas:</p>
 
-  <table>
-    <tr><th>Archivo</th><th>Dónde vive</th></tr>
-    <tr>
-      <td><code>actividad.html</code></td>
-      <td>GitHub Pages (o cualquier servidor web)</td>
-    </tr>
-    <tr>
-      <td><code>Code.gs</code></td>
-      <td>Google Apps Script (dentro de Google Drive)</td>
-    </tr>
-    <tr>
-      <td>Google Sheet</td>
-      <td>Google Drive</td>
-    </tr>
-    <tr>
-      <td>Generador</td>
-      <td>Tu computadora (o en la web — ver pestaña 2)</td>
-    </tr>
-  </table>
-
-  <div class="callout tip">
-    <span class="tag">Flujo general</span>
-    Abrir el Generador → cargar las preguntas → descargar Code.gs → crear planilla y publicar Web App → copiar la URL → pegarla en el Generador → descargar la actividad.html → publicarla en la web (GitHub Pages u otro servicio).
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  2 ══ -->
-<section class="panel" id="panel-generador">
-  <h2><span class="n">2</span>El Generador</h2>
-  <p class="sub">Un archivo HTML que corre en el navegador: no requiere instalar nada.</p>
-
-  <div class="cta" style="margin-bottom:18px">
-    <a class="btn" href="https://recursos-docentes.github.io/plantilla-actividades-digitales/generador_escritos.html" target="_blank" rel="noopener">Abrir el Generador ↗</a>
-    <p style="margin:10px 0 0;font-size:13px;color:var(--muted)">O descargarlo desde <a href="https://github.com/recursos-docentes/plantilla-actividades-digitales/blob/main/generador_escritos.html" target="_blank" rel="noopener">GitHub</a> para usar sin conexión.</p>
-  </div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Abrir el Generador</strong>
-        <p>Hacer clic en el botón de arriba para abrirlo directamente en el navegador. También se puede descargar y abrir como archivo local — funciona igual en los dos casos.</p>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <div class="icon">⚙️</div>
+        <h4>generador_escritos.html</h4>
+        <p>Asistente de 4 pasos que produce el HTML de la actividad y el Code.gs</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-card">
+        <div class="icon">📄</div>
+        <h4>actividad.html</h4>
+        <p>Archivo generado: el estudiante lo abre en el navegador y responde</p>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-card">
+        <div class="icon">📊</div>
+        <h4>Google Sheets + Apps Script</h4>
+        <p>Recibe las respuestas, registra puntajes y salidas de pantalla</p>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Completar la sección Configuración</strong>
-        <p>Título de la actividad, materia, instrucción inicial, cabecera de sección, tiempo en minutos y nombre del archivo que se va a descargar. La clave localStorage y la URL del Web App se completan más adelante.</p>
+
+    <h3>Flujo completo</h3>
+    <ol>
+      <li>La docente usa <strong>generador_escritos.html</strong> para configurar la actividad y descargar el HTML final.</li>
+      <li>Sube ese HTML a <strong>GitHub Pages</strong> o CREA para que tenga una URL pública.</li>
+      <li>Configura el <strong>Code.gs</strong> en un Google Apps Script vinculado a una planilla nueva y despliega la Web App.</li>
+      <li>Pega la URL de la Web App en el generador antes de descargar el HTML final (paso 3 del asistente).</li>
+      <li>Los estudiantes abren la URL de la actividad, ingresan su nombre y responden en <strong>pantalla completa</strong>.</li>
+      <li>Al enviar, las respuestas llegan a la planilla con corrección automática y el estudiante ve el resultado al instante.</li>
+    </ol>
+
+    <div class="callout info">
+      <strong>Sin servidor propio.</strong> Todo corre en el navegador del estudiante. Google Apps Script actúa como backend gratuito. El HTML generado es completamente autocontenido.
+    </div>
+
+    <h3>Tecnologías</h3>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Componente</th><th>Tecnología</th><th>Para qué</th></tr>
+        <tr><td>Envío de respuestas</td><td>JSONP</td><td>Permite llamadas cross-origin sin servidor propio</td></tr>
+        <tr><td>Doble envío</td><td><code>localStorage</code></td><td>Bloquea reenvío si la actividad ya fue enviada</td></tr>
+        <tr><td>Pantalla completa</td><td>Fullscreen API</td><td>Fuerza pantalla completa; detecta y registra salidas</td></tr>
+        <tr><td>Backend</td><td>Google Apps Script</td><td>Recibe datos vía GET, escribe en Google Sheets</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===================== GENERADOR ===================== -->
+  <div class="tab-panel" id="tab-generador">
+    <h2>El Generador — asistente de 4 pasos</h2>
+    <p class="lead">Abrir <strong>generador_escritos.html</strong> en el navegador (doble clic o arrastrar). El asistente guía por 4 pasos y produce el HTML listo para publicar.</p>
+
+    <div class="callout warn">
+      <strong>⚠ Antes de aplicar la actividad con los estudiantes</strong>
+      Revisar todas las preguntas y sus respuestas correctas, especialmente si se usó IA para generar el JSON. Probar la actividad completa (desde el ingreso del nombre hasta el envío) para asegurarse de que todo quedó bien configurado y que las respuestas se registran correctamente en la planilla.
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Configuración</h3>
+          <ul>
+            <li><strong>Título</strong> de la actividad (visible para el estudiante).</li>
+            <li><strong>Materia</strong> (aparece en el encabezado).</li>
+            <li><strong>Instrucción inicial</strong>: texto que el estudiante lee antes de comenzar.</li>
+            <li><strong>Tiempo límite</strong> en minutos (0 = sin límite). El cronómetro se inicia al entrar en pantalla completa.</li>
+            <li><strong>Clave de sesión</strong>: identificador único en <code>localStorage</code> que impide reenvíos. Usar una clave distinta para cada actividad, por ejemplo <code>conjuntos_2026_g1</code>.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Preguntas</h3>
+          <p>Agregar preguntas con los botones de tipo o importar un JSON. Ver la pestaña <strong>Tipos de pregunta</strong> para los formatos disponibles.</p>
+          <p>La <strong>barra de símbolos científicos</strong> (🔬) permite insertar superíndices, subíndices, letras griegas y operadores de química/física en cualquier enunciado o alternativa — hacer clic primero en el campo de texto y luego en el símbolo.</p>
+          <p>Cada pregunta tiene un campo de puntaje; el total se calcula automáticamente.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Planilla</h3>
+          <p>Conectar la actividad con Google Sheets:</p>
+          <ol>
+            <li>Descargar el <strong>Code.gs</strong> (botón incluido en este paso).</li>
+            <li>Abrir <strong>Google Drive</strong> y crear una planilla nueva.
+              <span style="color:var(--warn);font-weight:600"> ⚠ Si se tienen varias cuentas de Google, abrir Drive en una ventana de incógnito (Ctrl+Shift+N); de lo contrario Apps Script puede no abrirse con la cuenta correcta.</span>
+            </li>
+            <li>En la planilla: <strong>Extensiones → Apps Script</strong>.</li>
+            <li>Borrar el contenido del editor, pegar el código del <code>Code.gs</code> y guardar (Ctrl+S).</li>
+            <li><strong>Implementar → Nueva implementación</strong> → Tipo: Aplicación web → Ejecutar como: yo → Acceso: Cualquier usuario → Implementar.</li>
+            <li>Copiar la URL de la aplicación web y pegarla en el campo de este paso.</li>
+          </ol>
+          <div class="callout warn">
+            <strong>Arranque en frío:</strong> la primera ejecución del día puede tardar hasta 30 segundos. Abrir la URL de la Web App en el navegador 2–3 minutos antes de la clase para pre-calentar el servidor.
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Descargar</h3>
+          <p>Vista previa de la actividad y botón para descargar el HTML final con todo incluido.</p>
+          <p>Hacer clic en <strong>⬇ Descargar actividad HTML</strong>. El navegador guarda el archivo en la carpeta de descargas. Ese archivo es el que se publica para los estudiantes.</p>
+
+          <h3 style="margin-top:16px">Opción A — GitHub Pages</h3>
+          <ol>
+            <li>Ir a <a href="https://github.com" target="_blank">github.com</a> e iniciar sesión.</li>
+            <li>Abrir el repositorio o crear uno nuevo (público).</li>
+            <li>Hacer clic en <strong>Add file → Upload files</strong>.</li>
+            <li>Arrastrar el HTML descargado y hacer clic en <strong>Commit changes</strong>.</li>
+            <li>En el repositorio: <strong>Settings → Pages</strong> → Source: <em>Deploy from a branch</em> → rama <em>main</em> → carpeta <em>/ (root)</em> → <strong>Save</strong>.</li>
+            <li>Esperar 1–2 minutos. La URL de la actividad será:<br>
+              <code>https://[usuario].github.io/[repositorio]/[archivo].html</code></li>
+          </ol>
+          <div class="callout ok" style="margin-top:10px">
+            Para actualizar: subir el HTML nuevo con el mismo nombre de archivo. La URL no cambia.
+          </div>
+
+          <h3 style="margin-top:20px">Opción B — CREA</h3>
+          <ol>
+            <li>Comprimir el HTML en un archivo <code>.zip</code> (clic derecho → Comprimir / Enviar a → Carpeta comprimida).</li>
+            <li>En CREA, ir a la sección <strong>Recursos</strong> del curso.</li>
+            <li>Agregar recurso → <strong>Paquete de contenido web</strong>.</li>
+            <li>Subir el <code>.zip</code> y publicar.</li>
+            <li>CREA genera una URL que los estudiantes pueden abrir directamente.</li>
+          </ol>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="callout ok">
+      <strong>El HTML es autocontenido.</strong> No depende de archivos externos. Se puede abrir directamente en cualquier navegador moderno.
+    </div>
+  </div>
+
+  <!-- ===================== PREGUNTAS ===================== -->
+  <div class="tab-panel" id="tab-preguntas">
+    <h2>Tipos de pregunta</h2>
+    <p class="lead">El generador soporta 7 tipos. Todos permiten asignar puntaje independiente.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <tr>
+          <th>Tipo</th><th>Código JSON</th><th>Descripción</th><th>Corrección</th>
+        </tr>
+        <tr>
+          <td><strong>Opción única</strong></td>
+          <td><code>single</code></td>
+          <td>Múltiple opción, una sola correcta. La alternativa correcta se indica con la letra: <code>"a"</code>, <code>"b"</code>, etc.</td>
+          <td><span class="tag si">Sí</span></td>
+        </tr>
+        <tr>
+          <td><strong>Múltiple respuesta</strong></td>
+          <td><code>multi</code></td>
+          <td>Múltiple opción, varias correctas. <code>correct</code> es un array: <code>["a","c"]</code>.</td>
+          <td><span class="tag si">Sí (todas o nada)</span></td>
+        </tr>
+        <tr>
+          <td><strong>V / F</strong></td>
+          <td><code>tf</code></td>
+          <td>Verdadero o Falso. <code>correct</code>: <code>"true"</code> o <code>"false"</code>.</td>
+          <td><span class="tag si">Sí</span></td>
+        </tr>
+        <tr>
+          <td><strong>V / F / Sin Evidencia</strong></td>
+          <td><code>tfse</code></td>
+          <td>Tres opciones: Verdadero, Falso o Sin Evidencia. <code>correct</code>: <code>"true"</code>, <code>"false"</code> o <code>"se"</code>. Útil para trabajar con argumentación y fuentes.</td>
+          <td><span class="tag si">Sí</span></td>
+        </tr>
+        <tr>
+          <td><strong>Abierta</strong></td>
+          <td><code>open</code></td>
+          <td>Respuesta libre en texto. La respuesta llega a la planilla para revisión manual.</td>
+          <td><span class="tag no">No</span></td>
+        </tr>
+        <tr>
+          <td><strong>Emparejar</strong></td>
+          <td><code>match</code></td>
+          <td>Relacionar columna izquierda con derecha. <code>pairs</code>: array de <code>{"left":"…","right":"…"}</code>.</td>
+          <td><span class="tag parcial">Parcial (por par)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Banco de palabras</strong></td>
+          <td><code>fill</code></td>
+          <td>Completar espacios eligiendo palabras de un banco. Las palabras faltantes se marcan con <code>[corchetes]</code> en el enunciado. Se pueden agregar distractores con <code>extraWords</code>.</td>
+          <td><span class="tag parcial">Parcial (por hueco)</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <h3>🔬 Barra de símbolos científicos</h3>
+    <p>El generador incluye una barra de símbolos para preguntas de física, química y matemáticas. Hacer clic en un enunciado o alternativa para activarlo, luego clic en el símbolo deseado:</p>
+    <div class="sym-preview">
+      <span class="sym-chip">x²→ x⁰ x¹ x² x³ x⁴ x⁵</span>
+      <span class="sym-chip">x₂→ x₀ x₁ x₂ x₃ x₄</span>
+      <span class="sym-chip">α β γ δ ε θ λ μ π σ ω Δ Σ Ω</span>
+      <span class="sym-chip">→ ⇌ ↑ ↓ ° ± × ÷ ≈ ≠ ≤ ≥ √ ∞</span>
+    </div>
+
+    <h3>Importar desde JSON</h3>
+    <p>En el paso 2, el botón <strong>Importar JSON</strong> permite cargar un array de preguntas de una vez. Formato:</p>
+    <div class="code-block">[
+  {<span class="nm">"type"</span>:<span class="st">"single"</span>, <span class="nm">"text"</span>:<span class="st">"¿Cuál es el símbolo del Oxígeno?"</span>,
+   <span class="nm">"opts"</span>:[<span class="st">"O"</span>,<span class="st">"Ox"</span>,<span class="st">"Og"</span>,<span class="st">"O₂"</span>], <span class="nm">"correct"</span>:<span class="st">"a"</span>, <span class="nm">"puntaje"</span>:1},
+
+  {<span class="nm">"type"</span>:<span class="st">"tf"</span>, <span class="nm">"text"</span>:<span class="st">"El agua hierve a 100°C a nivel del mar."</span>,
+   <span class="nm">"correct"</span>:<span class="st">"true"</span>, <span class="nm">"puntaje"</span>:1},
+
+  {<span class="nm">"type"</span>:<span class="st">"tfse"</span>, <span class="nm">"text"</span>:<span class="st">"Todos los metales son buenos conductores eléctricos."</span>,
+   <span class="nm">"correct"</span>:<span class="st">"se"</span>, <span class="nm">"puntaje"</span>:1},
+
+  {<span class="nm">"type"</span>:<span class="st">"multi"</span>, <span class="nm">"text"</span>:<span class="st">"¿Cuáles son gases nobles?"</span>,
+   <span class="nm">"opts"</span>:[<span class="st">"Helio"</span>,<span class="st">"Nitrógeno"</span>,<span class="st">"Argón"</span>,<span class="st">"Oxígeno"</span>],
+   <span class="nm">"correct"</span>:[<span class="st">"a"</span>,<span class="st">"c"</span>], <span class="nm">"puntaje"</span>:2},
+
+  {<span class="nm">"type"</span>:<span class="st">"match"</span>, <span class="nm">"text"</span>:<span class="st">"Relacionar elemento con símbolo"</span>,
+   <span class="nm">"pairs"</span>:[{<span class="nm">"left"</span>:<span class="st">"Sodio"</span>,<span class="nm">"right"</span>:<span class="st">"Na"</span>},{<span class="nm">"left"</span>:<span class="st">"Cloro"</span>,<span class="nm">"right"</span>:<span class="st">"Cl"</span>}],
+   <span class="nm">"puntaje"</span>:2},
+
+  {<span class="nm">"type"</span>:<span class="st">"fill"</span>, <span class="nm">"text"</span>:<span class="st">"El [hidrógeno] tiene número atómico [1]."</span>,
+   <span class="nm">"extraWords"</span>:<span class="st">"oxígeno,carbono"</span>, <span class="nm">"puntaje"</span>:2},
+
+  {<span class="nm">"type"</span>:<span class="st">"open"</span>, <span class="nm">"text"</span>:<span class="st">"Explicar el proceso de ósmosis."</span>,
+   <span class="nm">"puntaje"</span>:3}
+]</div>
+
+    <h3>Generar preguntas con IA</h3>
+    <p>Copiar el siguiente prompt en cualquier asistente de IA (Claude, ChatGPT, Gemini) para generar un JSON importable directamente en el generador:</p>
+    <div class="code-block">Generá un array JSON de preguntas para una actividad educativa.
+Cada pregunta debe ser un objeto con estos campos:
+
+- <span class="nm">type</span>: <span class="st">"single"</span> | <span class="st">"multi"</span> | <span class="st">"tf"</span> | <span class="st">"tfse"</span> | <span class="st">"open"</span> | <span class="st">"match"</span> | <span class="st">"fill"</span>
+- <span class="nm">text</span>: enunciado de la pregunta
+- <span class="nm">opts</span>: array de opciones (solo para single y multi)
+- <span class="nm">correct</span>: letra <span class="st">"a"/"b"</span>... (single), array [<span class="st">"a","c"</span>] (multi),
+           <span class="st">"true"/"false"</span> (tf), <span class="st">"true"/"false"/"se"</span> (tfse),
+           null (open, match, fill)
+- <span class="nm">pairs</span>: [{left, right}] (solo para match)
+- <span class="nm">extraWords</span>: palabras extra separadas por coma (solo para fill)
+- <span class="nm">puntaje</span>: número (1–5)
+
+Tema: [INDICAR EL TEMA]
+Cantidad: [N] preguntas
+Tipos a incluir: [INDICAR TIPOS]
+
+Responder SOLO con el JSON, sin explicaciones.</div>
+  </div>
+
+  <!-- ===================== PLANILLA ===================== -->
+  <div class="tab-panel" id="tab-planilla">
+    <h2>Planilla de respuestas y Code.gs</h2>
+    <p class="lead">El <strong>Code.gs</strong> se descarga desde el <strong>Paso 3</strong> del generador. Cada actividad genera su propio Code.gs con las respuestas correctas ya incluidas.</p>
+
+    <div class="callout warn">
+      <strong>⚠ Múltiples cuentas de Google:</strong> si el equipo tiene más de una cuenta de Google configurada, abrir Google Drive en una <strong>ventana de incógnito</strong> (Ctrl+Shift+N) antes de crear la planilla. De lo contrario, Apps Script puede abrirse con la cuenta incorrecta y fallar al implementar.
+    </div>
+
+    <h3>Pasos para configurar la planilla</h3>
+    <ol>
+      <li>En el <strong>Paso 3</strong> del generador, descargar el <code>Code.gs</code>.</li>
+      <li>Abrir <strong>Google Drive</strong> y crear una planilla nueva (Ctrl+Shift+N si hay varias cuentas).</li>
+      <li>En la planilla: <strong>Extensiones → Apps Script</strong>.</li>
+      <li>En el editor de Apps Script, borrar todo el contenido existente.</li>
+      <li>Pegar el contenido del <code>Code.gs</code> descargado y guardar (Ctrl+S).</li>
+      <li>Hacer clic en <strong>Implementar → Nueva implementación</strong>.</li>
+      <li>Configurar: Tipo → <em>Aplicación web</em> / Ejecutar como → <em>Yo</em> / Acceso → <em>Cualquier usuario</em>.</li>
+      <li>Hacer clic en <strong>Implementar</strong> y copiar la URL generada.</li>
+      <li>Volver al generador y pegar esa URL en el campo del <strong>Paso 3</strong>.</li>
+    </ol>
+
+    <div class="callout info">
+      <strong>Primera ejecución del día (arranque en frío):</strong> Google Apps Script puede tardar hasta 30 segundos en responder la primera vez. Abrir la URL de la Web App directamente en el navegador 2–3 minutos antes de iniciar la clase para evitar demoras.
+    </div>
+
+    <h3>Columnas generadas en la planilla</h3>
+    <div class="tbl-wrap">
+      <table>
+        <tr><th>Columna</th><th>Contenido</th></tr>
+        <tr><td><strong>Timestamp</strong></td><td>Fecha y hora exacta del envío</td></tr>
+        <tr><td><strong>Nombre</strong></td><td>Nombre ingresado por el estudiante</td></tr>
+        <tr><td><strong>q1, q2, q3…</strong></td><td>Respuesta enviada para cada pregunta</td></tr>
+        <tr><td><strong>Correctas</strong></td><td>Cantidad de preguntas con corrección automática respondidas correctamente</td></tr>
+        <tr><td><strong>Total</strong></td><td>Total de preguntas con corrección automática</td></tr>
+        <tr><td><strong>Puntos obtenidos</strong></td><td>Puntaje conseguido (suma de puntajes de preguntas correctas)</td></tr>
+        <tr><td><strong>Puntos totales</strong></td><td>Puntaje máximo posible de la actividad</td></tr>
+        <tr><td><strong>Salidas pantalla</strong></td><td>Cantidad de veces que el estudiante salió de pantalla completa durante la actividad</td></tr>
+      </table>
+    </div>
+
+    <div class="callout ok">
+      <strong>Puntaje en columnas separadas.</strong> Los puntos obtenidos y los puntos totales llegan en columnas independientes, lo que facilita calcular la nota con fórmulas propias en la planilla.
+    </div>
+  </div>
+
+  <!-- ===================== PUBLICAR ===================== -->
+  <div class="tab-panel" id="tab-publicar">
+    <h2>Publicar la Web App</h2>
+    <p class="lead">Este paso se realiza una sola vez por actividad (o cuando se cambian las preguntas/puntajes).</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Abrir el editor de Apps Script</h3>
+          <p>En la planilla de Google Sheets: <strong>Extensiones → Apps Script</strong>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Pegar el Code.gs</h3>
+          <p>Borrar todo el contenido existente y pegar el código descargado desde el generador. Guardar con Ctrl+S.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Nueva implementación</h3>
+          <p><strong>Implementar → Nueva implementación</strong></p>
+          <ul>
+            <li>Tipo: <strong>Aplicación web</strong></li>
+            <li>Ejecutar como: <strong>Yo (mi cuenta)</strong></li>
+            <li>Quién tiene acceso: <strong>Cualquier usuario</strong></li>
+          </ul>
+          <p>Hacer clic en <strong>Implementar</strong> y autorizar los permisos si se solicitan.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Copiar la URL</h3>
+          <p>Copiar la URL de la aplicación web (comienza con <code>https://script.google.com/macros/s/…/exec</code>) y pegarla en el campo del <strong>Paso 3</strong> del generador.</p>
+        </div>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Cargar las preguntas</strong>
-        <p>Usar los botones <strong>+ Opción múltiple</strong>, <strong>+ V / F</strong>, <strong>+ Abierta</strong>, <strong>+ Emparejar</strong> y <strong>+ Banco de palabras</strong>. Cada pregunta se edita, reordena y elimina desde su propio panel desplegable.</p>
-      </div>
+
+    <div class="callout warn">
+      <strong>Actualizaciones:</strong> si se modifica el Code.gs (por cambiar preguntas o puntajes), usar <strong>Implementar → Administrar implementaciones → editar</strong> la implementación existente — no crear una nueva, para mantener la misma URL.
     </div>
   </div>
 
-  <div class="callout tip">
-    <span class="tag">Cada vez que se usa</span>
-    El Generador trae preguntas de ejemplo para mostrar los tipos disponibles. Para empezar una actividad nueva, basta con cambiar la configuración y eliminar o reemplazar esas preguntas.
-  </div>
+  <!-- ===================== URL ===================== -->
+  <div class="tab-panel" id="tab-url">
+    <h2>Pegar la URL de la Web App</h2>
+    <p class="lead">La URL del Apps Script se ingresa en el <strong>Paso 3 — Planilla</strong> del generador, antes de descargar el HTML final.</p>
 
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
+    <h3>¿Dónde pegarla?</h3>
+    <p>En el campo que aparece después de los pasos de configuración del Paso 3, con la etiqueta <strong>"URL de la Web App"</strong>. Una vez pegada, el generador la incorpora directamente en el HTML de la actividad.</p>
 
-<!-- ═══════════════════════════════════  3 ══ -->
-<section class="panel" id="panel-preguntas">
-  <h2><span class="n">3</span>Cargar las preguntas</h2>
-  <p class="sub">Seis tipos disponibles, cada uno con su panel de edición.</p>
-
-  <table>
-    <tr><th>Tipo</th><th>Cuándo usarlo</th><th>Corrección</th></tr>
-    <tr>
-      <td><strong>Opción múltiple</strong></td>
-      <td>4 opciones, una sola correcta. Bueno para conceptos y definiciones.</td>
-      <td>Automática — se elige la letra correcta en el panel.</td>
-    </tr>
-    <tr>
-      <td><strong>Múltiple respuesta</strong></td>
-      <td>4 opciones donde pueden ser correctas una o varias. El alumno marca todas las que corresponden con casillas de verificación.</td>
-      <td>Automática (todo o nada) — se marcan en el panel las letras correctas; el alumno debe seleccionarlas todas y ninguna de las incorrectas para obtener el puntaje.</td>
-    </tr>
-    <tr>
-      <td><strong>V / F</strong></td>
-      <td>Afirmación que el alumno marca como verdadera o falsa.</td>
-      <td>Automática — se elige Verdadero o Falso en el panel.</td>
-    </tr>
-    <tr>
-      <td><strong>Abierta</strong></td>
-      <td>Desarrollo, demostración o justificación. El alumno escribe en un editor de texto. Se puede elegir si la barra de herramientas es completa (con símbolos matemáticos) o básica (solo negrita, cursiva y subrayado), según la materia.</td>
-      <td>Manual — el texto queda guardado en la planilla para corregir a mano. Por defecto se agrega como <em>opcional</em> con puntaje 0.</td>
-    </tr>
-    <tr>
-      <td><strong>Emparejar</strong></td>
-      <td>El alumno conecta elementos de una columna izquierda con los de una columna derecha. Ideal para relacionar conceptos, términos con definiciones, o elementos de conjuntos.</td>
-      <td>Automática con crédito parcial — se puntúa en proporción a los pares correctos (ej. 3/4 pares = 75% del puntaje).</td>
-    </tr>
-    <tr>
-      <td><strong>Banco de palabras</strong></td>
-      <td>Texto con espacios en blanco que el alumno completa eligiendo palabras de un banco. En el panel se escribe el texto con las respuestas entre corchetes: <code>[respuesta]</code>. Se pueden agregar palabras distractoras opcionales.</td>
-      <td>Automática con crédito parcial — se puntúa en proporción a los blancos completados correctamente.</td>
-    </tr>
-  </table>
-
-  <div class="callout info">
-    <span class="tag">Agregar una imagen a una pregunta</span>
-    Cada pregunta tiene un botón <strong>📷 Imagen</strong>. Al hacer clic se abre el selector de archivos; la imagen se convierte automáticamente a formato digital y queda embebida en el HTML generado, sin necesidad de subirla a ningún servidor. La actividad sigue siendo un único archivo autocontenido. Para quitarla, usar la <strong>✕</strong> que aparece junto a la miniatura.
-  </div>
-
-  <div class="callout tip">
-    <span class="tag">Generar preguntas con IA e importarlas de golpe</span>
-    El Generador incluye un botón <strong>↓ Importar desde JSON</strong> que carga todas las preguntas a la vez. En lugar de escribirlas una por una, se le pide a la IA que las genere directamente en el formato JSON esperado, se copia el bloque y se pega en el importador.
-  </div>
-
-  <h3>Cómo hacerlo</h3>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Pedir el JSON a la IA</strong>
-        <p>Usar este prompt (adaptando tema, curso y cantidad):</p>
-      </div>
+    <div class="callout warn">
+      <strong>Importante:</strong> si se olvida pegar la URL antes de descargar, el HTML generado no podrá enviar respuestas a la planilla. Si eso ocurre, volver al generador, pegar la URL e importar las preguntas (o usar la función de importar JSON) para no tener que reescribir todo.
     </div>
+
+    <h3>Verificar que funciona</h3>
+    <p>Abrir la URL de la Web App directamente en el navegador. Debe responder con algo como:</p>
+    <div class="code-block">{<span class="nm">"status"</span>:<span class="st">"ok"</span>}</div>
+    <p>Si responde así, la Web App está activa y lista para recibir envíos.</p>
+
+    <h3>¿Qué pasa si la URL cambia?</h3>
+    <p>Si se crea una implementación nueva (en vez de actualizar la existente), la URL cambia. En ese caso hay que volver a pegar la URL nueva en el generador y descargar el HTML de la actividad nuevamente.</p>
   </div>
 
-  <div class="filebox">
-    <div class="bar">
-      <span>Prompt para la IA</span>
-      <button class="copybtn" onclick="copyBox(this)">Copiar</button>
+  <!-- ===================== ACTIVIDAD ===================== -->
+  <div class="tab-panel" id="tab-actividad">
+    <h2>Lo que ve el estudiante</h2>
+    <p class="lead">La actividad generada es un archivo HTML autocontenido que el estudiante abre desde una URL.</p>
+
+    <h3>Flujo del estudiante</h3>
+    <ol>
+      <li>Abrir la URL de la actividad en el navegador.</li>
+      <li>Ingresar su nombre y hacer clic en <strong>Comenzar</strong>.</li>
+      <li>La actividad solicita entrar en <strong>pantalla completa</strong>.</li>
+      <li>El cronómetro (si está configurado) comienza al entrar en pantalla completa.</li>
+      <li>Responder todas las preguntas y hacer clic en <strong>Enviar</strong>.</li>
+      <li>Ver la corrección inmediata con puntaje y retroalimentación por pregunta.</li>
+    </ol>
+
+    <h3>Pantalla completa y detección de salidas</h3>
+    <div class="callout warn">
+      <strong>⚠ Los navegadores no permiten bloquear la tecla Escape</strong> por razones de seguridad — es un comportamiento del sistema operativo/navegador que no puede desactivarse por código.
     </div>
-    <pre>Generame un array JSON con preguntas para una actividad digital de [TEMA], para [CURSO].
-Incluir: 3 de opción múltiple, 1 de múltiple respuesta, 2 de verdadero/falso, 1 abierta, 1 de emparejar y 1 de banco de palabras.
-Usar exactamente este formato — sin texto adicional fuera del array:
+    <p>En cambio, la actividad <strong>detecta cuando el estudiante sale de pantalla completa</strong> (por Escape u otro medio) y:</p>
+    <ul>
+      <li>Muestra una <strong>pantalla de bloqueo</strong> que cubre toda la ventana con un mensaje de aviso.</li>
+      <li><strong>Pausa el cronómetro</strong> mientras el estudiante está fuera de pantalla completa.</li>
+      <li>Registra la <strong>cantidad de salidas</strong> y las envía con las respuestas a la planilla (columna <strong>Salidas pantalla</strong>).</li>
+      <li>El estudiante solo puede continuar haciendo clic en <strong>"Volver a pantalla completa"</strong>.</li>
+    </ul>
+    <p>Esto permite a la docente identificar en la planilla qué estudiantes salieron de pantalla completa y cuántas veces lo hicieron.</p>
 
-[
-  {
-    "type": "single",
-    "text": "Enunciado de la pregunta",
-    "opts": ["Opción A", "Opción B", "Opción C", "Opción D"],
-    "correct": "a"
-  },
-  {
-    "type": "multi",
-    "text": "¿Cuáles de las siguientes son propiedades de los conjuntos? (Seleccionar todas las correctas.)",
-    "opts": ["Propiedad A", "Propiedad B", "Propiedad C", "Propiedad D"],
-    "correct": ["a", "c"]
-  },
-  {
-    "type": "tf",
-    "text": "Enunciado para verdadero o falso.",
-    "correct": "true"
-  },
-  {
-    "type": "open",
-    "text": "Enunciado de la pregunta abierta."
-  },
-  {
-    "type": "match",
-    "text": "Relacionar cada elemento con su correspondiente.",
-    "pairs": [
-      { "left": "Elemento izquierda 1", "right": "Elemento derecha 1" },
-      { "left": "Elemento izquierda 2", "right": "Elemento derecha 2" },
-      { "left": "Elemento izquierda 3", "right": "Elemento derecha 3" }
-    ]
-  },
-  {
-    "type": "fill",
-    "text": "El [conjunto vacío] se denota con el símbolo [∅] y no contiene ningún [elemento].",
-    "extraWords": "subconjunto, ℕ, intersección"
-  }
-]
-
-Reglas:
-- "correct" en opción múltiple (type "single"): "a", "b", "c" o "d". En V/F: "true" o "false".
-- "correct" en múltiple respuesta (type "multi"): un array con todas las letras correctas, ej: ["a", "c"].
-- "pairs": array de objetos {left, right} con los pares correctos. La columna derecha se muestra desordenada.
-- "fill": las respuestas correctas van entre corchetes en el texto: [así]. "extraWords" son palabras distractoras (opcionales), separadas por coma.
-- Se puede agregar "puntaje": 2 a cualquier pregunta para darle más peso.</pre>
-  </div>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Copiar el bloque JSON que devuelve la IA</strong>
-        <p>Seleccionar solo el array (desde <code>[</code> hasta <code>]</code>), sin texto introductorio.</p>
-      </div>
+    <div class="callout ok">
+      <strong>El envío no es automático.</strong> La actividad no se envía sola cuando el estudiante sale de pantalla completa. El estudiante debe hacer clic en Enviar para enviar sus respuestas.
     </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Importar en el Generador</strong>
-        <p>Ir al Generador → sección Preguntas → clic en <strong>↓ Importar desde JSON</strong> → pegar → clic en <strong>Importar preguntas</strong>. Las preguntas aparecen todas de inmediato.</p>
-      </div>
+
+    <h3>Anti-doble-envío</h3>
+    <p>La clave de sesión configurada en el Paso 1 se guarda en <code>localStorage</code> del navegador al enviar. Si el estudiante intenta abrir la actividad de nuevo en el mismo navegador y computadora, verá un mensaje indicando que ya la envió.</p>
+
+    <div class="callout warn">
+      <strong>Nota para iOS (iPad/iPhone):</strong> Safari en iOS tiene soporte limitado para la API de pantalla completa. La actividad funciona pero no puede forzar pantalla completa en esos dispositivos. Recomendado usar Chrome o Firefox en computadoras de escritorio.
     </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Revisar y ajustar</strong>
-        <p>Editar texto, puntajes u opciones que la IA no haya generado exactamente como se quería. Las preguntas abiertas que dependan del contexto específico de clase conviene escribirlas o modificarlas a mano.</p>
-      </div>
-    </div>
-  </div>
 
-  <div class="callout info">
-    <span class="tag">Campos opcionales en el JSON</span>
-    Se puede agregar <code>"puntaje": 2</code> para asignar más peso a una pregunta, y <code>"obligatoria": false</code> para marcarla como opcional. En preguntas de tipo <strong>fill</strong>, <code>"extraWords"</code> agrega palabras distractoras al banco. En preguntas de tipo <strong>multi</strong>, <code>"correct"</code> es un array con todas las letras correctas: <code>["a", "c"]</code>. En preguntas de tipo <strong>open</strong>, <code>"toolbar": "basic"</code> activa la barra simplificada (solo formato); sin ese campo, se usa la barra completa con símbolos matemáticos. Si se omiten los opcionales, el Generador usa los valores por defecto (1 punto, obligatoria excepto en preguntas abiertas que son opcionales con puntaje 0 por defecto, barra completa).
-  </div>
-
-  <h3>Barra de herramientas en preguntas abiertas</h3>
-  <p>Cada pregunta de tipo <strong>Abierta</strong> tiene un selector de barra de herramientas con dos opciones:</p>
-  <ul>
-    <li><strong>Completa</strong> — incluye formato (negrita, cursiva, subrayado, tamaño) más todos los grupos de símbolos matemáticos. Ideal para matemática, lógica, física, química.</li>
-    <li><strong>Básica</strong> — solo negrita, cursiva, subrayado y tamaño de letra. Recomendada para literatura, lengua, historia o cualquier materia donde los símbolos matemáticos no tienen sentido.</li>
-  </ul>
-  <p>Los símbolos matemáticos disponibles en la barra completa cubren: conjuntos (∈ ∉ ⊆ ∪ ∩ ∅…), conjuntos numéricos (ℕ ℤ ℝ ℚ), operadores (× ÷ ± √ ∑ ∞), lógica (∧ ∨ ¬ → ↔ ∀ ∃) y otros (≤ ≥ ≠ |A|…).</p>
-
-  <div class="callout warn">
-    <span class="tag">Clave localStorage</span>
-    Cada actividad necesita una clave única en el campo <strong>Clave localStorage</strong> (ej. <code>logica_conjuntos_2026</code>, <code>logica_grafos_2026</code>). Si dos actividades distintas usan la misma clave y el alumno ya hizo la primera, la segunda le va a aparecer como "ya enviada". Conviene incluir el tema y el año.
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  4 ══ -->
-<section class="panel" id="panel-planilla">
-  <h2><span class="n">4</span>Planilla y Code.gs</h2>
-  <p class="sub">El script que recibe las respuestas y las guarda en Google Sheets.</p>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Descargar el Code.gs desde el Generador</strong>
-        <p>En el Generador, una vez cargadas las preguntas, hacer clic en <strong>⬇ Descargar Code.gs</strong>. Se descarga un archivo de texto con el script ya configurado para esa actividad.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Crear una Google Sheet nueva</strong>
-        <p>En Google Drive: <strong>Nuevo → Google Sheets</strong>. Darle un nombre relacionado con la actividad, por ejemplo <em>Respuestas – Conjuntos 2026</em>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Abrir el editor de Apps Script</strong>
-        <p>En la planilla: menú <strong>Extensiones → Apps Script</strong>. Se abre el editor con un archivo <code>Code.gs</code> vacío.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Pegar el código descargado</strong>
-        <p>Borrar todo el contenido del editor, pegar el contenido del archivo <code>Code.gs</code> descargado y hacer clic en <strong>Guardar</strong> (ícono del diskette o Ctrl+S).</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout warn">
-    <span class="tag">No hacer clic en Ejecutar</span>
-    El botón Ejecutar del editor sirve para probar funciones manualmente. La función <code>doGet</code> espera un parámetro que solo llega cuando un alumno envía la actividad, así que ejecutarla a mano da error. No es necesario ejecutar nada: el script se activa solo cuando recibe un envío.
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  5 ══ -->
-<section class="panel" id="panel-webapp">
-  <h2><span class="n">5</span>Publicar como aplicación web</h2>
-  <p class="sub">Este paso convierte el script en una URL que la actividad puede llamar para guardar respuestas.</p>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Implementar → Nueva implementación</strong>
-        <p>En el editor de Apps Script: botón azul <strong>Implementar</strong> (arriba a la derecha) → <strong>Nueva implementación</strong>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Configurar la implementación</strong>
-        <p>En el diálogo que aparece:<br>
-        — Tipo: <strong>Aplicación web</strong> (ícono de engranaje → seleccionar si no está)<br>
-        — Ejecutar como: <strong>Yo</strong><br>
-        — Quién tiene acceso: <strong>Cualquier usuario</strong><br>
-        Hacer clic en <strong>Implementar</strong>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Autorizar el acceso</strong>
-        <p>La primera vez pide autorización. Hacer clic en <strong>Autorizar acceso</strong> → elegir la cuenta de Google → en la pantalla de advertencia, clic en <strong>Avanzado → Ir a [nombre del proyecto] (no seguro)</strong> → <strong>Permitir</strong>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Copiar la URL del Web App</strong>
-        <p>Aparece una URL larga que empieza con <code>https://script.google.com/macros/s/...</code>. Copiarla — se necesita en el siguiente paso.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="callout info">
-    <span class="tag">Permisos necesarios</span>
-    Al autorizar, el script pide permiso para leer y escribir en Google Sheets. Es necesario para que pueda crear los encabezados y agregar las filas de respuestas. El script solo accede a la planilla donde fue creado.
-  </div>
-
-  <div class="callout warn">
-    <span class="tag">Si se modifica el script después</span>
-    Cada vez que se guarda un cambio en el Code.gs hay que hacer una nueva implementación (<strong>Implementar → Administrar implementaciones → Nueva versión</strong>). La URL no cambia, pero el código actualizado no entra en efecto hasta publicar la nueva versión.
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  6 ══ -->
-<section class="panel" id="panel-url">
-  <h2><span class="n">6</span>Pegar la URL en el Generador</h2>
-  <p class="sub">Este es el dato que conecta la actividad con la planilla.</p>
-
-  <p>Volver al Generador y pegar la URL copiada en el paso anterior en el campo <strong>"URL del Web App de Google Apps Script"</strong>. Ahora el Generador tiene todo lo que necesita para producir la actividad completa.</p>
-
-  <div class="callout tip">
-    <span class="tag">Si ya se descargó el Code.gs antes de tener la URL</span>
-    No hace falta volver a descargarlo: el Code.gs no cambia si se modifica la URL. La URL solo va adentro del <strong>actividad.html</strong>, que se genera en el paso siguiente.
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  7 ══ -->
-<section class="panel" id="panel-descargar">
-  <h2><span class="n">7</span>Generar y descargar la actividad</h2>
-  <p class="sub">El Generador produce el HTML de la actividad con todo adentro: preguntas, estilos, lógica y URL de la planilla.</p>
-
-  <p>Hacer clic en <strong>⬇ Descargar actividad.html</strong>. El archivo se descarga con el nombre configurado (por ejemplo <code>actividad_conjuntos.html</code>).</p>
-
-  <div class="callout info">
-    <span class="tag">Qué lleva la actividad generada</span>
-    <ul style="margin:6px 0 0; padding-left:20px;">
-      <li>Todas las preguntas con corrección automática para opción múltiple, V/F, emparejar y banco de palabras</li>
-      <li>Pantalla completa forzada al comenzar</li>
-      <li>Aviso visible si el alumno sale de pantalla completa</li>
-      <li>Anti-doble-envío: si el alumno reabre el archivo ya enviado, ve "Actividad enviada"</li>
-      <li>Barra de símbolos matemáticos en preguntas abiertas</li>
-      <li>Temporizador configurable</li>
+    <h3>Retroalimentación instantánea</h3>
+    <p>Al enviar, el estudiante ve:</p>
+    <ul>
+      <li>Puntaje total obtenido sobre el máximo posible.</li>
+      <li>Cada pregunta con indicación de ✓ correcta o ✗ incorrecta.</li>
+      <li>Para las incorrectas, la respuesta correcta.</li>
+      <li>Las preguntas abiertas se muestran sin corrección (quedan para revisión manual).</li>
     </ul>
   </div>
 
-  <div class="callout warn">
-    <span class="tag">iPhone y iPad — pantalla completa</span>
-    En dispositivos iOS (iPhone e iPad), ningún navegador puede forzar la pantalla completa: Apple no lo permite. La actividad funciona con normalidad, pero sin ese modo. Si los alumnos usan celulares Apple, la restricción de pantalla completa no aplica para ellos.
-  </div>
+  <!-- ===================== GITHUB PAGES ===================== -->
+  <div class="tab-panel" id="tab-ghpages">
+    <h2>Publicar en GitHub Pages</h2>
+    <p class="lead">GitHub Pages es la opción más sencilla para dar una URL permanente a la actividad sin costo.</p>
 
-  <h3>Probar antes de distribuir</h3>
-  <p>Abrir el archivo descargado y completarlo como lo haría un alumno:</p>
-  <ul>
-    <li>Responder todas las preguntas y enviar.</li>
-    <li>Abrir la Google Sheet: debe haber aparecido una fila nueva con el nombre, las respuestas y el puntaje automático.</li>
-    <li>Cerrar y volver a abrir la actividad en el mismo navegador: debe mostrar "Actividad enviada" sin permitir responder de nuevo.</li>
-  </ul>
-
-  <div class="callout tip">
-    <span class="tag">Reiniciar el anti-doble-envío para seguir probando</span>
-    Si se quiere volver a hacer la actividad desde el mismo navegador (para probar): presionar <strong>Fn + F12</strong> (en algunos teclados alcanza con F12 solo) para abrir las herramientas de desarrollo → hacer clic en la pestaña <strong>Consola</strong> → escribir <code>localStorage.clear()</code> y presionar Enter → recargar la página. La actividad vuelve a la pantalla de inicio.
-  </div>
-
-  <div class="callout tip">
-    <span class="tag">Próxima actividad</span>
-    Para armar la siguiente actividad de otra unidad: abrir el Generador, cambiar el título, la clave localStorage (¡obligatorio!) y las preguntas, y repetir desde el paso 4 si se usa una planilla nueva, o desde el paso 6 si se reutiliza la misma planilla con el mismo Web App.
-  </div>
-
-  <div class="cta">
-    <p style="margin:0;color:var(--muted);">¿Querés ver cómo queda? Acá hay una actividad de prueba con preguntas de ejemplo:</p>
-    <a class="btn" href="https://logica-metodosdiscretos.github.io/EscritoConjuntos/escrito_conjuntos.html" target="_blank" rel="noopener">Ver actividad de prueba ↗</a>
-  </div>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  8 ══ -->
-<section class="panel" id="panel-github">
-  <h2><span class="n">8</span>Publicar en GitHub Pages</h2>
-  <p class="sub">Una URL pública y gratuita para que los alumnos accedan desde cualquier dispositivo.</p>
-
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-body">
-        <strong>Crear o usar un repositorio de GitHub</strong>
-        <p>En <a href="https://github.com" target="_blank" rel="noopener">github.com</a>: <strong>New repository</strong>. Darle un nombre relacionado con la actividad, por ejemplo <em>ActividadConjuntos</em>. Dejarlo público.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Crear o usar un repositorio existente</h3>
+          <p>Ir a <a href="https://github.com" target="_blank">github.com</a>, iniciar sesión y crear un repositorio público (o usar uno existente).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Subir el HTML</h3>
+          <p>En el repositorio, hacer clic en <strong>Add file → Upload files</strong>. Arrastrar el HTML generado y hacer clic en <strong>Commit changes</strong>.</p>
+          <p>Nombrar el archivo de forma descriptiva, por ejemplo <code>conjuntos_clase3.html</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Activar GitHub Pages</h3>
+          <p>En el repositorio: <strong>Settings → Pages</strong>. En <em>Source</em> seleccionar <strong>Deploy from a branch</strong>, rama <strong>main</strong>, carpeta <strong>/ (root)</strong>. Guardar.</p>
+          <p>GitHub genera la URL en unos segundos (puede tardar hasta 1 minuto la primera vez).</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Compartir la URL</h3>
+          <p>La URL tiene la forma <code>https://[usuario].github.io/[repositorio]/[archivo].html</code>. Compartirla con los estudiantes por CREA, WhatsApp o proyectarla en clase.</p>
+        </div>
       </div>
     </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-body">
-        <strong>Activar GitHub Pages</strong>
-        <p>En el repositorio: <strong>Settings → Pages → Branch: main → Save</strong>. GitHub Pages queda habilitado para ese repositorio.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-body">
-        <strong>Subir el archivo HTML</strong>
-        <p>Dentro del repositorio: <strong>Add file → Upload files</strong>. Subir el <code>actividad_conjuntos.html</code>. Hacer clic en <strong>Commit changes</strong>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">4</div>
-      <div class="step-body">
-        <strong>Esperar unos segundos y obtener la URL</strong>
-        <p>La URL tiene el formato <code>https://USUARIO.github.io/REPO/actividad_conjuntos.html</code>. Si el archivo se llama <code>index.html</code>, alcanza con <code>https://USUARIO.github.io/REPO/</code>.</p>
-      </div>
-    </div>
-    <div class="step">
-      <div class="step-num">5</div>
-      <div class="step-body">
-        <strong>Compartir la URL con los alumnos</strong>
-        <p>Por Google Classroom, correo o cualquier otro medio. Los alumnos la abren en cualquier navegador desde cualquier dispositivo.</p>
-      </div>
+
+    <div class="callout info">
+      <strong>Actualizar la actividad:</strong> subir el HTML nuevo con el mismo nombre de archivo y hacer clic en <em>Commit changes</em>. GitHub Pages se actualiza en 1–2 minutos. Si la URL no cambia, tampoco hay que volver a compartirla.
     </div>
   </div>
 
-  <div class="callout tip">
-    <span class="tag">Alternativa sin publicar</span>
-    La actividad funciona igual si se reparte como archivo (por Classroom, correo o pendrive) y el alumno lo abre directamente en el navegador. La conexión con la planilla funciona igual en los dos casos — no depende de dónde esté el HTML.
+  <!-- ===================== GLOSARIO ===================== -->
+  <div class="tab-panel" id="tab-glosario">
+    <h2>Glosario</h2>
+
+    <div class="glos-item">
+      <div class="glos-term">Apps Script / Web App</div>
+      <div class="glos-def">Servicio de Google que permite ejecutar código JavaScript en la nube. En este sistema actúa como backend: recibe las respuestas del estudiante vía URL y las escribe en Google Sheets. La implementación como "Aplicación web" le da una URL pública accesible desde cualquier navegador.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Arranque en frío</div>
+      <div class="glos-def">La primera ejecución diaria de un Apps Script puede tardar hasta 30 segundos porque Google "duerme" los servidores inactivos. Para evitarlo, abrir la URL de la Web App en el navegador unos minutos antes de la clase.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Code.gs</div>
+      <div class="glos-def">Archivo de código Google Apps Script generado automáticamente para cada actividad. Contiene las respuestas correctas, los puntajes, y la lógica para recibir y registrar envíos en la planilla. Se descarga desde el Paso 3 del generador.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Clave de sesión (localStorage)</div>
+      <div class="glos-def">Identificador único que se guarda en el navegador del estudiante al enviar la actividad. Evita que el mismo estudiante envíe dos veces desde la misma computadora. Usar una clave diferente para cada actividad (ej: <code>funciones_2026_g2</code>).</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">JSONP</div>
+      <div class="glos-def">Técnica para enviar datos entre dominios distintos sin necesidad de un servidor intermediario. El HTML de la actividad usa JSONP para comunicarse con el Apps Script de Google, evitando las restricciones de CORS del navegador.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Pantalla completa forzada</div>
+      <div class="glos-def">Al comenzar la actividad, el navegador entra en pantalla completa ocultando la barra de tareas y otras pestañas. Si el estudiante sale de pantalla completa (por Escape u otro método), la actividad muestra una pantalla de bloqueo que pausa el cronómetro y registra la salida. El estudiante debe volver a pantalla completa para continuar. Cada salida queda registrada en la columna <strong>Salidas pantalla</strong> de la planilla. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema.</em></div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Salidas pantalla</div>
+      <div class="glos-def">Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de pantalla completa durante la actividad. Permite identificar posibles intentos de consultar otras pestañas o recursos.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Tipo tfse (V / F / Sin Evidencia)</div>
+      <div class="glos-def">Variante del tipo Verdadero/Falso que agrega una tercera opción: "Sin Evidencia", para afirmaciones que no pueden responderse con los datos disponibles. Útil en actividades de pensamiento crítico y argumentación. La respuesta correcta puede ser <code>"true"</code>, <code>"false"</code> o <code>"se"</code>.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">Barra de símbolos científicos</div>
+      <div class="glos-def">Panel en el generador (Paso 2) que permite insertar superíndices, subíndices, letras griegas y operadores de física/química (→ ⇌ ° ± × ÷ ≈ √ ∞) directamente en los enunciados y alternativas de las preguntas.</div>
+    </div>
+
+    <div class="glos-item">
+      <div class="glos-term">GitHub Pages</div>
+      <div class="glos-def">Servicio gratuito de GitHub que publica archivos estáticos (HTML, CSS, JS) con una URL pública. Ideal para distribuir las actividades sin necesidad de hosting propio.</div>
+    </div>
   </div>
 
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<!-- ═══════════════════════════════════  9 ══ -->
-<section class="panel" id="panel-glosario">
-  <h2><span class="n">9</span>Glosario</h2>
-  <p class="sub">Términos técnicos que aparecen en la guía, explicados sin jerga.</p>
-
-  <dl>
-    <dt>Archivo HTML</dt>
-    <dd>Un archivo de texto con extensión <code>.html</code> que el navegador sabe cómo mostrar como una página web. Es el formato de la actividad digital y del Generador. No necesita instalarse ni compilarse: se abre directamente con doble clic, como un documento Word, pero en el navegador.</dd>
-
-    <dt>Google Apps Script</dt>
-    <dd>Un entorno de programación integrado en Google Drive que permite crear scripts que interactúan con Google Sheets, Gmail, Calendar y otros servicios de Google. En este sistema es el puente entre la actividad del alumno y la planilla de respuestas.</dd>
-
-    <dt>El Generador (<code>generador_escritos.html</code>)</dt>
-    <dd>Una herramienta hecha en HTML que funciona en el navegador. Permite armar la actividad de forma visual — sin tocar código — y descarga los dos archivos necesarios al terminar.</dd>
-
-    <dt>Web App / Aplicación web</dt>
-    <dd>Cuando el script se "publica", Google le asigna una dirección web (URL) a través de la cual puede recibir información. Esa URL es la que conecta la actividad con la planilla: cada vez que un alumno envía sus respuestas, la actividad llama a esa dirección y el script hace el resto.</dd>
-
-    <dt>URL</dt>
-    <dd>La dirección de una página web, como <code>https://www.google.com</code>. En este sistema se usa la URL del Web App (el script publicado) para que la actividad sepa a dónde enviar las respuestas.</dd>
-
-    <dt>Implementar (un script)</dt>
-    <dd>"Implementar" en el contexto de Apps Script significa publicar el script para que funcione como una aplicación web accesible desde internet. Es el equivalente a "poner en marcha" el script. Solo hace falta hacerlo una vez por actividad (o cuando se cambia algo en el script).</dd>
-
-    <dt>GitHub</dt>
-    <dd>Un sitio web donde se pueden guardar y compartir archivos de texto, código y páginas web. Es gratuito y ampliamente usado. En este sistema lo usamos para publicar la actividad en internet.</dd>
-
-    <dt>GitHub Pages</dt>
-    <dd>Un servicio gratuito de GitHub que convierte los archivos de un repositorio en una página web accesible con una URL pública. Es la forma más sencilla de publicar la actividad para que los alumnos puedan acceder desde cualquier dispositivo con internet.</dd>
-
-    <dt>Repositorio</dt>
-    <dd>Una "carpeta" dentro de GitHub donde se guardan los archivos de un proyecto. Cada actividad puede tener su propio repositorio, o varias actividades pueden convivir en uno.</dd>
-
-    <dt>JSONP</dt>
-    <dd>Una técnica que permite a una página web enviar datos a un servidor en otro dominio. En este sistema la actividad la usa para enviar las respuestas al script de Google sin errores de seguridad del navegador.</dd>
-
-    <dt>localStorage</dt>
-    <dd>Un pequeño espacio de memoria que el navegador reserva para cada página web. En este sistema se usa para recordar si un alumno ya envió la actividad: si la intenta abrir de nuevo en el mismo navegador y dispositivo, ve el mensaje "Actividad enviada" en lugar de las preguntas. No es un sistema de seguridad absoluto (borrando los datos del navegador se puede reiniciar), pero evita el doble envío accidental.</dd>
-
-    <dt>Clave localStorage</dt>
-    <dd>Un nombre interno que identifica a cada actividad dentro del navegador. Si dos actividades distintas usan el mismo nombre, el navegador las confunde y puede mostrar "ya enviada" al alumno que hizo la primera. Por eso cada actividad necesita una clave única, por ejemplo <code>logica_fracciones_2026</code>.</dd>
-
-    <dt>Pantalla completa forzada</dt>
-    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. En este sistema se activa al comenzar el examen y, si el alumno la cierra (por ejemplo, para abrir otra pestaña), la actividad se envía automáticamente con lo que haya contestado hasta ese momento.</dd>
-
-    <dt>Autocontenido</dt>
-    <dd>Un archivo que lleva todo adentro: estilos, lógica, preguntas. No depende de otros archivos ni de conexión a internet para mostrarse correctamente. La actividad generada es autocontenida, por eso funciona igual si se comparte por correo, pendrive o GitHub Pages.</dd>
-
-    <dt>Publicar la actividad</dt>
-    <dd>Subirla a un servidor web para que tenga una URL accesible desde cualquier dispositivo. La opción más usada aquí es GitHub Pages, pero también puede publicarse en Netlify, Vercel, el servidor del centro educativo, o simplemente repartirse como archivo.</dd>
-  </dl>
-
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
-</section>
-
-<footer>
-  <strong>Actividades Digitales — Guía del docente</strong>
-  <span>Prof. Elizabeth Izquierdo</span>
-  <br><span>✉️ profe.eliza17@gmail.com</span>
-</footer>
+</div><!-- /content -->
 
 <script>
-var TABS = ['arquitectura','generador','preguntas','planilla','webapp','url','descargar','github','glosario'];
-
-function activate(id, scroll){
-  TABS.forEach(function(t){
-    var btn = document.querySelector('[data-tab="'+t+'"]');
-    var panel = document.getElementById('panel-'+t);
-    if(btn) btn.classList.toggle('active', t===id);
-    if(panel) panel.classList.toggle('active', t===id);
-  });
-  if(scroll){
-    if(id === 'arquitectura'){
-      window.scrollTo({top: 0, behavior:'instant'});
-    } else {
-      var hdr = document.querySelector('header');
-      window.scrollTo({top: hdr ? hdr.offsetHeight : 0, behavior:'instant'});
-    }
-  }
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
-
-document.querySelectorAll('.tab-btn').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    activate(btn.dataset.tab, true);
-  });
-});
-
-document.querySelectorAll('.panel-nav .next').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    var panel = btn.closest('.panel');
-    var id = panel.id.replace('panel-','');
-    var idx = TABS.indexOf(id);
-    if(idx < TABS.length - 1) activate(TABS[idx+1], true);
-  });
-});
-
-document.querySelectorAll('.panel-nav .prev').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    var panel = btn.closest('.panel');
-    var id = panel.id.replace('panel-','');
-    var idx = TABS.indexOf(id);
-    if(idx > 0) activate(TABS[idx-1], true);
-  });
-});
-
-function copyBox(btn){
-  var pre = btn.closest('.filebox').querySelector('pre');
-  if(!pre) return;
-  navigator.clipboard.writeText(pre.textContent).then(function(){
-    btn.textContent = '¡Copiado!';
-    setTimeout(function(){ btn.textContent = 'Copiar'; }, 2000);
-  });
-}
-
-var initial = (location.hash||'').replace('#','');
-if(TABS.indexOf(initial) < 0) initial = 'arquitectura';
-// Al cargar: activar el panel sin mover el scroll (el encabezado queda visible)
-activate(initial, false);
 </script>
+
+<footer style="background:var(--card);border-top:1px solid var(--border);padding:16px 24px;text-align:center;font-size:.82rem;color:var(--muted);font-family:var(--serif)">
+  Recurso creado por <strong style="color:var(--text)">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026
+</footer>
+
 </body>
 </html>

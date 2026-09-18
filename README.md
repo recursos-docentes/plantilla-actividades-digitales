@@ -1,114 +1,96 @@
-# Actividades digitales — Generador y plantilla
+# Generador de Actividades Digitales
 
-Herramienta para armar actividades y evaluaciones digitales con autocorrección: un **Generador visual** (HTML que corre en el navegador, sin instalación) produce dos archivos — el HTML de la actividad y el script de Google Apps Script — que juntos funcionan como un examen digital autocorregido con medidas razonables contra copia.
-
-📘 **[Guía paso a paso para docentes](https://recursos-docentes.github.io/plantilla-actividades-digitales/)**
-
-🛠️ **[Abrir el Generador](https://recursos-docentes.github.io/plantilla-actividades-digitales/generador_escritos.html)**
+Herramienta para crear actividades interactivas con corrección automática vía Google Apps Script. Produce un HTML autocontenido que los estudiantes abren en el navegador, responden y envían — las respuestas llegan a una planilla de Google Sheets y el estudiante ve su corrección al instante.
 
 ---
 
-## Qué resuelve
+## Uso rápido
 
-Armar una actividad digital "a mano" con Google Forms u otras herramientas similares tiene límites: no se puede forzar pantalla completa, no hay forma simple de registrar si el estudiante intentó salirse, y las respuestas correctas suelen quedar visibles en el código si se arma algo custom. Esta plantilla resuelve los tres problemas:
-
-- **Pantalla completa forzada**, con aviso visible si el estudiante sale de ella antes de terminar (queda registrado en la planilla).
-- **Anti-doble-envío**: una vez enviado, el navegador queda marcado y no se puede reabrir la misma actividad ahí. Para habilitar un reintento, la docente ejecuta `localStorage.clear()` en la consola del navegador (F12 → Consola).
-- **Corrección 100% del lado del servidor**: la clave de respuestas vive solo en Apps Script. El HTML que recibe el estudiante no la contiene, así que abrir el código fuente o las herramientas de desarrollador (F12) no sirve para verla.
+1. Abrir `generador_escritos.html` en el navegador (doble clic o arrastrar).
+2. Completar los 4 pasos del asistente.
+3. Publicar el HTML generado en GitHub Pages o CREA.
 
 ---
 
-## Archivos del repositorio
+## Los 4 pasos del asistente
 
+### Paso 1 — Configuración
+- **Título**, **materia** e **instrucción inicial** para el estudiante.
+- **Tiempo límite** (en minutos; 0 = sin límite).
+- **Clave de sesión**: identificador único para esta actividad en `localStorage` (evita que el estudiante reenvíe). Usar una clave distinta para cada actividad, por ejemplo `conjuntos_2026_g1`.
+
+### Paso 2 — Preguntas
+Agregar preguntas una a una con los botones de tipo, o importar desde JSON.
+
+**Tipos disponibles:**
+
+| Tipo | Descripción | Corrección automática |
+|------|-------------|----------------------|
+| Opción única | Múltiple opción, una sola correcta | Sí |
+| Múltiple respuesta | Múltiple opción, varias correctas | Sí (todas o nada) |
+| V / F | Verdadero o Falso | Sí |
+| V / F / Sin Evidencia | Verdadero, Falso o Sin Evidencia | Sí |
+| Abierta | Respuesta libre en texto | No (revisar en planilla) |
+| Emparejar | Relacionar columna izquierda con derecha | Sí (parcial por par) |
+| Banco de palabras | Completar espacios eligiendo de un banco | Sí (parcial por hueco) |
+
+**Barra de símbolos científicos:** hacer clic en un enunciado para activarlo y luego seleccionar el símbolo (superíndices, subíndices, letras griegas, operadores de química/física).
+
+**Importar desde JSON:** el formato es un array de objetos:
+```json
+[
+  {"type":"single","text":"¿Cuánto es 2+2?","opts":["3","4","5","6"],"correct":"b","puntaje":1},
+  {"type":"tf","text":"El agua hierve a 100°C a nivel del mar.","correct":"true","puntaje":1},
+  {"type":"tfse","text":"Todos los metales son buenos conductores.","correct":"true","puntaje":1},
+  {"type":"match","text":"Relacionar","pairs":[{"left":"H₂O","right":"Agua"},{"left":"NaCl","right":"Sal"}],"puntaje":2},
+  {"type":"fill","text":"El [hidrógeno] tiene número atómico [1].","extraWords":"oxígeno,carbono","puntaje":2},
+  {"type":"open","text":"Explicar el proceso de ósmosis.","puntaje":3}
+]
 ```
-generador_escritos.html        # Generador visual — produce los dos archivos de abajo
-index.html # Guía completa para docentes
-```
 
-El Generador produce al descargar:
+### Paso 3 — Planilla
+Conectar con Google Sheets vía Apps Script:
 
-```
-[nombre-elegido].html          # La actividad (HTML autocontenido, sin dependencias locales)
-Code.gs                        # Script de Apps Script (corrección + guardado en Sheets)
-```
+1. Descargar el archivo `Code.gs`.
+2. Abrir Google Drive y crear una planilla nueva. ⚠ Si se tienen varias cuentas de Google, abrir Drive en una ventana de incógnito (Ctrl+Shift+N).
+3. En la planilla: **Extensiones → Apps Script**.
+4. Borrar el contenido del editor, pegar el código del `Code.gs` y guardar (Ctrl+S).
+5. **Implementar → Nueva implementación** → Tipo: Aplicación web → Ejecutar como: yo → Acceso: Cualquier usuario → Implementar.
+6. Copiar la URL de la aplicación web y pegarla en el campo del generador.
 
-El HTML de la actividad **no contiene ninguna respuesta correcta** — todo el criterio de corrección vive en `Code.gs`, que se pega en el proyecto de Apps Script vinculado a la planilla de la docente.
+> **Arranque en frío:** la primera ejecución del día puede tardar hasta 30 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
 
----
-
-## Tipos de pregunta soportados
-
-| Tipo | Qué es | Corrección |
-|------|--------|------------|
-| `single` | Opción única (radio buttons, una sola correcta) | Automática |
-| `multi` | Múltiple respuesta (checkboxes, pueden ser correctas varias opciones) | Automática — todo o nada: el alumno debe marcar exactamente las correctas |
-| `tf` | Verdadero / Falso | Automática |
-| `open` | Pregunta abierta de desarrollo — el alumno escribe en un editor de texto. La barra de herramientas puede ser **completa** (con símbolos matemáticos, para exactas) o **básica** (solo negrita/cursiva/subrayado, para letras). Se configura por pregunta en el Generador. Por defecto se agrega como opcional con puntaje 0. | Manual — queda guardada en la planilla |
-| `match` | Emparejar — dos columnas, el estudiante une cada elemento de la izquierda con el correspondiente de la derecha | Automática con crédito parcial |
-| `fill` | Banco de palabras — el estudiante completa espacios en blanco eligiendo palabras de un banco | Automática con crédito parcial |
-
-Cada pregunta puede tener una **imagen** opcional (se sube en el Generador y queda embebida en el HTML). Cada pregunta puede marcarse como **opcional** y tiene un puntaje configurable.
+### Paso 4 — Descargar
+- **Descargar actividad HTML**: el archivo listo para publicar.
+- **Opción A — GitHub Pages**: subir al repositorio y activar Pages en Configuración → Pages.
+- **Opción B — CREA**: comprimir el HTML en un `.zip` y cargarlo como *Paquete de contenido web* en Recursos.
 
 ---
 
-## Cómo armar una actividad nueva
+## Columnas en la planilla de respuestas
 
-El flujo completo está documentado paso a paso en la [guía para docentes](https://recursos-docentes.github.io/plantilla-actividades-digitales/). En resumen:
-
-1. Abrir el [Generador](https://recursos-docentes.github.io/plantilla-actividades-digitales/generador_escritos.html).
-2. Completar título, subtítulo, tiempo y clave localStorage (única por actividad).
-3. Agregar las preguntas desde la interfaz visual, **o pedirle las preguntas a una IA** con el prompt incluido en la guía e importar el JSON directamente en el Generador.
-4. Descargar el `Code.gs` → pegarlo en Apps Script → publicarlo como Web App → copiar la URL.
-5. Pegar la URL en el Generador → descargar el HTML de la actividad.
-6. Publicar el HTML (GitHub Pages u otro hosting estático).
-
----
-
-## Configurar la planilla de notas
-
-### 1. Crear la planilla
-Crear una planilla nueva en Google Sheets (el encabezado lo genera `Code.gs` automáticamente al recibir la primera respuesta).
-
-### 2. Pegar el script
-Extensiones → Apps Script → borrar el contenido de `Code.gs` y pegar el generado → guardar.
-
-### 3. Publicar como aplicación web
-Implementar → Nueva implementación → Tipo: **Aplicación web**. Configurar:
-- **Ejecutar como:** Yo
-- **Quién tiene acceso:** Cualquiera
-
-Autorizar cuando lo pida (el aviso de "no verificado" es normal para scripts propios). Copiar la URL que termina en `/exec` — la de la sección *App web*, no la de "Biblioteca".
-
-### 4. Conectar al Generador
-Pegar esa URL en el campo **URL del Web App** del Generador antes de descargar el HTML de la actividad.
-
-### Actualizar el script sin romper la URL
-Para cambiar `Code.gs` más adelante sin que cambie la URL: Implementar → Administrar implementaciones → lápiz → Versión: **Nueva versión** → Implementar. Crear una implementación nueva desde cero genera una URL distinta y obliga a volver a tocar el HTML.
+| Columna | Contenido |
+|---------|-----------|
+| Timestamp | Fecha y hora de envío |
+| Nombre | Nombre ingresado por el estudiante |
+| q1, q2, … | Respuesta de cada pregunta |
+| Correctas | Cantidad de preguntas correctas |
+| Total | Total de preguntas con corrección automática |
+| Puntos obtenidos | Puntaje conseguido |
+| Puntos totales | Puntaje máximo posible |
 
 ---
 
-## Decisiones técnicas
+## Preguntas frecuentes
 
-Vale la pena documentarlas para no volver a pisar los mismos problemas al adaptar la plantilla:
+**¿El archivo funciona abriéndolo directamente desde la computadora?**  
+No. Necesita estar publicado en un servidor web (GitHub Pages, CREA, etc.) para que el envío a Google Sheets funcione.
 
-**Todo el intercambio con Apps Script es por GET con formato JSONP** (un `<script src="...">`, nunca `fetch` con POST). Google Apps Script redirige cada pedido internamente, y en ese salto algunos navegadores convierten un POST en GET y descartan el cuerpo — con GET no hay cuerpo que perder. Además, `fetch` normal contra Apps Script choca con CORS al intentar leer la respuesta; JSONP los evita del todo porque cargar un `<script>` no está sujeto a esa política.
+**¿Qué pasa si el estudiante cierra el navegador antes de enviar?**  
+Las respuestas no se guardan — deben reempezar. Considerar usar la clave de sesión para marcar actividades ya completadas.
 
-**Un solo intento, con timeout de 15 segundos.** Si no llega respuesta a tiempo, se asume que el envío se disparó correctamente (porque ya se disparó) y se avisa sin mostrar el detalle de corrección, en vez de reintentar en bucle y arriesgarse a mandar la misma respuesta varias veces.
+**¿Cómo actualizar las preguntas de una actividad ya publicada?**  
+Regenerar el HTML con el generador y reemplazar el archivo en el servidor. Si se agregan preguntas, también hay que re-descargar y re-deployer el `Code.gs`.
 
-**La pantalla completa no se puede forzar en iOS** (iPhone ni iPad, en ningún navegador, porque Apple no lo permite). En esos dispositivos la actividad funciona con normalidad, pero sin ese modo de protección.
-
-**El anti-doble-envío usa `localStorage`**, que es por navegador y por origen (dominio). Dos actividades distintas publicadas en el mismo sitio no deben compartir la misma clave de `localStorage` — el Generador lo aclara y permite elegir la clave libremente.
-
-**No hay forma de garantizar al 100%** que un estudiante no reabra la actividad (otro navegador, modo incógnito, otro dispositivo evaden la marca). Es una traba razonable, no una prueba con cámara — para eso hace falta software de bloqueo real como Safe Exam Browser, que es una capa aparte y no depende de esta plantilla.
-
----
-
-## Personalización visual
-
-El HTML generado usa variables CSS (`:root`) para todos los colores. El Generador ofrece varios temas visuales; para agregar uno nuevo, alcanza con definir el juego de colores y pasarlo como opción en el selector de temas.
-
-Temas incluidos actualmente: papel de examen (claro, tipografía serif), editor de código (oscuro, acento ámbar), y otros.
-
----
-
-Herramienta creada por **Prof. Elizabeth Izquierdo** con asistencia de IA · 2026 · profe.eliza17@gmail.com
+**¿Las preguntas abiertas se corrigen automáticamente?**  
+No. El texto escrito por el estudiante llega a la planilla y debe revisarse manualmente.
