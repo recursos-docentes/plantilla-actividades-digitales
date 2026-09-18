@@ -329,8 +329,12 @@ input[type=file]{display:none}
       </div>
     </div>
 
-    <div style="margin-bottom:10px">
-      <label class="q-chk-lbl" style="font-size:14px;color:var(--text)"><input type="checkbox" id="cfg-shuffle-q" style="accent-color:var(--acc);width:15px;height:15px"> Mezclar preguntas al azar (cada alumno verá el orden diferente)</label>
+    <div style="margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;padding:12px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px">
+      <label class="q-chk-lbl" style="font-size:14px;color:var(--text)"><input type="checkbox" id="cfg-shuffle-q" style="accent-color:var(--acc);width:15px;height:15px"> Mezclar preguntas al azar</label>
+      <div style="display:flex;align-items:center;gap:8px;border-left:1px solid var(--border);padding-left:16px">
+        <span style="font-size:13px;font-weight:700;color:var(--muted)">Color de la actividad:</span>
+        <div id="color-swatches" style="display:flex;gap:6px"></div>
+      </div>
     </div>
 
     <div id="q-list">
@@ -476,6 +480,41 @@ var qCounter  = 0;
 var TYPE_LABELS = {single:'Opción única',multi:'Múltiple resp.',tf:'V / F',tfse:'V / F / Sin Evidencia',open:'Abierta',match:'Emparejar',fill:'Banco de palabras'};
 
 // ═══════════════════════════════════════════════════════
+//  PALETA DE COLORES DE LA ACTIVIDAD
+// ═══════════════════════════════════════════════════════
+var PALETTES = [
+  {name:'Azul marino', dark:'#1a1a2e', dark2:'#16213e', acc:'#7aa2f7', light:'#f0f4ff'},
+  {name:'Verde',       dark:'#14532d', dark2:'#052e16', acc:'#4ade80', light:'#f0fdf4'},
+  {name:'Violeta',     dark:'#3b0764', dark2:'#2e1065', acc:'#c084fc', light:'#faf5ff'},
+  {name:'Rojo',        dark:'#450a0a', dark2:'#3b0f0f', acc:'#f87171', light:'#fef2f2'},
+  {name:'Gris',        dark:'#111827', dark2:'#0f172a', acc:'#94a3b8', light:'#f1f5f9'},
+  {name:'Teal',        dark:'#042f2e', dark2:'#031d1c', acc:'#2dd4bf', light:'#f0fdfa'},
+];
+var selectedPalette = 0;
+
+function initSwatches() {
+  var c = document.getElementById('color-swatches');
+  if (!c) return;
+  PALETTES.forEach(function(p, i) {
+    var btn = document.createElement('button');
+    btn.title = p.name;
+    btn.style.cssText = 'width:24px;height:24px;border-radius:50%;background:'+p.dark
+      +';border:3px solid '+(i===0?p.acc:'transparent')
+      +';cursor:pointer;transition:all .18s;padding:0;flex-shrink:0'
+      +(i===0?';transform:scale(1.15)':'');
+    btn.onclick = function(e) {
+      e.preventDefault();
+      selectedPalette = i;
+      document.querySelectorAll('#color-swatches button').forEach(function(b, j) {
+        b.style.borderColor = j===i ? PALETTES[j].acc : 'transparent';
+        b.style.transform   = j===i ? 'scale(1.15)' : 'scale(1)';
+      });
+    };
+    c.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
 //  WIZARD
 // ═══════════════════════════════════════════════════════
 function goStep(n) {
@@ -547,7 +586,7 @@ function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 
 function renderAll() {
   var el = document.getElementById('q-list');
-  if (!questions.length) { el.innerHTML='<div class="empty-state">Sin preguntas. Usar los botones de arriba o importar desde JSON.</div>'; return; }
+  if (!questions.length) { el.innerHTML='<div class="empty-state">Sin preguntas. Usar los botones de abajo para agregar o importar desde JSON.</div>'; return; }
   el.innerHTML = questions.map(function(q,i){return card(q,i);}).join('');
 }
 
@@ -787,11 +826,18 @@ function buildActivityHTML() {
     return o;
   }));
 
+  var pal = PALETTES[selectedPalette];
+  var actCss = ACT_CSS
+    .replace(/#1a1a2e/g, pal.dark)
+    .replace(/#16213e/g, pal.dark2)
+    .replace(/#7aa2f7/g, pal.acc)
+    .replace(/#f0f4ff/g, pal.light);
+
   return '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
     +'<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
     +'<title>'+esc(title)+'</title>\n'
-    +'<style>\n'+ACT_CSS+'\n</style>\n</head>\n<body>\n'
-    +actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta)
+    +'<style>\n'+actCss+'\n</style>\n</head>\n<body>\n'
+    +actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta,pal)
     +'\n</body>\n</html>';
 }
 
@@ -1264,6 +1310,7 @@ document.addEventListener('DOMContentLoaded', function() {
       _symTarget = ev.target;
     }
   });
+  initSwatches();
 });
 
 // ═══════════════════════════════════════════════════════
