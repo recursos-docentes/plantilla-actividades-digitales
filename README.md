@@ -1,6 +1,6 @@
 # Generador de Actividades Digitales
 
-Herramienta para crear actividades interactivas con corrección automática vía Google Apps Script. Produce un HTML autocontenido que los estudiantes abren en el navegador, responden y envían — las respuestas llegan a una planilla de Google Sheets y el estudiante ve su corrección al instante.
+Herramienta para crear actividades interactivas con corrección automática vía Google Apps Script. Produce un HTML autocontenido que los estudiantes pueden abrir directamente desde su computadora (sin necesidad de publicarlo en ningún servidor), responden y envían — las respuestas llegan a una planilla de Google Sheets y el estudiante ve su corrección al instante.
 
 📖 **[Guía de uso — Actividades Interactivas](https://recursos-docentes.github.io/plantilla-actividades-digitales/)**
 
@@ -10,7 +10,7 @@ Herramienta para crear actividades interactivas con corrección automática vía
 
 1. Abrir `generador_actividad.html` en el navegador (doble clic o arrastrar).
 2. Completar los 4 pasos del asistente.
-3. Publicar el HTML generado en GitHub Pages o CREA.
+3. Distribuir el HTML generado a los estudiantes (por cualquier medio: mail, CREA, Drive, USB, etc.). No requiere publicación en servidor.
 
 ---
 
@@ -60,12 +60,16 @@ Conectar con Google Sheets vía Apps Script:
 5. **Implementar → Nueva implementación** → Tipo: Aplicación web → Ejecutar como: yo → Acceso: Cualquier usuario → Implementar.
 6. Copiar la URL de la aplicación web y pegarla en el campo del generador.
 
-> **Arranque en frío:** la primera ejecución del día puede tardar hasta 30 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
+> **Arranque en frío:** la primera ejecución del día puede tardar hasta 15 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
 
 ### Paso 4 — Descargar
-- **Descargar actividad HTML**: el archivo listo para publicar.
-- **Opción A — GitHub Pages**: subir al repositorio y activar Pages en Configuración → Pages.
-- **Opción B — CREA**: comprimir el HTML en un `.zip` y cargarlo como *Paquete de contenido web* en Recursos.
+- **Descargar actividad HTML**: el archivo listo para distribuir a los estudiantes.
+
+El HTML funciona abriéndolo directamente desde cualquier computadora (doble clic en el archivo). No necesita estar publicado en un servidor para que el envío a Google Sheets funcione. Formas de distribuirlo:
+
+- **Correo / Drive / CREA**: enviar el archivo directamente.
+- **GitHub Pages** (opcional): subir al repositorio y activar Pages en Configuración → Pages. Útil si se quiere un enlace permanente.
+- **CREA como recurso web** (opcional): comprimir el HTML en un `.zip` y cargarlo como *Paquete de contenido web* en Recursos.
 
 ---
 
@@ -83,10 +87,22 @@ Conectar con Google Sheets vía Apps Script:
 
 ---
 
+## Formato de la actividad generada
+
+El HTML que recibe el estudiante incluye:
+
+- **Pantalla de inicio**: título, materia, instrucciones y campo para ingresar nombre.
+- **Barra de progreso**: muestra en tiempo real cuántas preguntas fueron respondidas.
+- **Preguntas numeradas**: cada pregunta tiene su número (`01`, `02`...) en una columna izquierda con separadores punteados entre preguntas.
+- **Pantalla de resultados**: al enviar, el estudiante ve su puntaje desglosado por pregunta (si el GS está conectado) o una confirmación de envío.
+- **Pantalla completa obligatoria**: al iniciar se solicita modo pantalla completa; si el estudiante sale, queda registrado en la planilla.
+
+---
+
 ## Preguntas frecuentes
 
 **¿El archivo funciona abriéndolo directamente desde la computadora?**  
-No. Necesita estar publicado en un servidor web (GitHub Pages, CREA, etc.) para que el envío a Google Sheets funcione.
+Sí. El HTML generado puede abrirse con doble clic desde cualquier carpeta o dispositivo. El envío a Google Sheets usa JSONP, que funciona tanto desde `file://` como desde un servidor web. No es necesario publicar el archivo en ningún servidor.
 
 **¿Qué pasa si el estudiante cierra el navegador antes de enviar?**  
 Las respuestas no se guardan — deben reempezar. Considerar usar la clave de sesión para marcar actividades ya completadas.
