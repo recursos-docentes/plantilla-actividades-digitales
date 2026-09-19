@@ -825,12 +825,9 @@ function buildCodeGS() {
 var GS_FN=[
 'function doGet(e){',
 '  try{',
-'    var p=e.parameter,cb=p.callback||"cb";',
-'    var data=JSON.parse(decodeURIComponent(p.data||"{}"));',
-'    Logger.log("=== ACTIVIDAD DEBUG ===");',
-'    Logger.log("callback: "+cb);',
-'    Logger.log("data raw: "+(p.data||"(vacío)").substring(0,300));',
-'    Logger.log("data parsed: "+JSON.stringify(data));',
+'    var p=e.parameter;',
+'    var cb=(p.callback||"cb").replace(/[^a-zA-Z0-9_]/g,"");',
+'    var data=JSON.parse(p.data||"{}");',
 '    var ss=SpreadsheetApp.getActiveSpreadsheet();',
 '    var sh=ss.getSheetByName(SHEET_NAME);',
 '    if(!sh){',
@@ -990,12 +987,16 @@ function qHTMLBlock(q,num) {
     ansH+='</div><button class="clear-btn" onclick="clearFill(\''+q.id+'\')">↺ Limpiar</button>';
   }
 
-  var reqBadge = q.required ? '<span style="color:#ef4444;font-weight:700;font-size:13px;margin-left:6px" title="Obligatoria">*</span>' : '';
-  return '<div class="qblk" id="qb_'+q.id+'" data-qid="'+q.id+'" data-type="'+q.type+'"'+(q.required?' data-required="1"':'')+' data-answered="0">'
-    +'<div class="qtop"><span class="qn">Pregunta '+num+reqBadge+'</span><span class="qpts">'+ptLbl+'</span></div>'
+  var padNum = num < 10 ? '0'+num : ''+num;
+  return '<div class="question" id="qb_'+q.id+'" data-qid="'+q.id+'" data-type="'+q.type+'"'+(q.required?' data-required="1"':'')+' data-answered="0">'
+    +'<div class="gutter">'+padNum+'</div>'
+    +'<div class="qcontent">'
+    +'<div class="qtype-lbl">'+TYPE_LABELS[q.type]+(q.required?'<span class="req-star"> *</span>':'')+'</div>'
     +imgH
     +'<div class="qtext">'+textH+'</div>'
     +'<div class="qans">'+ansH+'</div>'
+    +'<div class="qpts-lbl">'+ptLbl+'</div>'
+    +'</div>'
     +'</div>';
 }
 
@@ -1036,6 +1037,8 @@ function actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta) {
   +'    <!-- QUIZ -->\n'
   +'    <div id="s-quiz" style="display:none">\n'
   +'      <div class="quiz-info"><span class="quiz-info-name" id="nbadge"></span></div>\n'
+  +'      <div class="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>\n'
+  +'      <div class="prog-label" id="prog-label"></div>\n'
   +qHTML+'\n'
   +'      <div class="submit-area">\n'
   +'        <button class="btn-enviar" id="btn-enviar" onclick="enviar()">Enviar actividad</button>\n'
@@ -1098,16 +1101,23 @@ var ACT_CSS=[
 '.btn-begin{background:var(--amber);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:\'Lora\',Georgia,serif;width:100%}',
 '.btn-begin:hover{opacity:.88}',
 '/* Quiz area */',
-'.quiz-info{display:flex;align-items:center;justify-content:flex-end;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border)}',
+'.quiz-info{display:flex;align-items:center;justify-content:flex-end;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}',
 '.quiz-info-name{font-size:13px;color:var(--muted);font-style:italic}',
-'/* Question cards */',
-'.qblk{background:var(--panel-2);border:1px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:14px}',
-'.qblk.q-ok{border-left:3px solid var(--green)}',
-'.qblk.q-par{border-left:3px solid #b45309}',
-'.qblk.q-wrong{border-left:3px solid var(--red)}',
-'.qtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}',
-'.qn{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.06em}',
-'.qpts{font-size:10px;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:2px 7px;border-radius:999px}',
+'/* Progress bar */',
+'.prog-wrap{height:5px;background:var(--border);border-radius:999px;margin-bottom:4px;overflow:hidden}',
+'.prog-bar{height:100%;background:var(--amber);border-radius:999px;width:0%;transition:width .35s}',
+'.prog-label{font-size:11px;color:var(--muted);text-align:right;margin-bottom:18px;font-family:monospace}',
+'/* Question rows */',
+'.question{display:flex;border-bottom:1px dashed var(--border);padding:18px 0;gap:0}',
+'.question:last-of-type{border-bottom:none}',
+'.question.q-ok .gutter{background:var(--green-dim);color:var(--green)}',
+'.question.q-par .gutter{background:#fdf6e8;color:#b45309}',
+'.question.q-wrong .gutter{background:var(--red-dim);color:var(--red)}',
+'.gutter{width:44px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding-top:3px;border-right:1.5px solid var(--border);margin-right:18px;font-family:monospace;font-size:15px;font-weight:700;color:var(--muted)}',
+'.qcontent{flex:1;min-width:0}',
+'.qtype-lbl{font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;display:flex;align-items:center;gap:6px}',
+'.req-star{color:#ef4444;font-size:13px;font-weight:900}',
+'.qpts-lbl{font-size:10px;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:2px 7px;border-radius:999px;display:inline-block;margin-top:10px}',
 '.qtext{font-size:14.5px;line-height:1.65;margin-bottom:13px;color:var(--text)}',
 '/* Options */',
 '.opts{display:flex;flex-direction:column;gap:7px}',
@@ -1179,7 +1189,8 @@ var ACT_CSS=[
 '  .window{border-radius:8px}',
 '  .win-content{padding:18px 14px}',
 '  .splash h1{font-size:18px}',
-'  .qblk{padding:14px 13px;border-radius:8px}',
+'  .question{flex-direction:column;padding:14px 0}',
+'  .gutter{width:auto;border-right:none;border-bottom:1.5px solid var(--border);margin-right:0;margin-bottom:10px;padding:0 0 6px 0;justify-content:flex-start;font-size:13px}',
 '  .match-cols{grid-template-columns:1fr}',
 '  .match-item{font-size:13px}',
 '  .opt-lbl{font-size:13px}',
@@ -1221,10 +1232,29 @@ var ACT_JS=[
 '  if(!nombre){var err=document.getElementById("splash-err");if(err)err.textContent="⚠ Ingresar el nombre y apellido antes de comenzar.";return;}',
 '  document.getElementById("nbadge").textContent=nombre;',
 '  scr("s-quiz");',
+'  updProgress();',
 '  if(TIMER_MIN>0){var tmrEl=document.getElementById("tmr");if(tmrEl)tmrEl.style.display="block";}',
 '  requestFS();',
 '  if(TIMER_MIN>0){tLeft=TIMER_MIN*60;updTimer();timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;enviar();}},1000);}',
 '}',
+'',
+'function updProgress(){',
+'  var total=QMETA.length,done=0;',
+'  QMETA.forEach(function(q){',
+'    var qb=document.getElementById("qb_"+q.id);if(!qb)return;',
+'    var ans=false;',
+'    if(qb.querySelector("input[type=radio]:checked,input[type=checkbox]:checked"))ans=true;',
+'    var ta=qb.querySelector("textarea");if(ta&&ta.value.trim())ans=true;',
+'    if(Object.keys(matchState[q.id]||{}).length>0)ans=true;',
+'    if(qb.querySelector(".blank.filled"))ans=true;',
+'    if(ans)done++;',
+'  });',
+'  var pct=total?Math.round(done/total*100):0;',
+'  var pb=document.getElementById("prog-bar");if(pb)pb.style.width=pct+"%";',
+'  var pl=document.getElementById("prog-label");if(pl)pl.textContent=done+" / "+total+" respondida"+(done===1?"":"s");',
+'}',
+'document.addEventListener("change",function(e){if(document.getElementById("s-quiz")&&document.getElementById("s-quiz").style.display!=="none")updProgress();});',
+'document.addEventListener("input",function(e){if(e.target.tagName==="TEXTAREA")updProgress();});',
 '',
 'function mLeft(btn){',
 '  var qid=btn.dataset.qid,val=btn.dataset.val;',
@@ -1247,6 +1277,7 @@ var ACT_JS=[
 '  matchState[qid][matchSel[qid]]=val;',
 '  matchSel[qid]=null;',
 '  updMatch(qid);',
+'  updProgress();',
 '}',
 'function updMatch(qid){',
 '  var sel=matchSel[qid];',
@@ -1287,6 +1318,7 @@ var ACT_JS=[
 '  span.dataset.filled=activeWord.dataset.word;',
 '  span.classList.add("filled");',
 '  activeWord.disabled=true;activeWord.classList.remove("sel");activeWord=null;',
+'  updProgress();',
 '}',
 '',
 'function clearFill(qid){',
@@ -1322,7 +1354,7 @@ var ACT_JS=[
 '  if(sent)return;',
 '  // Validar preguntas obligatorias',
 '  var missing=[];',
-'  document.querySelectorAll(".qblk[data-required=\'1\']").forEach(function(blk){',
+'  document.querySelectorAll(".question[data-required=\'1\']").forEach(function(blk){',
 '    var qid=blk.dataset.qid,ok=false;',
 '    var radios=blk.querySelectorAll("input[type=radio]");',
 '    if(radios.length){ok=Array.from(radios).some(function(r){return r.checked;});}',
@@ -1352,16 +1384,16 @@ var ACT_JS=[
 '  var btn=document.getElementById("btn-enviar");if(btn)btn.disabled=true;',
 '  scr("s-wait");',
 '  var payload=collect();',
-'  console.log("[Actividad] payload enviado:", JSON.stringify(payload));',
 '  try{localStorage.setItem(LS_KEY,JSON.stringify({sent:true,ts:Date.now()}));}catch(e){}',
 '  if(!WEB_URL){setTimeout(function(){showResult(null);},800);return;}',
 '  var cb="cb_"+Date.now();',
-'  var tm=setTimeout(function(){cleanup();showResult(null);},32000);',
+'  var tm=setTimeout(function(){cleanup();showResult(null);},15000);',
 '  window[cb]=function(d){clearTimeout(tm);cleanup();showResult(d);};',
 '  function cleanup(){try{delete window[cb];}catch(e){}var s=document.getElementById("_sc");if(s)s.parentNode.removeChild(s);}',
 '  var sep=WEB_URL.indexOf("?")>=0?"&":"?";',
 '  var sc=document.createElement("script");sc.id="_sc";',
-'  sc.src=WEB_URL+sep+"callback="+cb+"&data="+encodeURIComponent(JSON.stringify(payload));',
+'  sc.onerror=function(){clearTimeout(tm);cleanup();showResult(null);};',
+'  sc.src=WEB_URL+sep+"data="+encodeURIComponent(JSON.stringify(payload))+"&callback="+cb;',
 '  document.head.appendChild(sc);',
 '}',
 '',
