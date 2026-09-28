@@ -770,10 +770,13 @@ Reglas:
     <dd>Un nombre interno que identifica a cada actividad dentro del navegador. Si dos actividades distintas usan el mismo nombre, el navegador las confunde. Por eso cada actividad necesita una clave única, por ejemplo <code>logica_fracciones_2026</code>.</dd>
 
     <dt>Pantalla completa forzada</dt>
-    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, aparece una pantalla de bloqueo con aviso y se pausa el cronómetro; cada salida queda registrada en la columna <strong>Salidas pantalla</strong> de la planilla. El envío no es automático. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
+    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, aparece una pantalla de bloqueo con aviso y se pausa el cronómetro; cada salida queda registrada en las columnas <strong>Salidas pantalla</strong> y <strong>Tiempo fuera (seg)</strong> de la planilla. El envío no es automático. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
 
     <dt>Salidas pantalla</dt>
-    <dd>Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de pantalla completa durante la actividad. Permite identificar posibles intentos de consultar otras pestañas o recursos externos.</dd>
+    <dd>Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de pantalla completa durante la actividad. Se complementa con la columna <strong>Tiempo fuera (seg)</strong>.</dd>
+
+    <dt>Tiempo fuera (seg)</dt>
+    <dd>Columna en la planilla que registra el total de segundos acumulados que el estudiante estuvo fuera de pantalla completa, sumando todas las salidas. Si el estudiante salió tres veces (30 seg + 15 seg + 20 seg), la columna muestra 65. Permite distinguir una salida accidental de un intento prolongado de consultar otras pestañas.</dd>
 
     <dt>Tipo tfse (V / F / Sin Evidencia)</dt>
     <dd>Variante del tipo Verdadero/Falso que agrega una tercera opción: "Sin Evidencia", para afirmaciones que no pueden responderse con los datos disponibles. La respuesta correcta puede ser <code>"true"</code>, <code>"false"</code> o <code>"se"</code>.</dd>

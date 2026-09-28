@@ -84,6 +84,8 @@ El HTML funciona abriéndolo directamente desde cualquier computadora (doble cli
 | Total | Total de preguntas con corrección automática |
 | Puntos obtenidos | Puntaje conseguido |
 | Puntos totales | Puntaje máximo posible |
+| Salidas pantalla | Cantidad de veces que el estudiante salió de pantalla completa |
+| Tiempo fuera (seg) | Total de segundos acumulados fuera de pantalla completa (suma de todas las salidas) |
 
 ---
 
