@@ -88,7 +88,7 @@ pre{font-family:var(--mono);font-size:12.5px;line-height:1.6;overflow-x:auto;whi
 .steps{display:flex;flex-direction:column;gap:0}
 .step{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)}
 .step:last-child{border-bottom:none}
-.step-num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:var(--acc-light);color:var(--acc);border:2px solid var(--acc-border);font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:var(--mono)}
 .step-body{flex:1}
 .step-body strong{display:block;margin-bottom:4px;font-size:15px;font-weight:700}
 .step-body p{margin-bottom:0;font-size:14px;color:var(--muted)}
@@ -209,14 +209,14 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
 
 <div class="tabs" role="tablist">
   <button class="tab-btn" data-tab="arquitectura"><span class="num">1</span>Arquitectura</button>
-  <button class="tab-btn" data-tab="generador"><span class="num">2</span>El Generador</button>
-  <button class="tab-btn" data-tab="preguntas"><span class="num">3</span>Preguntas</button>
-  <button class="tab-btn" data-tab="planilla"><span class="num">4</span>Planilla</button>
-  <button class="tab-btn" data-tab="webapp"><span class="num">5</span>Web App</button>
-  <button class="tab-btn" data-tab="url"><span class="num">6</span>Pegar URL</button>
-  <button class="tab-btn" data-tab="descargar"><span class="num">7</span>Descargar</button>
-  <button class="tab-btn" data-tab="github"><span class="num">8</span>Publicar</button>
-  <button class="tab-btn" data-tab="glosario"><span class="num">9</span>Glosario</button>
+  <button class="tab-btn" data-tab="preguntas"><span class="num">2</span>Preguntas</button>
+  <button class="tab-btn" data-tab="planilla"><span class="num">3</span>Planilla</button>
+  <button class="tab-btn" data-tab="webapp"><span class="num">4</span>Web App</button>
+  <button class="tab-btn" data-tab="url"><span class="num">5</span>Pegar URL</button>
+  <button class="tab-btn" data-tab="descargar"><span class="num">6</span>Descargar</button>
+  <button class="tab-btn" data-tab="github"><span class="num">7</span>Publicar</button>
+  <button class="tab-btn" data-tab="glosario"><span class="num">8</span>Glosario</button>
+  <button class="tab-btn" data-tab="generador"><span class="num">9</span>El Generador</button>
 </div>
 
 <!-- ═══════════════════════════════════  1 ══ -->
@@ -249,7 +249,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
       <tr><th>Archivo</th><th>Dónde vive</th></tr>
       <tr>
         <td><code>actividad.html</code></td>
-        <td>GitHub Pages (o cualquier servidor web)</td>
+        <td>En la computadora del estudiante, o en un servidor web (GitHub Pages, CREA, etc.)</td>
       </tr>
       <tr>
         <td><code>Code.gs</code></td>
@@ -261,7 +261,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
       </tr>
       <tr>
         <td>Generador</td>
-        <td>Tu computadora (o en la web — ver pestaña 2)</td>
+        <td>Tu computadora (ver «El Generador», última pestaña)</td>
       </tr>
     </table>
   </div>
@@ -276,7 +276,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
 
 <!-- ═══════════════════════════════════  2 ══ -->
 <section class="panel" id="panel-generador">
-  <h2><span class="n">2</span>El Generador</h2>
+  <h2><span class="n">9</span>El Generador</h2>
   <p class="sub">Un archivo HTML que corre en el navegador: no requiere instalar nada.</p>
 
   <div class="cta" style="margin-bottom:18px">
@@ -322,12 +322,12 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
     El Generador trae preguntas de ejemplo para mostrar los tipos disponibles. Para empezar una actividad nueva, basta con cambiar la configuración y eliminar o reemplazar esas preguntas.
   </div>
 
-  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
+  <div class="panel-nav"><button class="prev">← Anterior</button></div>
 </section>
 
 <!-- ═══════════════════════════════════  3 ══ -->
 <section class="panel" id="panel-preguntas">
-  <h2><span class="n">3</span>Cargar las preguntas</h2>
+  <h2><span class="n">2</span>Cargar las preguntas</h2>
   <p class="sub">Siete tipos disponibles, cada uno con su panel de edición.</p>
 
   <div class="tbl-wrap">
@@ -491,7 +491,7 @@ Reglas:
 
 <!-- ═══════════════════════════════════  4 ══ -->
 <section class="panel" id="panel-planilla">
-  <h2><span class="n">4</span>Planilla y Code.gs</h2>
+  <h2><span class="n">3</span>Planilla y Code.gs</h2>
   <p class="sub">El script que recibe las respuestas y las guarda en Google Sheets.</p>
 
   <div class="steps">
@@ -540,7 +540,7 @@ Reglas:
 
 <!-- ═══════════════════════════════════  5 ══ -->
 <section class="panel" id="panel-webapp">
-  <h2><span class="n">5</span>Publicar como aplicación web</h2>
+  <h2><span class="n">4</span>Publicar como aplicación web</h2>
   <p class="sub">Este paso convierte el script en una URL que la actividad puede llamar para guardar respuestas.</p>
 
   <div class="steps">
@@ -585,7 +585,7 @@ Reglas:
 
   <div class="callout warn">
     <span class="tag">Arranque en frío</span>
-    La primera ejecución diaria puede tardar hasta 30 segundos. Abrir la URL de la Web App en el navegador 2–3 minutos antes de la clase para pre-calentar el servidor y evitar demoras al primer envío.
+    La primera ejecución diaria puede tardar hasta 15 segundos. Abrir la URL de la Web App en el navegador 2–3 minutos antes de la clase para pre-calentar el servidor y evitar demoras al primer envío.
   </div>
 
   <div class="callout warn">
@@ -598,7 +598,7 @@ Reglas:
 
 <!-- ═══════════════════════════════════  6 ══ -->
 <section class="panel" id="panel-url">
-  <h2><span class="n">6</span>Pegar la URL en el Generador</h2>
+  <h2><span class="n">5</span>Pegar la URL en el Generador</h2>
   <p class="sub">Este es el dato que conecta la actividad con la planilla.</p>
 
   <p>Volver al Generador y pegar la URL copiada en el paso anterior en el campo <strong>"URL del Web App de Google Apps Script"</strong>. Ahora el Generador tiene todo lo que necesita para producir la actividad completa.</p>
@@ -613,7 +613,7 @@ Reglas:
 
 <!-- ═══════════════════════════════════  7 ══ -->
 <section class="panel" id="panel-descargar">
-  <h2><span class="n">7</span>Generar y descargar la actividad</h2>
+  <h2><span class="n">6</span>Generar y descargar la actividad</h2>
   <p class="sub">El Generador produce el HTML de la actividad con todo adentro: preguntas, estilos, lógica y URL de la planilla.</p>
 
   <p>Hacer clic en <strong>⬇ Descargar actividad HTML</strong>. El archivo se descarga con el nombre configurado (por ejemplo <code>actividad_conjuntos.html</code>).</p>
@@ -653,12 +653,12 @@ Reglas:
 
 <!-- ═══════════════════════════════════  8 ══ -->
 <section class="panel" id="panel-github">
-  <h2><span class="n">8</span>Publicar la actividad</h2>
+  <h2><span class="n">7</span>Publicar la actividad</h2>
   <p class="sub">La actividad debe estar en un servidor web para que el envío a la planilla funcione. Estas son las opciones más comunes.</p>
 
-  <div class="callout warn">
-    <span class="tag">⚠ No funciona como archivo local</span>
-    La actividad <strong>no funciona si se abre directamente desde la computadora</strong> (doble clic o <code>file://...</code>). Los navegadores bloquean las solicitudes JSONP desde orígenes locales, por lo que el envío a la planilla falla silenciosamente. Los alumnos deben acceder siempre mediante una URL que empiece con <code>https://</code>.
+  <div class="callout info">
+    <span class="tag">También funciona como archivo local</span>
+    El HTML generado puede abrirse con doble clic directamente desde la computadora del estudiante — no es obligatorio publicarlo en un servidor. El envío usa JSONP, que funciona tanto desde <code>file://</code> como desde <code>https://</code>. Publicarlo en CREA o GitHub Pages sigue siendo útil si se quiere distribuir por enlace o sin depender de que el estudiante tenga el archivo.
   </div>
 
   <h3 style="margin-top:24px">Opción A — CREA</h3>
@@ -729,7 +729,7 @@ Reglas:
 
 <!-- ═══════════════════════════════════  9 ══ -->
 <section class="panel" id="panel-glosario">
-  <h2><span class="n">9</span>Glosario</h2>
+  <h2><span class="n">8</span>Glosario</h2>
   <p class="sub">Términos técnicos que aparecen en la guía, explicados sin jerga.</p>
 
   <dl>
@@ -785,7 +785,7 @@ Reglas:
     <dd>Un archivo que lleva todo adentro: estilos, lógica, preguntas. No depende de otros archivos ni de conexión a internet para mostrarse correctamente. La actividad generada es autocontenida, por eso funciona igual si se comparte por correo, pendrive o GitHub Pages.</dd>
   </dl>
 
-  <div class="panel-nav"><button class="prev">← Anterior</button></div>
+  <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
 </section>
 
 <footer>
@@ -793,7 +793,7 @@ Reglas:
 </footer>
 
 <script>
-var TABS = ['arquitectura','generador','preguntas','planilla','webapp','url','descargar','github','glosario'];
+var TABS = ['arquitectura','preguntas','planilla','webapp','url','descargar','github','glosario','generador'];
 
 function activate(id, scroll){
   TABS.forEach(function(t){
