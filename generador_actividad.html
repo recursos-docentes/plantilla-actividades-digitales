@@ -40,6 +40,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height
 
 /* FIELDS */
 .field{margin-bottom:14px}
+.q-card-err{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(192,57,43,.15)}
+.q-warn{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.35);color:var(--red);font-size:13px;font-weight:600;padding:7px 10px;border-radius:6px;margin-bottom:10px}
 .field label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
 .field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--serif);font-size:15px;padding:9px 12px;outline:none;transition:border-color .15s}
 .field input:focus,.field textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(59,91,219,.12)}
@@ -302,6 +304,8 @@ V / F / Sin Evidencia: {"type":"tfse","text":"Enunciado","correct":"false","punt
 Abierta: {"type":"open","text":"Enunciado","puntaje":2}
 Emparejar: {"type":"match","text":"Enunciado","pairs":[{"left":"Elemento A","right":"Concepto 1"},{"left":"Elemento B","right":"Concepto 2"}],"puntaje":2}
 Banco de palabras (las palabras entre corchetes son los huecos): {"type":"fill","text":"El [hidrógeno] tiene número atómico [1].","extraWords":"oxígeno,carbono","puntaje":2}
+
+IMPORTANTE: todas las preguntas, salvo las abiertas, deben traer la respuesta correcta ("correct" con la letra o letras de las opciones, "pairs" completos o palabras entre [corchetes]). No dejar ninguna sin respuesta.
 
 Tema: [INDICAR TEMA]
 Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick="copyPrompt()">📋 Copiar</button></div>
@@ -618,25 +622,26 @@ function addQ(type) {
 }
 
 function removeQ(id)      { questions = questions.filter(function(q){return q.id!==id;}); renderAll(); }
-function setQText(id,v)   { gq(id).text = v; }
-function setOpt(id,i,v)   { gq(id).opts[i] = v; }
+function setQText(id,v)   { gq(id).text = v; updWarn(id); }
+function setOpt(id,i,v)   { gq(id).opts[i] = v; updWarn(id); }
 function setPoints(id,v)  { gq(id).points = Math.max(1,parseInt(v)||1); }
-function setFillText(id,v)      { gq(id).fillText = v; }
+function setFillText(id,v)      { gq(id).fillText = v; updWarn(id); }
 function setExtra(id,v)         { gq(id).extraWords = v; }
 function setRequired(id,v)      { gq(id).required = v; }
 function setShuffleOpts(id,v)   { gq(id).shuffleOpts = v; }
-function setPair(id,pi,s,v){ gq(id).pairs[pi][s] = v; }
+function setPair(id,pi,s,v){ gq(id).pairs[pi][s] = v; updWarn(id); }
 function addPair(id)       { gq(id).pairs.push({left:'',right:''}); renderAll(); }
 function removePair(id,pi) { gq(id).pairs.splice(pi,1); renderAll(); }
 function gq(id)            { return questions.find(function(q){return q.id===id;}); }
 
-function setCorrectSingle(id,v) { gq(id).correct = v; }
+function setCorrectSingle(id,v) { gq(id).correct = v; updWarn(id); }
 function setCorrectMulti(id,v,checked) {
   var q = gq(id);
   if (!Array.isArray(q.correct)) q.correct = [];
   if (checked) { if (!q.correct.includes(v)) q.correct.push(v); }
   else { q.correct = q.correct.filter(function(x){return x!==v;}); }
   q.correct.sort();
+  updWarn(id);
 }
 function moveQ(id,dir) {
   var i = questions.findIndex(function(q){return q.id===id;}), j=i+dir;
@@ -673,8 +678,8 @@ function card(q,idx) {
       var L=LETS[oi];
       var chk = q.type==='single' ? (q.correct===L?'checked':'') : (Array.isArray(q.correct)&&q.correct.includes(L)?'checked':'');
       var chg = q.type==='single'
-        ? 'setCorrectSingle("'+q.id+'","'+L+'")'
-        : 'setCorrectMulti("'+q.id+'","'+L+'",this.checked)';
+        ? "setCorrectSingle('"+q.id+"','"+L+"')"
+        : "setCorrectMulti('"+q.id+"','"+L+"',this.checked)";
       body += '<div class="opt-row">'
         +'<input type="'+it+'" name="cr_'+q.id+'" value="'+L+'" '+chk+' onchange="'+chg+'" title="Correcta">'
         +'<span class="opt-letter">'+L+')</span>'
@@ -733,7 +738,8 @@ function card(q,idx) {
     ? '<div style="margin-bottom:10px"><div style="font-size:11px;font-family:var(--mono);color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Enunciado</div><textarea class="enunciado-ta" oninput="setQText(\''+q.id+'\',this.value)" rows="2">'+esc(q.text)+'</textarea></div>'
     : '';
 
-  return '<div class="q-card" id="qcard_'+q.id+'">'
+  var wTxt = warnHTML(q);
+  return '<div class="q-card'+(wTxt?' q-card-err':'')+'" id="qcard_'+q.id+'">'
     +'<div class="q-card-hd"><span class="q-num">P'+(idx+1)+'</span><span class="q-badge">'+TYPE_LABELS[q.type]+'</span>'
     +'<div class="q-acts">'
     +'<button class="btn btn-ghost btn-sm" onclick="moveQ(\''+q.id+'\',-1)" title="Subir">↑</button>'
@@ -741,6 +747,7 @@ function card(q,idx) {
     +'<button class="btn btn-danger btn-sm" onclick="removeQ(\''+q.id+'\')">✕</button>'
     +'</div></div>'
     +'<div class="q-card-body">'
+    +'<div class="q-warn" id="qwarn_'+q.id+'" style="display:'+(wTxt?'block':'none')+'">'+esc(wTxt)+'</div>'
     +enunciadoHtml
     +imgHtml
     +'<div style="margin-top:10px">'+body+'</div>'
@@ -796,9 +803,9 @@ function doImport() {
       id:'q'+qCounter, type:it.type,
       text: it.text||'',
       opts: it.opts ? it.opts.slice() : [],
-      correct: it.correct!==undefined ? it.correct : ((it.type==='tf'||it.type==='tfse')?'true':it.type==='single'?'a':[]),
-      pairs: it.pairs ? it.pairs.map(function(p){return {left:p.left||'',right:p.right||''};}) : [],
-      fillText: it.type==='fill' ? (it.text||'') : '',
+      correct: normCorrect(it),
+      pairs: normPairs(it.pairs),
+      fillText: it.type==='fill' ? (it.text||it.fillText||'') : '',
       extraWords: it.extraWords||'',
       image: null,
       points: it.puntaje||it.points||1,
@@ -810,8 +817,114 @@ function doImport() {
   renderAll();
   toggleImport();
   document.getElementById('import-json').value='';
-  if (imported) alert('Se importaron '+imported+' pregunta(s) correctamente.');
+  var probs = allProblems();
+  if (imported && probs.length) alert('Se importaron '+imported+' pregunta(s), pero '+probs.length+' necesita(n) revisión antes de descargar:\n\n'+probs.join('\n')+'\n\nLas preguntas con problemas quedan marcadas en rojo.');
+  else if (imported) alert('Se importaron '+imported+' pregunta(s) correctamente.');
   else alert('No se importó ninguna pregunta. Verificar los tipos: single, multi, tf, tfse, open, match, fill.');
+}
+
+// ── Normalización de lo que devuelve la IA ──
+var LETTERS = ['a','b','c','d','e','f'];
+function letterFor(v, opts) {
+  if (v===undefined || v===null) return '';
+  var t = String(v).trim();
+  var m = t.match(/^\(?([a-fA-F])\)?[).:]?$/);
+  if (m) return m[1].toLowerCase();
+  if (opts) {
+    var i = opts.findIndex(function(o){ return String(o).trim().toLowerCase() === t.toLowerCase(); });
+    if (i >= 0) return LETTERS[i];
+  }
+  return '';
+}
+function normCorrect(it) {
+  var c = it.correct!==undefined ? it.correct : (it.correcta!==undefined ? it.correcta : it.answer);
+  var opts = it.opts || [];
+  if (it.type==='single') return letterFor(Array.isArray(c) ? c[0] : c, opts);
+  if (it.type==='multi') {
+    var arr = Array.isArray(c) ? c : (c===undefined || c===null ? [] : String(c).split(/[,;]+|\s+y\s+|\s+/));
+    var out = [];
+    arr.forEach(function(x){ var L = letterFor(x, opts); if (L && out.indexOf(L)<0) out.push(L); });
+    return out.sort();
+  }
+  if (it.type==='tf' || it.type==='tfse') {
+    if (c===true) return 'true';
+    if (c===false) return 'false';
+    var t = String(c===undefined||c===null ? '' : c).trim().toLowerCase();
+    if (['true','verdadero','v'].indexOf(t)>=0) return 'true';
+    if (['false','falso','f'].indexOf(t)>=0) return 'false';
+    if (it.type==='tfse' && ['se','sin evidencia','sin_evidencia','sinevidencia'].indexOf(t)>=0) return 'se';
+    return '';
+  }
+  return null;
+}
+function normPairs(pairs) {
+  if (!Array.isArray(pairs)) return [];
+  return pairs.map(function(p){
+    if (Array.isArray(p)) return {left:String(p[0]||''), right:String(p[1]||'')};
+    p = p || {};
+    return {
+      left:  String(p.left  || p.izquierda || p.izq || p.a || ''),
+      right: String(p.right || p.derecha   || p.der || p.b || '')
+    };
+  });
+}
+function cleanPairs(q) {
+  return (q.pairs||[]).filter(function(p){ return String(p.left).trim() && String(p.right).trim(); });
+}
+
+// ── Validación: preguntas sin respuesta correcta o incompletas ──
+function qProblems(q) {
+  var p = [];
+  var valid = (q.opts||[]).map(function(o,i){ return String(o).trim() ? LETTERS[i] : null; }).filter(Boolean);
+  if (q.type!=='fill' && !String(q.text||'').trim()) p.push('falta el enunciado');
+  if (q.type==='single' || q.type==='multi') {
+    if (valid.length < 2) p.push('tiene menos de 2 opciones con texto');
+  }
+  if (q.type==='single') {
+    if (!q.correct) p.push('falta marcar la opción correcta');
+    else if (valid.indexOf(q.correct)<0) p.push('la opción marcada como correcta está vacía');
+  } else if (q.type==='multi') {
+    var c = Array.isArray(q.correct) ? q.correct : [];
+    if (!c.length) p.push('falta marcar las opciones correctas');
+    else if (c.some(function(L){ return valid.indexOf(L)<0; })) p.push('hay una opción vacía marcada como correcta');
+  } else if (q.type==='tf') {
+    if (['true','false'].indexOf(q.correct)<0) p.push('falta marcar Verdadero o Falso');
+  } else if (q.type==='tfse') {
+    if (['true','false','se'].indexOf(q.correct)<0) p.push('falta marcar la respuesta correcta');
+  } else if (q.type==='match') {
+    var incompletos = (q.pairs||[]).filter(function(x){ return !!String(x.left).trim() !== !!String(x.right).trim(); }).length;
+    if (!cleanPairs(q).length) p.push('no tiene ningún par completo');
+    if (incompletos) p.push(incompletos+' par(es) con un solo lado completo');
+  } else if (q.type==='fill') {
+    if (!/\[[^\]]+\]/.test(q.fillText||'')) p.push('no tiene ninguna palabra entre [corchetes]');
+  }
+  return p;
+}
+function allProblems() {
+  var out = [];
+  questions.forEach(function(q,i){
+    var p = qProblems(q);
+    if (p.length) out.push('P'+(i+1)+' ('+TYPE_LABELS[q.type]+'): '+p.join('; '));
+  });
+  return out;
+}
+function warnHTML(q) {
+  var p = qProblems(q);
+  return p.length ? '⚠ '+p.join(' · ') : '';
+}
+function updWarn(id) {
+  var q = gq(id); if (!q) return;
+  var el = document.getElementById('qwarn_'+id);
+  var card = document.getElementById('qcard_'+id);
+  var w = warnHTML(q);
+  if (el) { el.textContent = w; el.style.display = w ? 'block' : 'none'; }
+  if (card) card.classList.toggle('q-card-err', !!w);
+}
+function checkBeforeDownload() {
+  var probs = allProblems();
+  if (!probs.length) return true;
+  alert('No se puede descargar todavía. Hay '+probs.length+' pregunta(s) incompletas:\n\n'+probs.join('\n')+'\n\nCorregirlas en el Paso 2 (están marcadas en rojo).');
+  return false;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -824,7 +937,7 @@ function buildCodeGS() {
     pts[q.id]=parseInt(q.points)||1;
     if (q.type==='single'||q.type==='tf'||q.type==='tfse') singles[q.id]=q.correct;
     else if (q.type==='multi') multis[q.id]=(Array.isArray(q.correct)?q.correct:[]).slice().sort();
-    else if (q.type==='match') pairs[q.id]=q.pairs.map(function(p){return [p.left,p.right];});
+    else if (q.type==='match') pairs[q.id]=cleanPairs(q).map(function(p){return [p.left,p.right];});
     else if (q.type==='fill') {
       var ans=[],re=/\[([^\]]+)\]/g,m;
       while((m=re.exec(q.fillText))!==null) ans.push(m[1]);
@@ -866,23 +979,23 @@ var GS_FN=[
 '      var pt=QUESTION_POINTS[id]||1; totalPts+=pt; totalQ++;',
 '      var ans=data[id];',
 '      if(CORRECT_ANSWERS[id]!==undefined){',
-'        var ok=String(ans)===String(CORRECT_ANSWERS[id]);',
+'        var ok=String(CORRECT_ANSWERS[id]||"")!==""&&String(ans)===String(CORRECT_ANSWERS[id]);',
 '        if(ok){correct++;earned+=pt;} details[id]={correct:ok,earned:ok?pt:0,max:pt};',
 '      }else if(CORRECT_MULTI[id]){',
 '        var exp=CORRECT_MULTI[id].slice().sort().join(",");',
 '        var got=(Array.isArray(ans)?ans.slice().sort():[]).join(",");',
-'        var ok=exp===got; if(ok){correct++;earned+=pt;}',
+'        var ok=exp!==""&&exp===got; if(ok){correct++;earned+=pt;}',
 '        details[id]={correct:ok,earned:ok?pt:0,max:pt};',
 '      }else if(CORRECT_PAIRS[id]){',
 '        var ep=CORRECT_PAIRS[id],gp=Array.isArray(ans)?ans:[],pc=0;',
 '        ep.forEach(function(e){gp.forEach(function(g){if(Array.isArray(g)&&g[0]===e[0]&&g[1]===e[1])pc++;});});',
-'        var r=ep.length>0?pc/ep.length:0,pe=Math.round(pt*r*10)/10,ok=pc===ep.length;',
+'        var r=ep.length>0?pc/ep.length:0,pe=Math.round(pt*r*10)/10,ok=ep.length>0&&pc===ep.length;',
 '        if(ok)correct++; earned+=pe;',
 '        details[id]={correct:ok,earned:pe,max:pt,partial:!ok&&pc>0};',
 '      }else if(CORRECT_FILLS[id]){',
 '        var ef=CORRECT_FILLS[id],gf=Array.isArray(ans)?ans:[],fc=0;',
 '        var bl=[];ef.forEach(function(w,i){var okb=!!(gf[i]&&gf[i].trim().toLowerCase()===w.trim().toLowerCase());bl.push(okb);if(okb)fc++;});',
-'        var r=ef.length>0?fc/ef.length:0,fe=Math.round(pt*r*10)/10,ok=fc===ef.length;',
+'        var r=ef.length>0?fc/ef.length:0,fe=Math.round(pt*r*10)/10,ok=ef.length>0&&fc===ef.length;',
 '        if(ok)correct++; earned+=fe;',
 '        details[id]={correct:ok,earned:fe,max:pt,partial:!ok&&fc>0,blanks:bl};',
 '      }',
@@ -979,13 +1092,13 @@ function qHTMLBlock(q,num) {
   } else if (q.type==='open') {
     ansH='<textarea class="open-ta" name="'+q.id+'" rows="4" placeholder="Escribir la respuesta aquí..."></textarea>';
   } else if (q.type==='match') {
-    var rights=q.pairs.map(function(p){return p.right;}).filter(Boolean);
+    var cp=cleanPairs(q);
+    var rights=cp.map(function(p){return p.right;});
     var shuf=rights.slice().sort(function(){return Math.random()-.5;});
     ansH='<p class="match-hint">Hacer clic en un elemento de la izquierda y luego en el correspondiente de la derecha.</p>';
     ansH+='<div class="match-cols">';
     ansH+='<div class="match-col">';
-    q.pairs.forEach(function(p){
-      if(!p.left)return;
+    cp.forEach(function(p){
       ansH+='<button type="button" class="match-item match-left" data-qid="'+q.id+'" data-val="'+esc(p.left)+'" onclick="mLeft(this)">'+esc(p.left)+'<span class="match-badge"></span></button>';
     });
     ansH+='</div><div class="match-col">';
@@ -1583,11 +1696,13 @@ function dlFile(content,name,mime){
 
 function downloadCodeGS(){
   if(!questions.length){alert('Primero agregar preguntas en el Paso 2.');return;}
+  if(!checkBeforeDownload())return;
   dlFile(buildCodeGS(), slug(document.getElementById('cfg-title').value)+'_Code.gs','text/plain');
 }
 
 function downloadHTML(){
   if(!questions.length){alert('Agregar al menos una pregunta antes de descargar.');return;}
+  if(!checkBeforeDownload())return;
   dlFile(buildActivityHTML(), slug(document.getElementById('cfg-title').value)+'.html','text/html');
 }
 </script>
