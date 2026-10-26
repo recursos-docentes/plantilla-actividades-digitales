@@ -21,6 +21,14 @@ Herramienta para crear actividades interactivas con corrección automática vía
 - **Tiempo límite** (en minutos; 0 = sin límite).
 - **Clave de sesión**: identificador único para esta actividad en `localStorage` (evita que el estudiante reenvíe). Usar una clave distinta para cada actividad, por ejemplo `conjuntos_2026_g1`.
 
+**Control durante la evaluación:**
+- **Salidas permitidas antes del envío automático** (0 = nunca): cuenta salir de pantalla completa, cambiar de ventana (Alt+Tab) u ocultar la pestaña. Al llegar al límite, la actividad se envía sola con lo respondido.
+- **Copiar y pegar**:
+  - *Solo dentro de la actividad* (por defecto): se puede copiar y pegar lo escrito en la propia actividad (útil para código). Lo que viene de afuera se bloquea y se registra; el texto de la actividad no sale al portapapeles del sistema.
+  - *Bloqueado*: no se permite copiar ni pegar.
+  - *Permitido sin restricciones*: comportamiento normal.
+- **Pausar el reloj mientras está fuera**: desmarcado por defecto (el tiempo sigue corriendo aunque el estudiante salga).
+
 ### Paso 2 — Preguntas
 Agregar preguntas una a una con los botones de tipo, o importar desde JSON.
 
@@ -84,8 +92,15 @@ El HTML funciona abriéndolo directamente desde cualquier computadora (doble cli
 | Total | Total de preguntas con corrección automática |
 | Puntos obtenidos | Puntaje conseguido |
 | Puntos totales | Puntaje máximo posible |
-| Salidas pantalla | Cantidad de veces que el estudiante salió de pantalla completa |
-| Tiempo fuera (seg) | Total de segundos acumulados fuera de pantalla completa (suma de todas las salidas) |
+| Salidas (pantalla/ventana) | Cantidad de veces que el estudiante salió de la actividad (pantalla completa, Alt+Tab o cambio de pestaña) |
+| Tiempo fuera (seg) | Total de segundos acumulados fuera de la actividad (suma de todas las salidas) |
+| Pegados bloqueados | Intentos de pegar texto traído de afuera (o cualquier pegado, en modo *Bloqueado*) |
+| Inserciones sospechosas | Veces que apareció mucho texto de golpe (≥ 25 caracteres) o a ritmo no humano (≥ 20 caracteres/seg) en una respuesta abierta |
+| Registro de salidas | Hora, motivo y duración de cada salida |
+| Registro de inserciones | Hora y pregunta de cada inserción sospechosa |
+| Envío | `Manual` o `Automático` con el motivo (límite de salidas o tiempo agotado) |
+
+> Si se reutiliza una planilla con la hoja "Respuestas" creada por una versión anterior, las columnas nuevas no tendrán encabezado. Conviene usar una planilla nueva o borrar esa hoja.
 
 ---
 
@@ -97,7 +112,8 @@ El HTML que recibe el estudiante incluye:
 - **Barra de progreso**: muestra en tiempo real cuántas preguntas fueron respondidas.
 - **Preguntas numeradas**: cada pregunta tiene su número (`01`, `02`...) en una columna izquierda con separadores punteados entre preguntas.
 - **Pantalla de resultados**: al enviar, el estudiante ve su puntaje desglosado por pregunta (si el GS está conectado) o una confirmación de envío.
-- **Pantalla completa obligatoria**: al iniciar se solicita modo pantalla completa; si el estudiante sale, queda registrado en la planilla.
+- **Pantalla completa obligatoria**: al iniciar se solicita modo pantalla completa; si el estudiante sale de ella, cambia de ventana o de pestaña, aparece una pantalla de bloqueo y la salida queda registrada en la planilla.
+- **Respuestas protegidas**: las respuestas correctas (incluidas las del banco de palabras) solo están en `Code.gs`, no en el HTML del estudiante.
 
 ---
 

@@ -770,10 +770,19 @@ Reglas:
     <dd>Un nombre interno que identifica a cada actividad dentro del navegador. Si dos actividades distintas usan el mismo nombre, el navegador las confunde. Por eso cada actividad necesita una clave única, por ejemplo <code>logica_fracciones_2026</code>.</dd>
 
     <dt>Pantalla completa forzada</dt>
-    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, aparece una pantalla de bloqueo con aviso y se pausa el cronómetro; cada salida queda registrada en las columnas <strong>Salidas pantalla</strong> y <strong>Tiempo fuera (seg)</strong> de la planilla. El envío no es automático. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
+    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, cambia de ventana (Alt+Tab) u oculta la pestaña, aparece una pantalla de bloqueo con aviso; cada salida queda registrada en las columnas <strong>Salidas (pantalla/ventana)</strong>, <strong>Tiempo fuera (seg)</strong> y <strong>Registro de salidas</strong> de la planilla. Por defecto el cronómetro sigue corriendo (se puede elegir pausarlo) y, si se configura un límite de salidas, la actividad se envía automáticamente al alcanzarlo. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
 
-    <dt>Salidas pantalla</dt>
-    <dd>Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de pantalla completa durante la actividad. Se complementa con la columna <strong>Tiempo fuera (seg)</strong>.</dd>
+    <dt>Salidas (pantalla/ventana)</dt>
+    <dd>Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de la actividad: salir de pantalla completa, cambiar de ventana o de programa (Alt+Tab) u ocultar la pestaña. Se complementa con <strong>Tiempo fuera (seg)</strong> y con <strong>Registro de salidas</strong>, que detalla la hora, el motivo y la duración de cada una.</dd>
+
+    <dt>Salidas permitidas antes del envío automático</dt>
+    <dd>Opción del paso 1. Si vale 0, las salidas solo se registran. Si vale, por ejemplo, 3, al tercer abandono la actividad se envía sola con lo respondido hasta ese momento, y la columna <strong>Envío</strong> lo indica.</dd>
+
+    <dt>Copiar y pegar</dt>
+    <dd>Opción del paso 1 con tres modos. <strong>Solo dentro de la actividad</strong> (por defecto): se puede copiar y pegar texto escrito en la propia actividad, útil para reorganizar código; lo copiado desde otro programa o página se bloquea, y el texto de la actividad no sale al portapapeles del sistema. <strong>Bloqueado</strong>: no se permite copiar ni pegar. <strong>Permitido sin restricciones</strong>: comportamiento normal del navegador. Los intentos bloqueados se cuentan en la columna <strong>Pegados bloqueados</strong>.</dd>
+
+    <dt>Inserciones sospechosas</dt>
+    <dd>Columna que cuenta las veces que en una respuesta abierta apareció mucho texto de golpe (25 caracteres o más en un solo evento) o a un ritmo no humano (20 caracteres o más en un segundo). Suele indicar texto insertado por una extensión o un programa. La columna <strong>Registro de inserciones</strong> muestra la hora y la pregunta. Es un indicio para revisar, no una prueba.</dd>
 
     <dt>Tiempo fuera (seg)</dt>
     <dd>Columna en la planilla que registra el total de segundos acumulados que el estudiante estuvo fuera de pantalla completa, sumando todas las salidas. Si el estudiante salió tres veces (30 seg + 15 seg + 20 seg), la columna muestra 65. Permite distinguir una salida accidental de un intento prolongado de consultar otras pestañas.</dd>

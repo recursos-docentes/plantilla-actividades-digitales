@@ -248,6 +248,28 @@ input[type=file]{display:none}
       </div>
     </div>
 
+    <p class="sec-title" style="font-size:16px;margin-top:22px">Control durante la evaluación</p>
+    <div class="grid-2">
+      <div class="field">
+        <label>Salidas permitidas antes del envío automático</label>
+        <input type="number" id="cfg-max-exits" value="0" min="0">
+        <div class="hint">Cuenta salir de pantalla completa, cambiar de ventana (Alt+Tab) o de pestaña. 0 = nunca se envía sola, solo se registra.</div>
+      </div>
+      <div class="field">
+        <label>Copiar y pegar</label>
+        <select id="cfg-paste">
+          <option value="internal" selected>Solo dentro de la actividad</option>
+          <option value="block">Bloqueado</option>
+          <option value="free">Permitido sin restricciones</option>
+        </select>
+        <div class="hint">"Solo dentro de la actividad": se puede copiar y pegar lo escrito en la propia actividad (útil para código). Lo que viene de afuera se bloquea y queda registrado.</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="q-chk-lbl" style="font-size:14px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400"><input type="checkbox" id="cfg-pause-timer" style="accent-color:var(--acc);width:15px;height:15px"> Pausar el reloj mientras el estudiante está fuera de la actividad</label>
+      <div class="hint">Desmarcado (recomendado): el tiempo sigue corriendo aunque salga.</div>
+    </div>
+
     <div class="step-nav">
       <span></span>
       <button class="btn btn-primary" onclick="goStep(2)">Siguiente: Preguntas →</button>
@@ -834,7 +856,7 @@ var GS_FN=[
 '      sh=ss.insertSheet(SHEET_NAME);',
 '      var hdrs=["Timestamp","Nombre"];',
 '      QUESTION_IDS.forEach(function(id){hdrs.push(id);});',
-'      hdrs.push("Correctas","Total","Puntos obtenidos","Puntos totales","Salidas pantalla","Tiempo fuera (seg)");',
+'      hdrs.push("Correctas","Total","Puntos obtenidos","Puntos totales","Salidas (pantalla/ventana)","Tiempo fuera (seg)","Pegados bloqueados","Inserciones sospechosas","Registro de salidas","Registro de inserciones","Envío");',
 '      sh.appendRow(hdrs);',
 '    }',
 '    var row=[new Date(),data.nombre||""];',
@@ -859,13 +881,13 @@ var GS_FN=[
 '        details[id]={correct:ok,earned:pe,max:pt,partial:!ok&&pc>0};',
 '      }else if(CORRECT_FILLS[id]){',
 '        var ef=CORRECT_FILLS[id],gf=Array.isArray(ans)?ans:[],fc=0;',
-'        ef.forEach(function(w,i){if(gf[i]&&gf[i].trim().toLowerCase()===w.trim().toLowerCase())fc++;});',
+'        var bl=[];ef.forEach(function(w,i){var okb=!!(gf[i]&&gf[i].trim().toLowerCase()===w.trim().toLowerCase());bl.push(okb);if(okb)fc++;});',
 '        var r=ef.length>0?fc/ef.length:0,fe=Math.round(pt*r*10)/10,ok=fc===ef.length;',
 '        if(ok)correct++; earned+=fe;',
-'        details[id]={correct:ok,earned:fe,max:pt,partial:!ok&&fc>0};',
+'        details[id]={correct:ok,earned:fe,max:pt,partial:!ok&&fc>0,blanks:bl};',
 '      }',
 '    });',
-'    row.push(correct,totalQ,earned,totalPts,data.fsExits||0,data.fsOutSec||0);',
+'    row.push(correct,totalQ,earned,totalPts,data.fsExits||0,data.fsOutSec||0,data.pasteBlocked||0,data.suspicious||0,data.exitLog||"",data.suspLog||"",data.envio||"Manual");',
 '    sh.appendRow(row);',
 '    var res={ok:true,correct:correct,total:totalQ,earned:earned,totalPts:totalPts,details:details};',
 '    return ContentService.createTextOutput(cb+"("+JSON.stringify(res)+")").setMimeType(ContentService.MimeType.JAVASCRIPT);',
@@ -893,11 +915,6 @@ function buildActivityHTML() {
   var qHTML = qs.map(function(q,i){return qHTMLBlock(q,i+1);}).join('\n');
   var qMeta = JSON.stringify(qs.map(function(q){
     var o={id:q.id,type:q.type,pts:parseInt(q.points)||1,required:!!q.required};
-    if (q.type==='fill'){
-      var a=[],re=/\[([^\]]+)\]/g,m;
-      while((m=re.exec(q.fillText))!==null) a.push(m[1]);
-      o.fillAnswers=a;
-    }
     return o;
   }));
 
@@ -925,7 +942,7 @@ function qHTMLBlock(q,num) {
   if (q.type==='fill') {
     var bi=0;
     textH = esc(q.fillText).replace(/\[([^\]]+)\]/g,function(_,w){
-      return '<span class="blank" data-idx="'+(bi++)+'" data-answer="'+esc(w)+'" onclick="fillBlank(this)">______</span>';
+      return '<span class="blank" data-idx="'+(bi++)+'" onclick="fillBlank(this)">______</span>';
     });
   } else {
     textH = esc(q.text).replace(/\n/g,'<br>');
@@ -1009,11 +1026,12 @@ function actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta) {
   return '<!-- OVERLAY PANTALLA COMPLETA -->\n'
   +'<div id="fs-overlay">\n'
   +'  <div class="fs-icon">🔒</div>\n'
-  +'  <div class="fs-title">Saliste de pantalla completa</div>\n'
-  +'  <p class="fs-msg">Durante la evaluación es obligatorio permanecer en pantalla completa. Hacer clic en el botón para continuar. La salida queda registrada.</p>\n'
-  +'  <button class="fs-btn" onclick="volverFS()">↩ Volver a pantalla completa</button>\n'
+  +'  <div class="fs-title">Salida de la actividad detectada</div>\n'
+  +'  <p class="fs-msg">Durante la evaluación es obligatorio permanecer en esta ventana y en pantalla completa. Hacer clic en el botón para continuar. La salida queda registrada.</p>\n'
+  +'  <button class="fs-btn" onclick="volverFS()">↩ Volver a la actividad</button>\n'
   +'  <p class="fs-count" id="fs-exit-count"></p>\n'
   +'</div>\n\n'
+  +'<div id="clip-toast"></div>\n'
   +'<div class="win-bg">\n'
   +'<div class="window">\n'
   +'  <div class="titlebar">\n'
@@ -1066,6 +1084,9 @@ function actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta) {
   +'var WEB_URL='+JSON.stringify(url)+';\n'
   +'var LS_KEY='+JSON.stringify(lsKey)+';\n'
   +'var TIMER_MIN='+timer+';\n'
+  +'var MAX_EXITS='+(parseInt(document.getElementById('cfg-max-exits').value)||0)+';\n'
+  +'var PAUSE_TIMER='+(document.getElementById('cfg-pause-timer').checked?'true':'false')+';\n'
+  +'var PASTE_MODE='+JSON.stringify(document.getElementById('cfg-paste').value||'internal')+';\n'
   +'var QMETA='+qMeta+';\n'
   +ACT_JS
   +'\n<\/script>';
@@ -1182,7 +1203,9 @@ var ACT_CSS=[
 '.fs-title{font-size:22px;font-weight:700;color:#f87171;margin-bottom:10px}',
 '.fs-msg{font-size:14px;color:rgba(255,255,255,.7);max-width:420px;line-height:1.7;margin-bottom:26px}',
 '.fs-btn{background:var(--amber);color:#fff;border:none;border-radius:10px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer}',
-'.fs-count{font-size:12px;color:#febc2e;margin-top:16px;font-weight:700}',
+'.fs-count{font-size:12px;color:#febc2e;margin-top:16px;font-weight:700;max-width:420px;line-height:1.6}',
+'#clip-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1e1030;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:10000;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}',
+'#clip-toast.show{opacity:1}',
 '/* Responsive */',
 '@media(max-width:600px){',
 '  .win-bg{padding:10px 8px 40px}',
@@ -1204,29 +1227,101 @@ var ACT_CSS=[
 // ── JavaScript de la actividad (HTML del estudiante) ───────
 var ACT_JS=[
 'var nombre="",timerIv=null,tLeft=TIMER_MIN*60,sent=false,activeWord=null,fsExits=0,fsStarted=false,fsOutMs=0,fsExitStart=0,matchState={},matchSel={};',
+'var started=false,isOut=false,dialogOpen=false,exitLog=[],pasteBlocked=0,suspicious=0,suspLog=[],internalClip="",autoReason="",lastLen={},typeTimes=[],lastSuspAt=0,internalInsert=false;',
 '',
 'function scr(id){["s-start","s-quiz","s-wait","s-result"].forEach(function(s){var e=document.getElementById(s);if(e)e.style.display=s===id?"block":"none"});}',
 '',
-'/* ── Pantalla completa ── */',
+'/* ── Pantalla completa y salidas de la actividad ── */',
 'function requestFS(){var el=document.documentElement;var p=el.requestFullscreen?el.requestFullscreen():el.webkitRequestFullscreen?el.webkitRequestFullscreen():null;if(p)p.catch(function(){});}',
 'function isFS(){return !!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement);}',
-'function handleFSChange(){',
-'  if(sent)return;',
-'  if(isFS()){',
-'    fsStarted=true;',
-'    if(fsExitStart>0){fsOutMs+=Date.now()-fsExitStart;fsExitStart=0;}',
-'    var ov=document.getElementById("fs-overlay");if(ov)ov.classList.remove("show");',
-'    if(TIMER_MIN>0&&tLeft>0&&!timerIv){updTimer();timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;enviar();}},1000);}',
-'  } else if(fsStarted){',
-'    fsExits++;',
-'    fsExitStart=Date.now();',
-'    var ov=document.getElementById("fs-overlay");if(ov)ov.classList.add("show");',
-'    var ec=document.getElementById("fs-exit-count");if(ec)ec.textContent="Salida #"+fsExits+" registrada";',
-'    if(timerIv){clearInterval(timerIv);timerIv=null;}',
-'  }',
+'function hora(){var d=new Date();return d.toTimeString().slice(0,8);}',
+'function startTimer(){',
+'  if(TIMER_MIN<=0||timerIv||tLeft<=0||sent)return;',
+'  updTimer();',
+'  timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;autoReason="se agotó el tiempo";enviar(true);}},1000);',
 '}',
-'function volverFS(){requestFS();}',
-'["fullscreenchange","webkitfullscreenchange","mozfullscreenchange"].forEach(function(ev){document.addEventListener(ev,handleFSChange);});',
+'function stopTimer(){if(timerIv){clearInterval(timerIv);timerIv=null;}}',
+'function salida(motivo){',
+'  if(!started||sent||dialogOpen)return;',
+'  if(isOut)return;',
+'  isOut=true;fsExits++;fsExitStart=Date.now();',
+'  exitLog.push(hora()+" "+motivo);',
+'  if(PAUSE_TIMER)stopTimer();',
+'  var ov=document.getElementById("fs-overlay");if(ov)ov.classList.add("show");',
+'  var ec=document.getElementById("fs-exit-count");',
+'  if(ec){',
+'    var t="Salida #"+fsExits+" registrada ("+motivo+").";',
+'    if(MAX_EXITS>0){var r=MAX_EXITS-fsExits;t+=r>0?" Al llegar a "+MAX_EXITS+" salidas la actividad se envía automáticamente (quedan "+r+").":"";}',
+'    ec.textContent=t;',
+'  }',
+'  if(MAX_EXITS>0&&fsExits>=MAX_EXITS){autoReason="se alcanzó el límite de "+MAX_EXITS+" salidas";enviar(true);}',
+'}',
+'function regreso(){',
+'  if(!isOut||sent)return;',
+'  if(document.hidden||!document.hasFocus())return;',
+'  if(fsStarted&&!isFS())return;',
+'  isOut=false;',
+'  if(fsExitStart>0){var ms=Date.now()-fsExitStart;fsOutMs+=ms;fsExitStart=0;if(exitLog.length)exitLog[exitLog.length-1]+=" ("+Math.round(ms/1000)+"s)";}',
+'  var ov=document.getElementById("fs-overlay");if(ov)ov.classList.remove("show");',
+'  startTimer();',
+'}',
+'function handleFSChange(){',
+'  if(sent||!started)return;',
+'  if(isFS()){fsStarted=true;}',
+'  else if(fsStarted){salida("salió de pantalla completa");}',
+'}',
+'function volverFS(){',
+'  if(fsStarted&&!isFS()){requestFS();setTimeout(regreso,300);}',
+'  else{regreso();}',
+'}',
+'["fullscreenchange","webkitfullscreenchange","mozfullscreenchange"].forEach(function(ev){document.addEventListener(ev,function(){handleFSChange();if(isFS())setTimeout(regreso,150);});});',
+'window.addEventListener("blur",function(){setTimeout(function(){if(!document.hasFocus())salida("cambió de ventana");},120);});',
+'document.addEventListener("visibilitychange",function(){if(document.hidden)salida("ocultó la pestaña");});',
+'function safeAlert(m){dialogOpen=true;try{alert(m);}finally{setTimeout(function(){dialogOpen=false;},300);}}',
+'function safeConfirm(m){dialogOpen=true;var r;try{r=confirm(m);}finally{setTimeout(function(){dialogOpen=false;},300);}return r;}',
+'',
+'/* ── Copiar y pegar ── */',
+'var toastT=null;',
+'function toast(m){var t=document.getElementById("clip-toast");if(!t)return;t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2600);}',
+'function isEditable(el){return el&&(el.tagName==="TEXTAREA"||(el.tagName==="INPUT"&&el.type==="text"));}',
+'function selText(e){var el=e.target;if(isEditable(el)&&typeof el.selectionStart==="number")return el.value.slice(el.selectionStart,el.selectionEnd);return String(window.getSelection()||"");}',
+'function insertAt(el,txt){',
+'  internalInsert=true;el.focus();',
+'  var ok=false;try{ok=document.execCommand("insertText",false,txt);}catch(x){}',
+'  if(!ok){var s0=el.selectionStart,s1=el.selectionEnd;el.setRangeText(txt,s0,s1,"end");el.dispatchEvent(new Event("input",{bubbles:true}));}',
+'  internalInsert=false;',
+'}',
+'function blockedPaste(){pasteBlocked++;toast(PASTE_MODE==="block"?"Copiar y pegar está deshabilitado en esta actividad.":"Solo se puede pegar texto copiado dentro de esta actividad. El intento quedó registrado.");}',
+'["copy","cut"].forEach(function(evn){document.addEventListener(evn,function(e){',
+'  if(!started||sent||PASTE_MODE==="free")return;',
+'  e.preventDefault();',
+'  if(PASTE_MODE==="block"){toast("Copiar y pegar está deshabilitado en esta actividad.");return;}',
+'  var t=selText(e);if(!t)return;',
+'  internalClip=t;',
+'  if(evn==="cut"&&isEditable(e.target)&&!e.target.readOnly&&!e.target.disabled){insertAt(e.target,"");}',
+'});});',
+'document.addEventListener("paste",function(e){',
+'  if(!started||sent||PASTE_MODE==="free")return;',
+'  e.preventDefault();',
+'  if(PASTE_MODE==="block"){blockedPaste();return;}',
+'  var ext="";try{ext=(e.clipboardData||window.clipboardData).getData("text")||"";}catch(x){}',
+'  var norm=function(x){return String(x).replace(/\\r\\n/g,"\\n");};',
+'  if(ext&&norm(ext)!==norm(internalClip)){blockedPaste();return;}',
+'  if(!internalClip)return;',
+'  if(isEditable(e.target)&&!e.target.readOnly&&!e.target.disabled)insertAt(e.target,internalClip);',
+'});',
+'["drop","dragstart"].forEach(function(evn){document.addEventListener(evn,function(e){if(started&&!sent&&PASTE_MODE!=="free"){e.preventDefault();if(evn==="drop")blockedPaste();}});});',
+'document.addEventListener("contextmenu",function(e){if(started&&!sent&&PASTE_MODE!=="free")e.preventDefault();});',
+'',
+'/* ── Detección de texto insertado de golpe o a ritmo no humano ── */',
+'function marcarSospecha(qid,motivo,throttle){var now=Date.now();if(throttle){if(now-lastSuspAt<5000)return;lastSuspAt=now;}suspicious++;suspLog.push(hora()+" "+qid+": "+motivo);}',
+'document.addEventListener("input",function(e){',
+'  var el=e.target;if(!started||sent||el.tagName!=="TEXTAREA")return;',
+'  var qid=el.name||"?",prev=lastLen[qid]||0,len=el.value.length,delta=len-prev;lastLen[qid]=len;',
+'  if(internalInsert)return;',
+'  if(delta>=25)marcarSospecha(qid,"+"+delta+" caracteres de una vez");',
+'  if(delta===1){var now=Date.now();typeTimes.push(now);while(typeTimes.length&&now-typeTimes[0]>1000)typeTimes.shift();if(typeTimes.length>=20)marcarSospecha(qid,typeTimes.length+" caracteres en 1 segundo",true);}',
+'},true);',
 '',
 '',
 'function iniciar(){',
@@ -1236,8 +1331,9 @@ var ACT_JS=[
 '  scr("s-quiz");',
 '  updProgress();',
 '  if(TIMER_MIN>0){var tmrEl=document.getElementById("tmr");if(tmrEl)tmrEl.style.display="block";}',
+'  started=true;',
 '  requestFS();',
-'  if(TIMER_MIN>0){tLeft=TIMER_MIN*60;updTimer();timerIv=setInterval(function(){tLeft--;updTimer();if(tLeft<=0){clearInterval(timerIv);timerIv=null;enviar();}},1000);}',
+'  if(TIMER_MIN>0){tLeft=TIMER_MIN*60;startTimer();}',
 '}',
 '',
 'function updProgress(){',
@@ -1332,7 +1428,7 @@ var ACT_JS=[
 '',
 'function collect(){',
 '  var fsOutSec=Math.round((fsOutMs+(fsExitStart>0?Date.now()-fsExitStart:0))/1000);',
-'  var ans={nombre:nombre,fsExits:fsExits,fsOutSec:fsOutSec};',
+'  var ans={nombre:nombre,fsExits:fsExits,fsOutSec:fsOutSec,pasteBlocked:pasteBlocked,suspicious:suspicious,exitLog:exitLog.join(" | "),suspLog:suspLog.join(" | "),envio:autoReason?"Automático: "+autoReason:"Manual"};',
 '  QMETA.forEach(function(q){',
 '    var qb=document.getElementById("qb_"+q.id);if(!qb)return;',
 '    if(q.type==="single"||q.type==="tf"||q.type==="tfse"){',
@@ -1353,8 +1449,9 @@ var ACT_JS=[
 '  return ans;',
 '}',
 '',
-'function enviar(){',
+'function enviar(force){',
 '  if(sent)return;',
+'  if(!force){',
 '  // Validar preguntas obligatorias',
 '  var missing=[];',
 '  document.querySelectorAll(".question[data-required=\'1\']").forEach(function(blk){',
@@ -1378,12 +1475,15 @@ var ACT_JS=[
 '  });',
 '  if(missing.length){',
 '    missing[0].scrollIntoView({behavior:"smooth",block:"center"});',
-'    alert("Hay " + missing.length + " pregunta(s) obligatoria(s) sin responder. Están marcadas con * en rojo.");',
+'    safeAlert("Hay " + missing.length + " pregunta(s) obligatoria(s) sin responder. Están marcadas con * en rojo.");',
 '    return;',
 '  }',
-'  if(!confirm("¿Enviar la actividad? No se puede modificar después."))return;',
+'  if(!safeConfirm("¿Enviar la actividad? No se puede modificar después."))return;',
+'  }',
 '  sent=true;',
-'  if(timerIv)clearInterval(timerIv);',
+'  stopTimer();',
+'  if(isOut&&fsExitStart>0){fsOutMs+=Date.now()-fsExitStart;fsExitStart=0;}',
+'  var ov=document.getElementById("fs-overlay");if(ov)ov.classList.remove("show");',
 '  var btn=document.getElementById("btn-enviar");if(btn)btn.disabled=true;',
 '  scr("s-wait");',
 '  var payload=collect();',
@@ -1402,6 +1502,7 @@ var ACT_JS=[
 '',
 'function showResult(data){',
 '  scr("s-result");',
+'  if(autoReason){var rt=document.querySelector(".res-title");if(rt)rt.textContent="Actividad enviada automáticamente: "+autoReason;}',
 '  var se=document.getElementById("res-score"),de=document.getElementById("res-details");',
 '  if(!data||!data.ok){',
 '    se.innerHTML="Enviado";',
@@ -1433,9 +1534,9 @@ var ACT_JS=[
 '    qb.querySelectorAll(".match-item").forEach(function(b){b.disabled=true;if(!d.correct)b.style.opacity="0.6";});',
 '  }else if(q.type==="fill"){',
 '    qb.querySelectorAll(".blank").forEach(function(b){',
-'      var f=(b.dataset.filled||"").trim().toLowerCase();',
-'      var a=(b.dataset.answer||"").trim().toLowerCase();',
-'      b.classList.add(f===a?"ok-b":"err-b");',
+'      var bi=parseInt(b.dataset.idx)||0;',
+'      var okb=d.blanks?!!d.blanks[bi]:d.correct;',
+'      b.classList.add(okb?"ok-b":"err-b");',
 '    });',
 '  }',
 '  qb.querySelectorAll("input,textarea,select,button").forEach(function(e){e.disabled=true;});',
