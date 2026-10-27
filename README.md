@@ -21,6 +21,8 @@ Herramienta para crear actividades interactivas con corrección automática vía
 - **Tiempo límite** (en minutos; 0 = sin límite).
 - **Clave de sesión**: identificador único para esta actividad en `localStorage` (evita que el estudiante reenvíe). Usar una clave distinta para cada actividad, por ejemplo `conjuntos_2026_g1`.
 
+- **Nota máxima** (por defecto 10): el puntaje se convierte proporcionalmente a esa escala (12 de 15 puntos = 8 sobre 10). 0 = mostrar solo puntos. Cada pregunta puede valer desde 0,5 puntos (en pasos de 0,5); en el Paso 2 se ve el total.
+
 **Control durante la evaluación:**
 - **Salidas permitidas antes del envío automático** (0 = nunca): cuenta salir de pantalla completa, cambiar de ventana (Alt+Tab) u ocultar la pestaña. Al llegar al límite, la actividad se envía sola con lo respondido.
 - **Copiar y pegar**:
@@ -92,6 +94,7 @@ El HTML funciona abriéndolo directamente desde cualquier computadora (doble cli
 | Total | Total de preguntas con corrección automática |
 | Puntos obtenidos | Puntaje conseguido |
 | Puntos totales | Puntaje máximo posible |
+| Nota (sobre N) | Puntos obtenidos convertidos proporcionalmente a la nota máxima del Paso 1 (por defecto 10), con un decimal |
 | Salidas (pantalla/ventana) | Cantidad de veces que el estudiante salió de la actividad (pantalla completa, Alt+Tab o cambio de pestaña) |
 | Tiempo fuera (seg) | Total de segundos acumulados fuera de la actividad (suma de todas las salidas) |
 | Pegados bloqueados | Intentos de pegar texto traído de afuera (o cualquier pegado, en modo *Bloqueado*) |
