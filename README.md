@@ -24,7 +24,7 @@ Herramienta para crear actividades interactivas con corrección automática vía
 - **Nota máxima** (por defecto 10): el puntaje se convierte proporcionalmente a esa escala (12 de 15 puntos = 8 sobre 10). 0 = mostrar solo puntos. Cada pregunta puede valer desde 0,5 puntos (en pasos de 0,5); en el Paso 2 se ve el total.
 
 **Control durante la evaluación:**
-- **Salidas permitidas antes del envío automático** (0 = nunca): cuenta salir de pantalla completa, cambiar de ventana (Alt+Tab) u ocultar la pestaña. Al llegar al límite, la actividad se envía sola con lo respondido.
+- **Envío automático por salidas** (casilla + cantidad de salidas permitidas): el estudiante puede salir y volver esa cantidad de veces; la salida siguiente envía la actividad con lo respondido. Con 1 sale una vez y vuelve, a la segunda se envía; con 0 se envía a la primera salida. Si la casilla está desmarcada, las salidas solo se registran. Cuenta salir de pantalla completa, Alt+Tab y cambio de pestaña.
 - **Copiar y pegar**:
   - *Solo dentro de la actividad* (por defecto): se puede copiar y pegar lo escrito en la propia actividad (útil para código). Lo que viene de afuera se bloquea y se registra; el texto de la actividad no sale al portapapeles del sistema.
   - *Bloqueado*: no se permite copiar ni pegar.
@@ -68,7 +68,9 @@ Conectar con Google Sheets vía Apps Script:
 3. En la planilla: **Extensiones → Apps Script**.
 4. Borrar el contenido del editor, pegar el código del `Code.gs` y guardar (Ctrl+S).
 5. **Implementar → Nueva implementación** → Tipo: Aplicación web → Ejecutar como: yo → Acceso: Cualquier usuario → Implementar.
+   - La primera vez, **autorizar el acceso**: *Autorizar acceso* → elegir la cuenta → si aparece "Google no verificó esta app": *Configuración avanzada → Ir a (proyecto)* → *Permitir*.
 6. Copiar la URL de la aplicación web y pegarla en el campo del generador.
+7. Probar la URL en una ventana de incógnito agregando `?callback=p&data={"nombre":"prueba"}`: debe responder `p({"ok":true…`. Con varias cuentas de Google abiertas, el navegador normal puede mostrar "No se pudo abrir el archivo" aunque funcione.
 
 > **Arranque en frío:** la primera ejecución del día puede tardar hasta 15 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
 

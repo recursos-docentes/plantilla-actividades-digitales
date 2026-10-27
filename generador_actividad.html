@@ -163,8 +163,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height
 /* MODE PANELS */
 .mode-panels{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
 .mode-panel{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
-.mode-panel-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;background:var(--card);transition:background .15s}
-.mode-panel-hd:hover{background:var(--card2)}
+.mode-panel-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;background:var(--acc-bg);transition:background .15s}
+.mode-panel-hd:hover{background:#dde3fb}
 .mode-panel-hd.mp-open{background:var(--acc-bg);border-bottom:1px solid var(--acc-border)}
 .mode-panel-title{font-size:14px;font-weight:700;color:var(--text)}
 .mode-panel-sub{font-size:12.5px;color:var(--muted);margin-top:1px}
@@ -262,9 +262,10 @@ input[type=file]{display:none}
     <p class="sec-title" style="font-size:16px;margin-top:22px">Control durante la evaluación</p>
     <div class="grid-2">
       <div class="field">
-        <label>Salidas permitidas antes del envío automático</label>
-        <input type="number" id="cfg-max-exits" value="0" min="0">
-        <div class="hint">Cuenta salir de pantalla completa, cambiar de ventana (Alt+Tab) o de pestaña. 0 = nunca se envía sola, solo se registra.</div>
+        <label>Envío automático por salidas</label>
+        <label class="q-chk-lbl" style="font-size:14px;color:var(--text);text-transform:none;letter-spacing:0;font-weight:400;margin-bottom:8px"><input type="checkbox" id="cfg-auto-exit" onchange="document.getElementById('cfg-max-exits').disabled=!this.checked" style="accent-color:var(--acc);width:15px;height:15px"> Enviar la actividad si sale más veces de las permitidas</label>
+        <input type="number" id="cfg-max-exits" value="2" min="0" disabled>
+        <div class="hint">Salidas permitidas: se puede salir y volver esa cantidad de veces; la salida siguiente envía la actividad. Con 1: sale una vez y vuelve; a la segunda se envía. Con 0: se envía a la primera salida. Desmarcado: las salidas solo se registran. Cuenta salir de pantalla completa, Alt+Tab y cambio de pestaña.</div>
       </div>
       <div class="field">
         <label>Copiar y pegar</label>
@@ -459,7 +460,9 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
         <li>Borrar todo el contenido del editor, <strong>pegar</strong> el contenido del archivo Code.gs y guardar (<kbd>Ctrl+S</kbd>).</li>
         <li>Ir a <strong>Implementar → Nueva implementación</strong>.</li>
         <li>Tipo: <strong>Aplicación web</strong>. Ejecutar como: yo. Quién tiene acceso: <strong>Cualquier usuario</strong>. Hacer clic en <strong>Implementar</strong>.</li>
+        <li><strong>Autorizar el acceso</strong> (solo la primera vez en cada planilla): Google muestra <em>"Se requiere autorización"</em> → <strong>Autorizar acceso</strong> → elegir la cuenta → si aparece <em>"Google no verificó esta app"</em>: <strong>Configuración avanzada → Ir a (nombre del proyecto)</strong> → <strong>Permitir</strong>.</li>
         <li>Copiar la <strong>URL de la aplicación web</strong> y pegarla en el campo de abajo.</li>
+        <li><strong>Probar la URL en una ventana de incógnito</strong> (Ctrl+Shift+N): pegarla y agregar al final <code>?callback=p&amp;data={"nombre":"prueba"}</code>. Si aparece <code>p({"ok":true…</code>, funciona (borrar luego la fila "prueba" de la planilla). Si aparece "No se pudo abrir el archivo", revisar que el acceso sea <strong>Cualquiera</strong>.</li>
       </ol>
     </div>
 
@@ -554,7 +557,7 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
 </main>
 
 <footer style="background:var(--acc);color:rgba(255,255,255,.8);text-align:center;padding:16px;font-size:13px;font-family:var(--serif)">
-  Recurso creado por <strong style="color:#fff">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026
+  Recurso creado por <strong style="color:#fff">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026 &middot; <span id="gen-version">versión 2026-10-26 · envío sin cookies</span>
 </footer>
 
 <script>
@@ -1059,7 +1062,7 @@ function buildActivityHTML() {
     .replace(/#6d28d9/g, pal.acc)
     .replace(/rgba\(109,40,217,\.12\)/g, pal.accDim);
 
-  return '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
+  return '<!DOCTYPE html>\n<!-- Generador de Actividades Digitales · versión 2026-10-26 · envío sin cookies -->\n<html lang="es">\n<head>\n'
     +'<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
     +'<title>'+esc(title)+'</title>\n'
     +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
@@ -1220,7 +1223,7 @@ function actBody(title,subject,inst,timer,lsKey,url,qHTML,qMeta) {
   +'var WEB_URL='+JSON.stringify(url)+';\n'
   +'var LS_KEY='+JSON.stringify(lsKey)+';\n'
   +'var TIMER_MIN='+timer+';\n'
-  +'var MAX_EXITS='+(parseInt(document.getElementById('cfg-max-exits').value)||0)+';\n'
+  +'var MAX_EXITS='+(document.getElementById('cfg-auto-exit').checked?Math.max(0,parseInt(document.getElementById('cfg-max-exits').value)||0):-1)+';\n'
   +'var PAUSE_TIMER='+(document.getElementById('cfg-pause-timer').checked?'true':'false')+';\n'
   +'var PASTE_MODE='+JSON.stringify(document.getElementById('cfg-paste').value||'internal')+';\n'
   +'var QMETA='+qMeta+';\n'
@@ -1387,10 +1390,10 @@ var ACT_JS=[
 '  var ec=document.getElementById("fs-exit-count");',
 '  if(ec){',
 '    var t="Salida #"+fsExits+" registrada ("+motivo+").";',
-'    if(MAX_EXITS>0){var r=MAX_EXITS-fsExits;t+=r>0?" Al llegar a "+MAX_EXITS+" salidas la actividad se envía automáticamente (quedan "+r+").":"";}',
+'    if(MAX_EXITS>=0){var r=MAX_EXITS-fsExits;t+=r>0?" Salidas permitidas: "+MAX_EXITS+" (quedan "+r+"). Si se supera el límite, la actividad se envía automáticamente.":(r===0?" Era la última salida permitida: la próxima envía la actividad automáticamente.":"");}',
 '    ec.textContent=t;',
 '  }',
-'  if(MAX_EXITS>0&&fsExits>=MAX_EXITS){autoReason="se alcanzó el límite de "+MAX_EXITS+" salidas";enviar(true);}',
+'  if(MAX_EXITS>=0&&fsExits>MAX_EXITS){autoReason=MAX_EXITS===0?"salió de la actividad (no se permitían salidas)":"superó las "+MAX_EXITS+" salida"+(MAX_EXITS===1?"":"s")+" permitida"+(MAX_EXITS===1?"":"s");enviar(true);}',
 '}',
 'function regreso(){',
 '  if(!isOut||sent)return;',
