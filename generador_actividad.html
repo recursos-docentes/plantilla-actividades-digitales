@@ -577,7 +577,7 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
 </main>
 
 <footer style="background:var(--acc);color:rgba(255,255,255,.8);text-align:center;padding:16px;font-size:13px;font-family:var(--serif)">
-  Recurso creado por <strong style="color:#fff">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026 &middot; <span id="gen-version">versión 2026-10-27 · v8</span>
+  Recurso creado por <strong style="color:#fff">Prof. Elizabeth Izquierdo</strong> con asistencia de IA &mdash; 2026 &middot; <span id="gen-version">versión 2026-10-27 · v9</span>
 </footer>
 
 <script>
@@ -1137,7 +1137,7 @@ function buildActivityHTML() {
     .replace(/#6d28d9/g, pal.acc)
     .replace(/rgba\(109,40,217,\.12\)/g, pal.accDim);
 
-  return '<!DOCTYPE html>\n<!-- Generador de Actividades Digitales · versión 2026-10-27 · v8 -->\n<html lang="es">\n<head>\n'
+  return '<!DOCTYPE html>\n<!-- Generador de Actividades Digitales · versión 2026-10-27 · v9 -->\n<html lang="es">\n<head>\n'
     +'<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
     +'<title>'+esc(title)+'</title>\n'
     +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
@@ -1495,7 +1495,7 @@ var ACT_JS=[
 'function safeConfirm(m){dialogOpen=true;var r;try{r=confirm(m);}finally{setTimeout(function(){dialogOpen=false;},300);}return r;}',
 '',
 '/* ── Copiar y pegar ── */',
-'var toastT=null;',
+'var toastT=null,CLIP_MARK="\\u2063";',
 'function toast(m){var t=document.getElementById("clip-toast");if(!t)return;t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove("show");},2600);}',
 'function isEditable(el){return el&&(el.tagName==="TEXTAREA"||(el.tagName==="INPUT"&&el.type==="text"));}',
 'function selText(e){var el=e.target;if(isEditable(el)&&typeof el.selectionStart==="number")return el.value.slice(el.selectionStart,el.selectionEnd);return String(window.getSelection()||"");}',
@@ -1512,6 +1512,8 @@ var ACT_JS=[
 '  if(PASTE_MODE==="block"){toast("Copiar y pegar está deshabilitado en esta actividad.");return;}',
 '  var t=selText(e);if(!t)return;',
 '  internalClip=t;',
+'  /* Marca invisible en el portapapeles del sistema: reemplaza lo que hubiera antes y no deja salir el texto de la actividad */',
+'  try{e.clipboardData.setData("text/plain",CLIP_MARK);}catch(x){}',
 '  if(evn==="cut"&&isEditable(e.target)&&!e.target.readOnly&&!e.target.disabled){insertAt(e.target,"");}',
 '});});',
 'document.addEventListener("paste",function(e){',
@@ -1520,7 +1522,7 @@ var ACT_JS=[
 '  if(PASTE_MODE==="block"){blockedPaste();return;}',
 '  var ext="";try{ext=(e.clipboardData||window.clipboardData).getData("text")||"";}catch(x){}',
 '  var norm=function(x){return String(x).replace(/\\r\\n/g,"\\n");};',
-'  if(ext&&norm(ext)!==norm(internalClip)){blockedPaste();return;}',
+'  if(ext&&ext!==CLIP_MARK&&norm(ext)!==norm(internalClip)){blockedPaste();return;}',
 '  if(!internalClip)return;',
 '  if(isEditable(e.target)&&!e.target.readOnly&&!e.target.disabled)insertAt(e.target,internalClip);',
 '});',
