@@ -90,7 +90,8 @@ pre{font-family:var(--mono);font-size:12.5px;line-height:1.6;overflow-x:auto;whi
 .step:last-child{border-bottom:none}
 .step-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;background:var(--acc-light);color:var(--acc);border:2px solid var(--acc-border);font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;font-family:var(--mono)}
 .step-body{flex:1}
-.step-body strong{display:block;margin-bottom:4px;font-size:15px;font-weight:700}
+.step-body > strong{display:block;margin-bottom:4px;font-size:15px;font-weight:700}
+.step-body p strong,.step-body li strong{display:inline;font-size:inherit;color:var(--text)}
 .step-body p{margin-bottom:0;font-size:14px;color:var(--muted)}
 
 /* FILEBOX */
@@ -165,7 +166,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
   /* pasos inline */
   .step{gap:10px;padding:10px 0}
   .step-num{width:26px;height:26px;font-size:12px}
-  .step-body strong{font-size:14px}
+  .step-body > strong{font-size:14px}
   .step-body p{font-size:13px}
 
   /* callouts */
@@ -240,7 +241,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
     <div class="arch-card">
       <div class="icon">📊</div>
       <h4>Google Sheets + Apps Script</h4>
-      <p>Recibe las respuestas, registra puntajes y salidas de pantalla</p>
+      <p>Recibe las respuestas, corrige, calcula la nota y registra las salidas</p>
     </div>
   </div>
 
@@ -268,7 +269,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
 
   <div class="callout tip">
     <span class="tag">Flujo general</span>
-    Abrir el Generador → cargar las preguntas → descargar Code.gs → crear planilla y publicar Web App → copiar la URL → pegarla en el Generador → descargar la actividad.html → publicarla en la web (GitHub Pages u otro servicio).
+    Abrir el Generador → cargar las preguntas → descargar Code.gs → crear planilla y publicar Web App → copiar la URL → pegarla en el Generador → descargar la actividad.html → probarla → distribuirla (como archivo, por CREA o por GitHub Pages).
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -290,20 +291,28 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
       <div class="step-body">
         <strong>Abrir el Generador</strong>
         <p>Hacer clic en el botón de arriba para abrirlo directamente en el navegador. También se puede descargar y abrir como archivo local — funciona igual en los dos casos.</p>
+        <p>Al pie del Generador figura la <strong>versión</strong> (por ejemplo <em>versión 2026-10-27 · v8</em>). Si después de una actualización sigue apareciendo la versión anterior, el navegador está mostrando una copia guardada: recargar sin caché con <strong>Ctrl+F5</strong> (en algunos teclados de notebook, <strong>Ctrl+Fn+F5</strong>).</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
         <strong>Completar la sección Configuración</strong>
-        <p>Título de la actividad, materia, instrucción inicial, cabecera de sección, tiempo en minutos y nombre del archivo que se va a descargar. La clave localStorage y la URL del Web App se completan más adelante.</p>
+        <p>Título, materia, instrucción inicial, tiempo límite (0 = sin límite) y clave de sesión. Además:</p>
+        <ul style="margin:6px 0 0;padding-left:20px;font-size:14px">
+          <li><strong>Nota máxima</strong> (por defecto 10): los puntos se convierten proporcionalmente a esa escala.</li>
+          <li><strong>Envío automático por salidas</strong>: casilla + cantidad de salidas permitidas.</li>
+          <li><strong>Copiar y pegar</strong>: solo dentro de la actividad, bloqueado o permitido.</li>
+          <li><strong>Pausar el reloj</strong> mientras el estudiante está fuera (desmarcado por defecto).</li>
+        </ul>
+        <p>La URL de la aplicación web se pega en el Paso 3 del Generador. El Generador <strong>no la recuerda</strong> al cerrarlo: hay que pegarla cada vez que se arma una actividad.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
         <strong>Cargar las preguntas</strong>
-        <p>Agregar preguntas una a una con los botones de tipo, o importar todas de golpe desde JSON. Cada pregunta se edita, reordena y elimina desde su propio panel desplegable.</p>
+        <p>Agregar preguntas una a una con los botones de tipo, o generarlas con IA desde el panel <strong>🤖 Generar con IA</strong>. Cada pregunta se edita, reordena y elimina desde su propia tarjeta. Las preguntas incompletas (por ejemplo, sin respuesta correcta marcada) quedan en rojo y el Generador no deja descargar hasta corregirlas.</p>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px">
           <span style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;font-family:var(--serif)">＋ Opción múltiple</span>
           <span style="background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;font-family:var(--serif)">＋ Múltiple respuesta</span>
@@ -319,7 +328,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
 
   <div class="callout tip">
     <span class="tag">Cada vez que se usa</span>
-    El Generador trae preguntas de ejemplo para mostrar los tipos disponibles. Para empezar una actividad nueva, basta con cambiar la configuración y eliminar o reemplazar esas preguntas.
+    El Generador se abre vacío: no guarda las preguntas ni la configuración de la vez anterior. Para modificar una actividad ya hecha, conviene guardar el JSON de las preguntas y volver a importarlo.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button></div>
@@ -372,13 +381,18 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
   </div>
 
   <div class="callout info">
+    <span class="tag">Puntaje y nota</span>
+    Cada pregunta tiene su campo <strong>Puntaje</strong> (desde 0,5, en pasos de 0,5). Junto a "Mezclar preguntas al azar" se ve el total, por ejemplo <em>Total: 15 puntos → nota sobre 10</em>. La nota se calcula en proporción: 12 de 15 puntos = 8 sobre 10, con un decimal.
+  </div>
+
+  <div class="callout info">
     <span class="tag">Agregar una imagen a una pregunta</span>
     Cada pregunta tiene un botón <strong>📷 Imagen</strong>. Al hacer clic se abre el selector de archivos; la imagen se convierte automáticamente a formato digital y queda embebida en el HTML generado, sin necesidad de subirla a ningún servidor.
   </div>
 
   <div class="callout tip">
     <span class="tag">Generar preguntas con IA e importarlas de golpe</span>
-    El Generador incluye un botón <strong>↓ Importar desde JSON</strong> que carga todas las preguntas a la vez. En lugar de escribirlas una por una, se le pide a la IA que las genere directamente en el formato JSON esperado, se copia el bloque y se pega en el importador.
+    En el Paso 2 del Generador, el panel <strong>🤖 Generar con IA</strong> arma el pedido para la IA. Se completan los datos, se copia el prompt, la IA devuelve las preguntas en formato JSON y se importan todas juntas.
   </div>
 
   <h3>Cómo hacerlo</h3>
@@ -386,92 +400,29 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
     <div class="step">
       <div class="step-num">1</div>
       <div class="step-body">
-        <strong>Pedir el JSON a la IA</strong>
-        <p>Usar este prompt (adaptando tema, curso y cantidad):</p>
+        <strong>Completar los datos del pedido</strong>
+        <p>Abrir el panel <strong>🤖 Generar con IA</strong> y completar <strong>Tema</strong>, <strong>Curso / nivel</strong> (opcional) y la <strong>cantidad de preguntas de cada tipo</strong>. El prompt se arma solo con esos datos. Si todas las cantidades quedan en 0, la IA elige la combinación de tipos.</p>
       </div>
     </div>
-  </div>
-
-  <div class="filebox">
-    <div class="bar">
-      <span>Prompt para la IA</span>
-      <button class="copybtn" onclick="copyBox(this)">Copiar</button>
-    </div>
-    <pre>Generame un array JSON con preguntas para una actividad digital de [TEMA], para [CURSO].
-Incluir: 3 de opción múltiple, 1 de múltiple respuesta, 2 de verdadero/falso, 1 de V/F/Sin Evidencia, 1 abierta, 1 de emparejar y 1 de banco de palabras.
-Usar exactamente este formato — sin texto adicional fuera del array:
-
-[
-  {
-    "type": "single",
-    "text": "Enunciado de la pregunta",
-    "opts": ["Opción A", "Opción B", "Opción C", "Opción D"],
-    "correct": "a"
-  },
-  {
-    "type": "multi",
-    "text": "¿Cuáles de las siguientes son propiedades de los conjuntos? (Seleccionar todas las correctas.)",
-    "opts": ["Propiedad A", "Propiedad B", "Propiedad C", "Propiedad D"],
-    "correct": ["a", "c"]
-  },
-  {
-    "type": "tf",
-    "text": "Enunciado para verdadero o falso.",
-    "correct": "true"
-  },
-  {
-    "type": "tfse",
-    "text": "Enunciado para V/F/Sin Evidencia.",
-    "correct": "se"
-  },
-  {
-    "type": "open",
-    "text": "Enunciado de la pregunta abierta."
-  },
-  {
-    "type": "match",
-    "text": "Relacionar cada elemento con su correspondiente.",
-    "pairs": [
-      { "left": "Elemento izquierda 1", "right": "Elemento derecha 1" },
-      { "left": "Elemento izquierda 2", "right": "Elemento derecha 2" },
-      { "left": "Elemento izquierda 3", "right": "Elemento derecha 3" }
-    ]
-  },
-  {
-    "type": "fill",
-    "text": "El [conjunto vacío] se denota con el símbolo [∅] y no contiene ningún [elemento].",
-    "extraWords": "subconjunto, ℕ, intersección"
-  }
-]
-
-Reglas:
-- "correct" en opción múltiple (type "single"): "a", "b", "c" o "d". En V/F (type "tf"): "true" o "false". En V/F/Sin Evidencia (type "tfse"): "true", "false" o "se".
-- "correct" en múltiple respuesta (type "multi"): un array con todas las letras correctas, ej: ["a", "c"].
-- "pairs": array de objetos {left, right} con los pares correctos. La columna derecha se muestra desordenada.
-- "fill": las respuestas correctas van entre corchetes en el texto: [así]. "extraWords" son palabras distractoras (opcionales), separadas por coma.
-- Se puede agregar "puntaje": 2 a cualquier pregunta para darle más peso.</pre>
-  </div>
-
-  <div class="steps">
     <div class="step">
       <div class="step-num">2</div>
       <div class="step-body">
-        <strong>Copiar el bloque JSON que devuelve la IA</strong>
-        <p>Seleccionar solo el array (desde <code>[</code> hasta <code>]</code>), sin texto introductorio.</p>
+        <strong>Copiar el prompt y pegarlo en la IA</strong>
+        <p>Botón <strong>📋 Copiar</strong> → pegar en Claude, ChatGPT, Gemini u otra IA.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">3</div>
       <div class="step-body">
-        <strong>Importar en el Generador</strong>
-        <p>Ir al Generador → sección Preguntas → clic en <strong>↓ Importar desde JSON</strong> → pegar → clic en <strong>Importar preguntas</strong>. Las preguntas aparecen todas de inmediato.</p>
+        <strong>Copiar la respuesta de la IA e importarla</strong>
+        <p>Copiar <strong>lo que responde la IA</strong> (no el prompt) y pegarlo en el cuadro del Paso 2 del panel → <strong>Importar</strong>. No hace falta recortar: si la IA agrega texto antes o después, o pone el JSON entre <code>```json</code>, el Generador toma solo la parte que va de <code>[</code> a <code>]</code>. Si por error se pega el prompt, el Generador lo avisa.</p>
       </div>
     </div>
     <div class="step">
       <div class="step-num">4</div>
       <div class="step-body">
         <strong>Revisar y ajustar</strong>
-        <p>Editar texto, puntajes u opciones que la IA no haya generado exactamente como se quería. Las preguntas abiertas que dependan del contexto específico de clase conviene escribirlas o modificarlas a mano.</p>
+        <p>Al importar aparece la lista de preguntas que necesitan revisión, y quedan marcadas en rojo (por ejemplo: <em>falta marcar las opciones correctas</em>, <em>no tiene ningún par completo</em>). El Generador no deja descargar mientras haya preguntas incompletas. Revisar también textos y puntajes: las preguntas abiertas que dependan del contexto de clase conviene escribirlas o ajustarlas a mano.</p>
       </div>
     </div>
   </div>
@@ -483,7 +434,7 @@ Reglas:
 
   <div class="callout warn">
     <span class="tag">⚠ Antes de aplicar la actividad con los estudiantes</span>
-    Revisar todas las preguntas y sus respuestas correctas, especialmente si se usó IA para generar el JSON. Probar la actividad completa (desde el ingreso del nombre hasta el envío) para asegurarse de que todo quedó bien configurado y que las respuestas se registran correctamente en la planilla.
+    Revisar todas las preguntas y sus respuestas correctas, especialmente si se usó IA. Una pregunta sin respuesta correcta nunca suma puntos, pero conviene que todas estén bien cargadas. Probar la actividad completa (desde el ingreso del nombre hasta el envío) para asegurarse de que todo quedó bien configurado y que las respuestas se registran correctamente en la planilla.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -526,13 +477,23 @@ Reglas:
   </div>
 
   <div class="callout warn">
-    <span class="tag">No hacer clic en Ejecutar</span>
-    El botón Ejecutar del editor sirve para probar funciones manualmente. La función <code>doGet</code> espera un parámetro que solo llega cuando un alumno envía la actividad, así que ejecutarla a mano da error. No es necesario ejecutar nada: el script se activa solo cuando recibe un envío.
+    <span class="tag">No hace falta ejecutar el script</span>
+    No es necesario ejecutar nada: el script se activa solo cuando recibe un envío. Si se presiona <strong>Ejecutar</strong> sobre <code>doGet</code>, el registro muestra "Se completó la ejecución" y no pasa nada más (sirve, como mucho, para que Google pida los permisos).
   </div>
 
   <div class="callout warn">
     <span class="tag">Múltiples cuentas de Google</span>
     Si el equipo tiene más de una cuenta de Google configurada, abrir Google Drive en una <strong>ventana de incógnito</strong> (Ctrl+Shift+N) antes de crear la planilla. De lo contrario, Apps Script puede abrirse con la cuenta incorrecta y fallar al implementar.
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">Una planilla por actividad</span>
+    Cada actividad necesita su propia planilla, su propio Code.gs y su propia URL. Si dos actividades distintas envían a la misma URL, las respuestas se mezclan y se corrigen con las respuestas equivocadas.
+  </div>
+
+  <div class="callout info">
+    <span class="tag">Formato de la planilla</span>
+    Con el primer envío, el script crea la hoja <strong>Respuestas</strong> con el encabezado fijo, texto ajustado, centrado y con bordes. Cada fila nueva sale con el mismo formato y la fecha completa (por ejemplo 27/10/2026 07:45:32). Si se cambia el Code.gs de una actividad que ya tiene respuestas, conviene borrar la hoja Respuestas para que se cree de nuevo con las columnas actualizadas.
   </div>
 
   <div class="panel-nav"><button class="prev">← Anterior</button><button class="next">Siguiente →</button></div>
@@ -573,7 +534,14 @@ Reglas:
       <div class="step-num">4</div>
       <div class="step-body">
         <strong>Copiar la URL del Web App</strong>
-        <p>Aparece una URL larga que empieza con <code>https://script.google.com/macros/s/...</code>. Copiarla — se necesita en el siguiente paso.</p>
+        <p>Aparece una URL larga que empieza con <code>https://script.google.com/macros/s/...</code> y termina en <code>/exec</code>. Copiarla con el botón <strong>Copiar</strong> — se necesita en el siguiente paso.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Probar la URL en una ventana de incógnito</strong>
+        <p>Abrir una ventana de incógnito (Ctrl+Shift+N), pegar la URL y agregar al final <code>?callback=p&amp;data={"nombre":"prueba"}</code>. Si aparece <code>p({"ok":true…</code>, funciona: en la planilla se crea la hoja Respuestas con una fila "prueba" (borrarla después). Si aparece <em>"No se pudo abrir el archivo"</em>, revisar que el acceso sea <strong>Cualquier usuario</strong> y volver a implementar.</p>
       </div>
     </div>
   </div>
@@ -585,7 +553,12 @@ Reglas:
 
   <div class="callout warn">
     <span class="tag">Arranque en frío</span>
-    La primera ejecución diaria puede tardar hasta 15 segundos. Abrir la URL de la Web App en el navegador 2–3 minutos antes de la clase para pre-calentar el servidor y evitar demoras al primer envío.
+    La primera ejecución diaria puede tardar hasta 30 segundos. Abrir la URL de la Web App en una ventana de incógnito 2–3 minutos antes de la clase para pre-calentar el servidor. Esa visita no agrega filas a la planilla.
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">Varias cuentas de Google en el navegador</span>
+    Con varias cuentas de Google abiertas, al abrir la URL en el navegador normal Google puede mostrar <em>"No se pudo abrir el archivo"</em> aunque todo esté bien. Es un problema de Google con las cuentas, no del script: por eso las pruebas se hacen en incógnito. La actividad envía las respuestas sin usar las cuentas del navegador, así que funciona igual para docentes y estudiantes con varias cuentas.
   </div>
 
   <div class="callout warn">
@@ -621,13 +594,20 @@ Reglas:
   <div class="callout info">
     <span class="tag">Qué lleva la actividad generada</span>
     <ul style="margin:6px 0 0;padding-left:20px">
-      <li>Todas las preguntas con corrección automática para opción múltiple, V/F, emparejar y banco de palabras</li>
-      <li>Pantalla completa forzada al comenzar</li>
-      <li>Overlay de bloqueo si el alumno sale de pantalla completa (sin envío automático)</li>
-      <li>Anti-doble-envío: si el alumno reabre el archivo ya enviado, ve "Actividad enviada"</li>
-      <li>Barra de símbolos científicos en los enunciados</li>
-      <li>Temporizador configurable</li>
+      <li>Corrección automática de opción única, múltiple respuesta, V/F, emparejar y banco de palabras, con la nota al final</li>
+      <li>Pantalla completa al comenzar</li>
+      <li>Pantalla de bloqueo si el estudiante sale de pantalla completa, cambia de ventana (Alt+Tab) u oculta la pestaña; cada salida queda registrada</li>
+      <li>Envío automático al superar las salidas permitidas (si se activó)</li>
+      <li>Control de copiar y pegar y registro de texto insertado de golpe</li>
+      <li>Temporizador: al agotarse, la actividad se envía sola</li>
+      <li>Anti-doble-envío: si el estudiante reabre la actividad después de un envío exitoso, ve "Esta actividad ya fue enviada"</li>
+      <li>Respuestas correctas protegidas: solo están en el Code.gs, no en el HTML</li>
     </ul>
+  </div>
+
+  <div class="callout warn">
+    <span class="tag">Si falta la URL</span>
+    Si se descarga la actividad sin la URL del Paso 3, el Generador lo avisa. Esa actividad sirve solo para probar: al enviar muestra <em>"Modo de prueba: … las respuestas no se guardaron"</em>.
   </div>
 
   <div class="callout warn">
@@ -639,8 +619,10 @@ Reglas:
   <p>Abrir el archivo descargado y completarlo como lo haría un alumno:</p>
   <ul>
     <li>Responder todas las preguntas y enviar.</li>
-    <li>Abrir la Google Sheet: debe haber aparecido una fila nueva con el nombre, las respuestas y el puntaje automático.</li>
-    <li>Cerrar y volver a abrir la actividad en el mismo navegador: debe mostrar "Actividad enviada" sin permitir responder de nuevo.</li>
+    <li>Al enviar, la actividad debe mostrar la nota y el detalle por pregunta. Si dice <em>"No se pudo confirmar que las respuestas llegaron a la planilla"</em>, revisar la URL (ver pestaña 4).</li>
+    <li>Abrir la Google Sheet: debe haber aparecido una fila nueva con el nombre, las respuestas, el puntaje y la nota.</li>
+    <li>Probar también salir de pantalla completa o cambiar de ventana: la salida debe quedar en las columnas de salidas.</li>
+    <li>Cerrar y volver a abrir la actividad en el mismo navegador: debe mostrar "Esta actividad ya fue enviada" sin permitir responder de nuevo.</li>
   </ul>
 
   <div class="callout tip">
@@ -654,11 +636,11 @@ Reglas:
 <!-- ═══════════════════════════════════  8 ══ -->
 <section class="panel" id="panel-github">
   <h2><span class="n">7</span>Publicar la actividad</h2>
-  <p class="sub">La actividad debe estar en un servidor web para que el envío a la planilla funcione. Estas son las opciones más comunes.</p>
+  <p class="sub">La actividad funciona como archivo local, pero también se puede publicar para compartirla por enlace. Estas son las opciones más comunes.</p>
 
   <div class="callout info">
     <span class="tag">También funciona como archivo local</span>
-    El HTML generado puede abrirse con doble clic directamente desde la computadora del estudiante — no es obligatorio publicarlo en un servidor. El envío usa JSONP, que funciona tanto desde <code>file://</code> como desde <code>https://</code>. Publicarlo en CREA o GitHub Pages sigue siendo útil si se quiere distribuir por enlace o sin depender de que el estudiante tenga el archivo.
+    El HTML generado puede abrirse con doble clic directamente desde la computadora del estudiante — no es obligatorio publicarlo en un servidor. El envío funciona tanto desde <code>file://</code> como desde <code>https://</code>. Publicarlo en CREA o GitHub Pages sigue siendo útil si se quiere distribuir por enlace o sin depender de que el estudiante tenga el archivo.
   </div>
 
   <h3 style="margin-top:24px">Opción A — CREA</h3>
@@ -760,23 +742,26 @@ Reglas:
     <dt>Repositorio</dt>
     <dd>Una "carpeta" dentro de GitHub donde se guardan los archivos de un proyecto. Cada actividad puede tener su propio repositorio, o varias actividades pueden convivir en uno.</dd>
 
-    <dt>JSONP</dt>
-    <dd>Una técnica que permite a una página web enviar datos a un servidor en otro dominio. En este sistema la actividad la usa para enviar las respuestas al script de Google sin errores de seguridad del navegador.</dd>
+    <dt>Envío de respuestas (fetch / JSONP)</dt>
+    <dd>La forma en que la actividad manda las respuestas al script de Google. Primero intenta un envío "sin cookies" (como si fuera una ventana de incógnito), que evita el error de Google cuando hay varias cuentas abiertas. Si ese método no está disponible, usa JSONP, una técnica más antigua, como respaldo.</dd>
 
     <dt>localStorage</dt>
-    <dd>Un pequeño espacio de memoria que el navegador reserva para cada página web. En este sistema se usa para recordar si un alumno ya envió la actividad: si la intenta abrir de nuevo en el mismo navegador y dispositivo, ve el mensaje "Actividad enviada" en lugar de las preguntas.</dd>
+    <dd>Un pequeño espacio de memoria que el navegador reserva para cada página web. En este sistema se usa para recordar si un alumno ya envió la actividad con éxito: si la intenta abrir de nuevo en el mismo navegador y dispositivo, ve el mensaje "Esta actividad ya fue enviada" en lugar de las preguntas. Si el envío falló, no queda bloqueado y puede volver a intentarlo.</dd>
 
     <dt>Clave localStorage</dt>
     <dd>Un nombre interno que identifica a cada actividad dentro del navegador. Si dos actividades distintas usan el mismo nombre, el navegador las confunde. Por eso cada actividad necesita una clave única, por ejemplo <code>logica_fracciones_2026</code>.</dd>
 
     <dt>Pantalla completa forzada</dt>
-    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, cambia de ventana (Alt+Tab) u oculta la pestaña, aparece una pantalla de bloqueo con aviso; cada salida queda registrada en las columnas <strong>Salidas (pantalla/ventana)</strong>, <strong>Tiempo fuera (seg)</strong> y <strong>Registro de salidas</strong> de la planilla. Por defecto el cronómetro sigue corriendo (se puede elegir pausarlo) y, si se configura un límite de salidas, la actividad se envía automáticamente al alcanzarlo. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
+    <dd>Una función del navegador que oculta la barra de pestañas, la barra de direcciones y el resto de la pantalla, mostrando solo la actividad. Si el alumno sale de pantalla completa, cambia de ventana (Alt+Tab) u oculta la pestaña, aparece una pantalla de bloqueo con aviso; cada salida queda registrada en las columnas <strong>Salidas (pantalla/ventana)</strong>, <strong>Tiempo fuera (seg)</strong> y <strong>Registro de salidas</strong> de la planilla. Por defecto el cronómetro sigue corriendo (se puede elegir pausarlo) y, si se activó el envío automático, la actividad se envía sola al superar las salidas permitidas. <em>Nota: los navegadores no permiten bloquear la tecla Escape por razones de seguridad del sistema operativo.</em></dd>
 
     <dt>Salidas (pantalla/ventana)</dt>
     <dd>Columna en la planilla de Google Sheets que registra cuántas veces el estudiante salió de la actividad: salir de pantalla completa, cambiar de ventana o de programa (Alt+Tab) u ocultar la pestaña. Se complementa con <strong>Tiempo fuera (seg)</strong> y con <strong>Registro de salidas</strong>, que detalla la hora, el motivo y la duración de cada una.</dd>
 
-    <dt>Salidas permitidas antes del envío automático</dt>
-    <dd>Opción del paso 1. Si vale 0, las salidas solo se registran. Si vale, por ejemplo, 3, al tercer abandono la actividad se envía sola con lo respondido hasta ese momento, y la columna <strong>Envío</strong> lo indica.</dd>
+    <dt>Envío automático por salidas</dt>
+    <dd>Opción del paso 1: una casilla y la cantidad de <strong>salidas permitidas</strong>. El estudiante puede salir y volver esa cantidad de veces; la salida siguiente envía la actividad con lo respondido hasta ese momento, y la columna <strong>Envío</strong> lo indica. Con 1: sale una vez y vuelve, a la segunda se envía. Con 0: se envía a la primera salida. Con la casilla desmarcada, las salidas solo se registran. La pantalla de bloqueo avisa cuántas salidas quedan.</dd>
+
+    <dt>Nota máxima</dt>
+    <dd>Opción del paso 1 (por defecto 10). Los puntos obtenidos se convierten en proporción a esa escala y se redondean a un decimal: 12 de 15 puntos = 8 sobre 10. La nota aparece en la columna <strong>Nota (sobre 10)</strong> y el estudiante la ve al enviar. Con 0 se muestran solo los puntos.</dd>
 
     <dt>Copiar y pegar</dt>
     <dd>Opción del paso 1 con tres modos. <strong>Solo dentro de la actividad</strong> (por defecto): se puede copiar y pegar texto escrito en la propia actividad, útil para reorganizar código; lo copiado desde otro programa o página se bloquea, y el texto de la actividad no sale al portapapeles del sistema. <strong>Bloqueado</strong>: no se permite copiar ni pegar. <strong>Permitido sin restricciones</strong>: comportamiento normal del navegador. Los intentos bloqueados se cuentan en la columna <strong>Pegados bloqueados</strong>.</dd>
@@ -785,7 +770,7 @@ Reglas:
     <dd>Columna que cuenta las veces que en una respuesta abierta apareció mucho texto de golpe (25 caracteres o más en un solo evento) o a un ritmo no humano (20 caracteres o más en un segundo). Suele indicar texto insertado por una extensión o un programa. La columna <strong>Registro de inserciones</strong> muestra la hora y la pregunta. Es un indicio para revisar, no una prueba.</dd>
 
     <dt>Tiempo fuera (seg)</dt>
-    <dd>Columna en la planilla que registra el total de segundos acumulados que el estudiante estuvo fuera de pantalla completa, sumando todas las salidas. Si el estudiante salió tres veces (30 seg + 15 seg + 20 seg), la columna muestra 65. Permite distinguir una salida accidental de un intento prolongado de consultar otras pestañas.</dd>
+    <dd>Columna en la planilla que registra el total de segundos acumulados que el estudiante estuvo fuera de la actividad, sumando todas las salidas. Si el estudiante salió tres veces (30 seg + 15 seg + 20 seg), la columna muestra 65. Permite distinguir una salida accidental de un intento prolongado de consultar otras pestañas.</dd>
 
     <dt>Tipo tfse (V / F / Sin Evidencia)</dt>
     <dd>Variante del tipo Verdadero/Falso que agrega una tercera opción: "Sin Evidencia", para afirmaciones que no pueden responderse con los datos disponibles. La respuesta correcta puede ser <code>"true"</code>, <code>"false"</code> o <code>"se"</code>.</dd>
