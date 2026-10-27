@@ -865,7 +865,15 @@ function copyPrompt() {
 
 function doImport() {
   var raw=document.getElementById('import-json').value.trim(), data;
-  try { data=JSON.parse(raw); } catch(e) { alert('JSON inválido: '+e.message); return; }
+  if (!raw) { alert('Pegar en este cuadro la respuesta de la IA (el JSON) y luego presionar Importar.'); return; }
+  if (/Generá una lista de preguntas en formato JSON/.test(raw)) {
+    alert('Lo que se pegó es el prompt, no la respuesta de la IA.\n\n1. Copiar el prompt (botón 📋 Copiar).\n2. Pegarlo en Claude, ChatGPT u otra IA.\n3. Copiar lo que responde la IA (empieza con [ ) y pegarlo en este cuadro.');
+    return;
+  }
+  // Tolerar texto extra o bloques ```json alrededor del array
+  var i0=raw.indexOf('['), i1=raw.lastIndexOf(']');
+  if (i0>=0 && i1>i0) raw=raw.slice(i0,i1+1);
+  try { data=JSON.parse(raw); } catch(e) { alert('No se pudo leer el JSON: '+e.message+'\n\nRevisar que se haya copiado completa la respuesta de la IA (desde [ hasta ]).'); return; }
   if (!Array.isArray(data)) { alert('El JSON debe ser un array [...].'); return; }
   var imported=0;
   data.forEach(function(it) {
