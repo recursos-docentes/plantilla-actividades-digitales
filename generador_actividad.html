@@ -477,7 +477,7 @@ Cantidad de preguntas: [INDICAR CANTIDAD]<button class="prompt-copy-btn" onclick
 
     <div class="callout warn">
       <strong>⚠ Arranque en frío — primer envío del día</strong>
-      La primera vez que alguien envía en el día, Apps Script puede tardar hasta 30 segundos en responder. Cada actividad necesita su propia planilla y su propio Code.gs: si dos actividades distintas usan la misma URL, las respuestas se mezclan y se corrigen con las respuestas equivocadas. El primer estudiante puede recibir la actividad pero no ver la corrección inmediata. Para evitarlo: abrir la URL de la aplicación web en el navegador 2 o 3 minutos antes de iniciar la actividad (esto "calienta" el servidor).
+      La primera vez que alguien envía en el día, Apps Script puede tardar hasta 30 segundos en responder. Cada actividad necesita su propia planilla y su propio Code.gs: si dos actividades distintas usan la misma URL, las respuestas se mezclan y se corrigen con las respuestas equivocadas. El primer estudiante puede recibir la actividad pero no ver la corrección inmediata. Para evitarlo: abrir la URL de la aplicación web en una ventana de incógnito 2 o 3 minutos antes de iniciar la actividad (esto "calienta" el servidor). Usar incógnito porque, con varias cuentas de Google abiertas, Google muestra "No se pudo abrir el archivo" aunque la aplicación funcione.
     </div>
 
     <div class="step-nav">
@@ -1626,14 +1626,28 @@ var ACT_JS=[
 '  try{localStorage.setItem(LS_KEY,JSON.stringify({sent:true,ts:Date.now()}));}catch(e){}',
 '  if(!WEB_URL){setTimeout(function(){showResult(null,"nourl");},800);return;}',
 '  var cb="cb_"+Date.now();',
-'  var tm=setTimeout(function(){cleanup();showResult(null,"timeout");},30000);',
-'  window[cb]=function(d){clearTimeout(tm);cleanup();showResult(d);};',
-'  function cleanup(){try{delete window[cb];}catch(e){}var s=document.getElementById("_sc");if(s)s.parentNode.removeChild(s);}',
 '  var sep=WEB_URL.indexOf("?")>=0?"&":"?";',
-'  var sc=document.createElement("script");sc.id="_sc";',
-'  sc.onerror=function(){clearTimeout(tm);cleanup();showResult(null,"error");};',
-'  sc.src=WEB_URL+sep+"data="+encodeURIComponent(JSON.stringify(payload))+"&callback="+cb;',
-'  document.head.appendChild(sc);',
+'  var src=WEB_URL+sep+"data="+encodeURIComponent(JSON.stringify(payload))+"&callback="+cb;',
+'  /* 1º: fetch SIN cookies (evita el error de Google con varias cuentas abiertas). 2º: JSONP como respaldo. */',
+'  if(window.fetch){',
+'    var ctl=window.AbortController?new AbortController():null;',
+'    var ft=setTimeout(function(){if(ctl)ctl.abort();},30000);',
+'    fetch(src,{credentials:"omit",cache:"no-store",signal:ctl?ctl.signal:undefined}).then(function(r){return r.text();}).then(function(t){',
+'      clearTimeout(ft);',
+'      var a=t.indexOf("("),b=t.lastIndexOf(")");',
+'      var d=null;try{d=JSON.parse(t.slice(a+1,b));}catch(x){}',
+'      if(d)showResult(d);else showResult(null,"error");',
+'    }).catch(function(err){clearTimeout(ft);if(err&&err.name==="AbortError")showResult(null,"timeout");else jsonp();});',
+'  }else{jsonp();}',
+'  function jsonp(){',
+'    var tm=setTimeout(function(){cleanup();showResult(null,"timeout");},30000);',
+'    window[cb]=function(d){clearTimeout(tm);cleanup();showResult(d);};',
+'    function cleanup(){try{delete window[cb];}catch(e){}var s=document.getElementById("_sc");if(s)s.parentNode.removeChild(s);}',
+'    var sc=document.createElement("script");sc.id="_sc";',
+'    sc.onerror=function(){clearTimeout(tm);cleanup();showResult(null,"error");};',
+'    sc.src=src;',
+'    document.head.appendChild(sc);',
+'  }',
 '}',
 '',
 'function showResult(data,why){',
