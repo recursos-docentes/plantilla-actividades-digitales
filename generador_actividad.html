@@ -172,6 +172,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--serif);line-height
 .mode-panel-hd.mp-open .mode-panel-arrow{transform:rotate(90deg)}
 .mode-panel-body{display:none;padding:16px;background:var(--card)}
 .mode-panel-body.mp-open{display:block}
+.ai-counts{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.ai-counts label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--text);background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:6px 8px}
+.ai-counts input{width:56px;background:var(--card);border:1px solid var(--border);border-radius:5px;padding:4px 6px;font-family:var(--serif);font-size:14px;text-align:center}
 .prompt-box{position:relative;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:12px 14px 12px 14px;margin-bottom:12px;font-family:monospace;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;word-break:break-word}
 .prompt-copy-btn{position:absolute;top:8px;right:8px;font-size:11px;padding:3px 9px;background:var(--acc);color:#fff;border:none;border-radius:5px;cursor:pointer;font-family:var(--serif);font-weight:700}
 .prompt-copy-btn:hover{opacity:.85}
@@ -304,7 +307,24 @@ input[type=file]{display:none}
           <span class="mode-panel-arrow">▶</span>
         </div>
         <div class="mode-panel-body" id="mp-ia-body">
-          <p style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Paso 1:</strong> Copiar el prompt y pegarlo en Claude, ChatGPT u otra IA.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:10px"><strong style="color:var(--text)">Paso 1:</strong> Completar los datos (el prompt se arma solo), copiarlo y pegarlo en Claude, ChatGPT u otra IA.</p>
+          <div class="ai-form">
+            <div class="grid-2">
+              <div class="field"><label>Tema</label><input type="text" id="ai-tema" placeholder="Ej: Consultas SELECT con WHERE y ORDER BY" oninput="buildPrompt()"></div>
+              <div class="field"><label>Curso / nivel (opcional)</label><input type="text" id="ai-nivel" placeholder="Ej: 2.º BT Informática, UTU" oninput="buildPrompt()"></div>
+            </div>
+            <div class="field" style="margin-bottom:6px"><label>Cantidad de preguntas por tipo</label></div>
+            <div class="ai-counts">
+              <label>Opción única<input type="number" min="0" value="0" data-t="single" oninput="buildPrompt()"></label>
+              <label>Múltiple respuesta<input type="number" min="0" value="0" data-t="multi" oninput="buildPrompt()"></label>
+              <label>V / F<input type="number" min="0" value="0" data-t="tf" oninput="buildPrompt()"></label>
+              <label>V / F / Sin Evidencia<input type="number" min="0" value="0" data-t="tfse" oninput="buildPrompt()"></label>
+              <label>Abierta<input type="number" min="0" value="0" data-t="open" oninput="buildPrompt()"></label>
+              <label>Emparejar<input type="number" min="0" value="0" data-t="match" oninput="buildPrompt()"></label>
+              <label>Banco de palabras<input type="number" min="0" value="0" data-t="fill" oninput="buildPrompt()"></label>
+            </div>
+            <p id="ai-total" style="font-size:13px;color:var(--acc);font-weight:700;margin:6px 0 12px"></p>
+          </div>
           <div class="prompt-box" id="ai-prompt-text">Generá una lista de preguntas en formato JSON para un cuestionario interactivo. El resultado debe ser un array JSON, sin texto adicional, siguiendo estos formatos según el tipo:
 
 Opción única: {"type":"single","text":"Enunciado","opts":["Op A","Op B","Op C","Op D"],"correct":"a","puntaje":1}
@@ -797,6 +817,36 @@ function toggleMode(mode) {
   body.classList.toggle('mp-open', !isOpen);
 }
 
+var AI_TYPE_NAMES={single:'Opción única',multi:'Múltiple respuesta',tf:'Verdadero / Falso',tfse:'V / F / Sin Evidencia',open:'Abierta',match:'Emparejar',fill:'Banco de palabras'};
+var AI_BASE=null;
+function buildPrompt(){
+  var box=document.getElementById('ai-prompt-text'); if(!box) return;
+  var btn=box.querySelector('.prompt-copy-btn');
+  if(AI_BASE===null){
+    var t=box.textContent.replace(/📋\s*Copiar\s*$/,'');
+    AI_BASE=t.replace(/\n*Tema:[\s\S]*$/,'').trim();
+  }
+  var tema=(document.getElementById('ai-tema').value||'').trim();
+  var nivel=(document.getElementById('ai-nivel').value||'').trim();
+  var lines=[],total=0;
+  document.querySelectorAll('.ai-counts input').forEach(function(inp){
+    var n=Math.max(0,parseInt(inp.value)||0);
+    if(n>0){lines.push('- '+AI_TYPE_NAMES[inp.dataset.t]+' ("'+inp.dataset.t+'"): '+n);total+=n;}
+  });
+  var tail='\n\nTema: '+(tema||'[INDICAR TEMA]');
+  if(nivel) tail+='\nCurso / nivel de los estudiantes: '+nivel;
+  if(total){
+    tail+='\nCantidad total: '+total+' preguntas, distribuidas exactamente así:\n'+lines.join('\n')+'\nNo incluir preguntas de otros tipos.';
+  } else {
+    tail+='\nCantidad de preguntas: [INDICAR CANTIDAD] (combinar los tipos que mejor se adapten al tema)';
+  }
+  box.textContent=AI_BASE+tail;
+  if(btn) box.appendChild(btn);
+  var tt=document.getElementById('ai-total');
+  if(tt) tt.textContent=total?('Total: '+total+' pregunta'+(total===1?'':'s')):'';
+}
+document.addEventListener('DOMContentLoaded', buildPrompt);
+
 function copyPrompt() {
   var el = document.getElementById('ai-prompt-text');
   var text = el.textContent || el.innerText || '';
@@ -996,6 +1046,7 @@ var GS_FN=[
 '      hdrs.push("Correctas","Total","Puntos obtenidos","Puntos totales",MAX_GRADE>0?"Nota (sobre "+MAX_GRADE+")":"Nota","Salidas (pantalla/ventana)","Tiempo fuera (seg)","Pegados bloqueados","Inserciones sospechosas","Registro de salidas","Registro de inserciones","Envío");',
 '      sh.appendRow(hdrs);',
 '    }',
+'    if(sh.getFrozenRows()===0)formatHeader(sh,sh.getLastColumn());',
 '    var row=[new Date(),data.nombre||""];',
 '    QUESTION_IDS.forEach(function(id){var v=data[id];row.push(Array.isArray(v)?JSON.stringify(v):(v||""));});',
 '    var correct=0,totalQ=0,earned=0,totalPts=0,details={};',
@@ -1028,6 +1079,7 @@ var GS_FN=[
 '    var nota=MAX_GRADE>0&&totalPts>0?Math.round(earned/totalPts*MAX_GRADE*10)/10:"";',
 '    row.push(correct,totalQ,earned,totalPts,nota,data.fsExits||0,data.fsOutSec||0,data.pasteBlocked||0,data.suspicious||0,data.exitLog||"",data.suspLog||"",data.envio||"Manual");',
 '    sh.appendRow(row);',
+'    formatRow(sh,sh.getLastRow(),row.length);',
 '    var res={ok:true,correct:correct,total:totalQ,earned:earned,totalPts:totalPts,nota:nota,maxGrade:MAX_GRADE,details:details};',
 '    return ContentService.createTextOutput(cb+"("+JSON.stringify(res)+")").setMimeType(ContentService.MimeType.JAVASCRIPT);',
 '  }catch(err){',
@@ -1035,6 +1087,21 @@ var GS_FN=[
 '    return ContentService.createTextOutput(cb2+"({\\"ok\\":false,\\"error\\":\\""+err.message+"\\"})")'+
 '      .setMimeType(ContentService.MimeType.JAVASCRIPT);',
 '  }',
+'}',
+'',
+'/* Formato de la planilla: encabezado fijo, texto ajustado, centrado y con bordes */',
+'function formatHeader(sh,n){',
+'  var r=sh.getRange(1,1,1,n);',
+'  r.setWrap(true).setHorizontalAlignment("center").setVerticalAlignment("middle").setFontWeight("bold").setBackground("#e8ecfd").setBorder(true,true,true,true,true,true);',
+'  sh.setFrozenRows(1);',
+'  sh.setColumnWidths(1,n,100);',
+'  sh.setColumnWidth(1,140);',
+'  r.getValues()[0].forEach(function(t,i){if(/^Registro/.test(String(t)))sh.setColumnWidth(i+1,220);});',
+'}',
+'function formatRow(sh,rw,n){',
+'  var r=sh.getRange(rw,1,1,n);',
+'  r.setWrap(true).setHorizontalAlignment("center").setVerticalAlignment("middle").setBorder(true,true,true,true,true,true);',
+'  sh.getRange(rw,1).setNumberFormat("d/m/yyyy hh:mm:ss");',
 '}'
 ].join('\n');
 
