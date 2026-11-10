@@ -1,28 +1,25 @@
 # Generador de Actividades Digitales
-
+ 
 Herramienta para crear actividades interactivas con corrección automática vía Google Apps Script. Produce un HTML autocontenido que los estudiantes pueden abrir directamente desde su computadora (sin necesidad de publicarlo en ningún servidor), responden y envían — las respuestas llegan a una planilla de Google Sheets y el estudiante ve su corrección al instante.
-
+ 
 📖 **[Guía de uso — Actividades Interactivas](https://recursos-docentes.github.io/plantilla-actividades-digitales/)**
-
+ 
 ---
-
+ 
 ## Uso rápido
-
+ 
 1. Abrir `generador_actividad.html` en el navegador (doble clic o arrastrar).
 2. Completar los 4 pasos del asistente.
 3. Distribuir el HTML generado a los estudiantes (por cualquier medio: mail, CREA, Drive, USB, etc.). No requiere publicación en servidor.
-
 ---
-
+ 
 ## Los 4 pasos del asistente
-
+ 
 ### Paso 1 — Configuración
 - **Título**, **materia** e **instrucción inicial** para el estudiante.
 - **Tiempo límite** (en minutos; 0 = sin límite).
 - **Clave de sesión**: identificador único para esta actividad en `localStorage` (evita que el estudiante reenvíe). Usar una clave distinta para cada actividad, por ejemplo `conjuntos_2026_g1`.
-
 - **Nota máxima** (por defecto 10): el puntaje se convierte proporcionalmente a esa escala (12 de 15 puntos = 8 sobre 10). 0 = mostrar solo puntos. Cada pregunta puede valer desde 0,5 puntos (en pasos de 0,5); en el Paso 2 se ve el total.
-
 **Control durante la evaluación:**
 - **Envío automático por salidas** (casilla + cantidad de salidas permitidas): el estudiante puede salir y volver esa cantidad de veces; la salida siguiente envía la actividad con lo respondido. Con 1 sale una vez y vuelve, a la segunda se envía; con 0 se envía a la primera salida. Si la casilla está desmarcada, las salidas solo se registran. Cuenta salir de pantalla completa, Alt+Tab y cambio de pestaña.
 - **Copiar y pegar**:
@@ -30,12 +27,11 @@ Herramienta para crear actividades interactivas con corrección automática vía
   - *Bloqueado*: no se permite copiar ni pegar.
   - *Permitido sin restricciones*: comportamiento normal.
 - **Pausar el reloj mientras está fuera**: desmarcado por defecto (el tiempo sigue corriendo aunque el estudiante salga).
-
 ### Paso 2 — Preguntas
 Agregar preguntas una a una con los botones de tipo, o importar desde JSON.
-
+ 
 **Tipos disponibles:**
-
+ 
 | Tipo | Descripción | Corrección automática |
 |------|-------------|----------------------|
 | Opción única | Múltiple opción, una sola correcta | Sí |
@@ -45,24 +41,45 @@ Agregar preguntas una a una con los botones de tipo, o importar desde JSON.
 | Abierta | Respuesta libre en texto | No (revisar en planilla) |
 | Emparejar | Relacionar columna izquierda con derecha | Sí (parcial por par) |
 | Banco de palabras | Completar espacios eligiendo de un banco | Sí (parcial por hueco) |
-
+| Ordenar líneas | Armar un código (o una secuencia) ordenando líneas mezcladas; puede incluir líneas que sobran | Sí (todo o nada, o parcial según las líneas en orden) |
+ 
+**Código en los enunciados:** el botón «</> Código» del enunciado inserta un bloque de código Java, que el estudiante ve en letra de código, con la sangría respetada y colores (como en un editor). También se puede escribir a mano entre tres comillas invertidas:
+ 
+````
+¿Qué muestra en consola?
+```java
+public static int doble(int n) {
+    return n * 2;
+}
+```
+````
+ 
+- Escribir `numerado` después de ```` ```java ```` muestra los números de línea (útil para preguntas del tipo «¿en qué línea está el error?»).
+- Un fragmento corto dentro de una oración va entre comillas invertidas simples: `` `return` ``. También funciona en las opciones.
+- En el editor, la tecla Tab inserta 4 espacios.
+- En **Banco de palabras**, los huecos `[entre corchetes]` pueden ir dentro del bloque de código. Para escribir corchetes reales (por ejemplo, arrays) usar `\[` y `\]`.
+**Ordenar líneas:** se escriben las líneas en el orden correcto, una por renglón y sin sangría (la sangría se agrega sola según las llaves `{` `}`). Opcionalmente, líneas que sobran como distractores. El estudiante hace clic en las líneas para armar el código. El orden correcto queda solo en `Code.gs`: en el HTML las líneas están mezcladas. Con «Puntaje parcial» se otorga una parte del puntaje según cuántas líneas quedan en el orden correcto; sin esa opción, es todo o nada.
+ 
 **Barra de símbolos científicos:** hacer clic en un enunciado para activarlo y luego seleccionar el símbolo (superíndices, subíndices, letras griegas, operadores de química/física).
-
+ 
 **Importar desde JSON:** el formato es un array de objetos:
-```json
+````json
 [
   {"type":"single","text":"¿Cuánto es 2+2?","opts":["3","4","5","6"],"correct":"b","puntaje":1},
   {"type":"tf","text":"El agua hierve a 100°C a nivel del mar.","correct":"true","puntaje":1},
   {"type":"tfse","text":"Todos los metales son buenos conductores.","correct":"true","puntaje":1},
   {"type":"match","text":"Relacionar","pairs":[{"left":"H₂O","right":"Agua"},{"left":"NaCl","right":"Sal"}],"puntaje":2},
   {"type":"fill","text":"El [hidrógeno] tiene número atómico [1].","extraWords":"oxígeno,carbono","puntaje":2},
-  {"type":"open","text":"Explicar el proceso de ósmosis.","puntaje":3}
+  {"type":"open","text":"Explicar el proceso de ósmosis.","puntaje":3},
+  {"type":"order","text":"Ordenar las líneas para que la función devuelva el doble.","lines":["public static int doble(int n) {","return n * 2;","}"],"extra":["System.out.println(n);"],"parcial":true,"puntaje":2}
 ]
-```
-
+````
+ 
+En `order`: `lines` es el orden correcto; `extra` (opcional) son líneas que sobran; `alts` (opcional) es una lista de otros órdenes válidos, por ejemplo cuando dos líneas pueden ir en cualquier orden; `parcial` (por defecto `true`) da puntaje parcial. En el JSON, un bloque de código dentro de `text` se escribe con `\n` para los saltos de línea: `"text":"Enunciado\n```java\nint x = 5;\n```"`.
+ 
 ### Paso 3 — Planilla
 Conectar con Google Sheets vía Apps Script:
-
+ 
 1. Descargar el archivo `Code.gs`.
 2. Abrir Google Drive y crear una planilla nueva. ⚠ Si se tienen varias cuentas de Google, abrir Drive en una ventana de incógnito (Ctrl+Shift+N).
 3. En la planilla: **Extensiones → Apps Script**.
@@ -71,22 +88,19 @@ Conectar con Google Sheets vía Apps Script:
    - La primera vez, **autorizar el acceso**: *Autorizar acceso* → elegir la cuenta → si aparece "Google no verificó esta app": *Configuración avanzada → Ir a (proyecto)* → *Permitir*.
 6. Copiar la URL de la aplicación web y pegarla en el campo del generador.
 7. Probar la URL en una ventana de incógnito agregando `?callback=p&data={"nombre":"prueba"}`: debe responder `p({"ok":true…`. Con varias cuentas de Google abiertas, el navegador normal puede mostrar "No se pudo abrir el archivo" aunque funcione.
-
 > **Arranque en frío:** la primera ejecución del día puede tardar hasta 15 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
-
+ 
 ### Paso 4 — Descargar
 - **Descargar actividad HTML**: el archivo listo para distribuir a los estudiantes.
-
 El HTML funciona abriéndolo directamente desde cualquier computadora (doble clic en el archivo). No necesita estar publicado en un servidor para que el envío a Google Sheets funcione. Formas de distribuirlo:
-
+ 
 - **Correo / Drive / CREA**: enviar el archivo directamente.
 - **GitHub Pages** (opcional): subir al repositorio y activar Pages en Configuración → Pages. Útil si se quiere un enlace permanente.
 - **CREA como recurso web** (opcional): comprimir el HTML en un `.zip` y cargarlo como *Paquete de contenido web* en Recursos.
-
 ---
-
+ 
 ## Columnas en la planilla de respuestas
-
+ 
 | Columna | Contenido |
 |---------|-----------|
 | Timestamp | Fecha y hora de envío |
@@ -104,34 +118,35 @@ El HTML funciona abriéndolo directamente desde cualquier computadora (doble cli
 | Registro de salidas | Hora, motivo y duración de cada salida |
 | Registro de inserciones | Hora y pregunta de cada inserción sospechosa |
 | Envío | `Manual` o `Automático` con el motivo (límite de salidas o tiempo agotado) |
-
+ 
 > Si se reutiliza una planilla con la hoja "Respuestas" creada por una versión anterior, las columnas nuevas no tendrán encabezado. Conviene usar una planilla nueva o borrar esa hoja.
-
+ 
 ---
-
+ 
 ## Formato de la actividad generada
-
+ 
 El HTML que recibe el estudiante incluye:
-
+ 
 - **Pantalla de inicio**: título, materia, instrucciones y campo para ingresar nombre.
 - **Barra de progreso**: muestra en tiempo real cuántas preguntas fueron respondidas.
 - **Preguntas numeradas**: cada pregunta tiene su número (`01`, `02`...) en una columna izquierda con separadores punteados entre preguntas.
 - **Pantalla de resultados**: al enviar, el estudiante ve su puntaje desglosado por pregunta (si el GS está conectado) o una confirmación de envío.
 - **Pantalla completa obligatoria**: al iniciar se solicita modo pantalla completa; si el estudiante sale de ella, cambia de ventana o de pestaña, aparece una pantalla de bloqueo y la salida queda registrada en la planilla.
+- **Herramientas del navegador bloqueadas**: durante la actividad se bloquean F12, Ctrl+Shift+I/J/C, Ctrl+U y el clic derecho. Ninguna página web puede impedirlo del todo (se pueden abrir desde el menú del navegador, lo que obliga a salir de pantalla completa y queda registrado como salida).
 - **Respuestas protegidas**: las respuestas correctas (incluidas las del banco de palabras) solo están en `Code.gs`, no en el HTML del estudiante.
-
 ---
-
+ 
 ## Preguntas frecuentes
-
+ 
 **¿El archivo funciona abriéndolo directamente desde la computadora?**  
 Sí. El HTML generado puede abrirse con doble clic desde cualquier carpeta o dispositivo. El envío a Google Sheets usa JSONP, que funciona tanto desde `file://` como desde un servidor web. No es necesario publicar el archivo en ningún servidor.
-
+ 
 **¿Qué pasa si el estudiante cierra el navegador antes de enviar?**  
 Las respuestas no se guardan — deben reempezar. Considerar usar la clave de sesión para marcar actividades ya completadas.
-
+ 
 **¿Cómo actualizar las preguntas de una actividad ya publicada?**  
 Regenerar el HTML con el generador y reemplazar el archivo en el servidor. Si se agregan preguntas, también hay que re-descargar y re-deployer el `Code.gs`.
-
+ 
 **¿Las preguntas abiertas se corrigen automáticamente?**  
 No. El texto escrito por el estudiante llega a la planilla y debe revisarse manualmente.
+ 
