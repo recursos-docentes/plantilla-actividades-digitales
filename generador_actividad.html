@@ -1108,7 +1108,9 @@ function checkBeforeDownload() {
 // ═══════════════════════════════════════════════════════
 function buildCodeGS() {
   var ids=questions.map(function(q){return q.id;}),
-      singles={}, multis={}, pairs={}, fills={}, orders={}, pts={};
+      singles={}, multis={}, pairs={}, fills={}, orders={}, pts={}, labels={};
+  // Nombres de columna legibles en la planilla: «P1 · Opción única» (mismo orden que en el Paso 2)
+  questions.forEach(function(q,i){ labels[q.id]='P'+(i+1)+' · '+TYPE_LABELS[q.type]; });
   questions.forEach(function(q){
     pts[q.id]=parseFloat(q.points)||1;
     if (q.type==='single'||q.type==='tf'||q.type==='tfse') singles[q.id]=q.correct;
@@ -1122,6 +1124,7 @@ function buildCodeGS() {
     +'// 2. Implementar → Nueva implementación → Aplicación web → Cualquier usuario\n\n'
     +'var SHEET_NAME="Respuestas";\n'
     +'var QUESTION_IDS='+JSON.stringify(ids)+';\n'
+    +'var QUESTION_LABELS='+JSON.stringify(labels)+';\n'
     +'var CORRECT_ANSWERS='+JSON.stringify(singles)+';\n'
     +'var CORRECT_MULTI='+JSON.stringify(multis)+';\n'
     +'var CORRECT_PAIRS='+JSON.stringify(pairs)+';\n'
@@ -1144,7 +1147,7 @@ var GS_FN=[
 '    if(!sh){',
 '      sh=ss.insertSheet(SHEET_NAME);',
 '      var hdrs=["Timestamp","Nombre"];',
-'      QUESTION_IDS.forEach(function(id){hdrs.push(id);});',
+'      QUESTION_IDS.forEach(function(id){hdrs.push(QUESTION_LABELS[id]||id);});',
 '      hdrs.push("Correctas","Total","Puntos obtenidos","Puntos totales",MAX_GRADE>0?"Nota (sobre "+MAX_GRADE+")":"Nota","Salidas (pantalla/ventana)","Tiempo fuera (seg)","Pegados bloqueados","Inserciones sospechosas","Registro de salidas","Registro de inserciones","Envío");',
 '      sh.appendRow(hdrs);',
 '    }',
