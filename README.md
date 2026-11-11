@@ -171,7 +171,14 @@ Regenerar el HTML con el generador y reemplazar el archivo en el servidor. Si se
 **¿Las preguntas abiertas se corrigen automáticamente?**  
 No. El texto escrito por el estudiante llega a la planilla y debe revisarse manualmente.
  
-
 ---
 
-<sub>Prof. Elizabeth Izquierdo con asistencia de Claude</sub>
+<div align="center">
+
+***
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Licencia Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a> 
+
+####  **Prof. Elizabeth Izquierdo con asistencia de Claude**
+</div>
+
