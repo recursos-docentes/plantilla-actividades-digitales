@@ -19,6 +19,8 @@ Herramienta para crear actividades interactivas con corrección automática vía
 - **Título**, **materia** e **instrucción inicial** para el estudiante.
 - **Tiempo límite** (en minutos; 0 = sin límite).
 - **Clave de sesión**: identificador único para esta actividad en `localStorage` (evita que el estudiante reenvíe). Usar una clave distinta para cada actividad, por ejemplo `conjuntos_2026_g1`.
+- **Lista de estudiantes** (recomendada): un nombre por renglón; se puede pegar la columna de una planilla. Con lista, el estudiante **elige su nombre** de un desplegable en vez de escribirlo, y el `Code.gs` solo acepta nombres de la lista.
+- **Al enviar, el estudiante ve**: *Automático* (recomendado: nota y corrección si hay lista, solo «Actividad enviada» si no la hay), *Nota y corrección de cada pregunta*, *Solo la nota* o *Solo «Actividad enviada»*. En la planilla siempre queda todo.
 - **Nota máxima** (por defecto 10): el puntaje se convierte proporcionalmente a esa escala (12 de 15 puntos = 8 sobre 10). 0 = mostrar solo puntos. Cada pregunta puede valer desde 0,5 puntos (en pasos de 0,5); en el Paso 2 se ve el total.
 **Control durante la evaluación:**
 - **Envío automático por salidas** (casilla + cantidad de salidas permitidas): el estudiante puede salir y volver esa cantidad de veces; la salida siguiente envía la actividad con lo respondido. Con 1 sale una vez y vuelve, a la segunda se envía; con 0 se envía a la primera salida. Si la casilla está desmarcada, las salidas solo se registran. Cuenta salir de pantalla completa, Alt+Tab y cambio de pestaña.
@@ -87,7 +89,7 @@ Conectar con Google Sheets vía Apps Script:
 5. **Implementar → Nueva implementación** → Tipo: Aplicación web → Ejecutar como: yo → Acceso: Cualquier usuario → Implementar.
    - La primera vez, **autorizar el acceso**: *Autorizar acceso* → elegir la cuenta → si aparece "Google no verificó esta app": *Configuración avanzada → Ir a (proyecto)* → *Permitir*.
 6. Copiar la URL de la aplicación web y pegarla en el campo del generador.
-7. Probar la URL en una ventana de incógnito agregando `?callback=p&data={"nombre":"prueba"}`: debe responder `p({"ok":true…`. Con varias cuentas de Google abiertas, el navegador normal puede mostrar "No se pudo abrir el archivo" aunque funcione.
+7. Probar la URL en una ventana de incógnito agregando `?callback=p`: debe responder `p({"ok":true,"ping":true…` (no agrega filas). Con varias cuentas de Google abiertas, el navegador normal puede mostrar "No se pudo abrir el archivo" aunque funcione.
 > **Arranque en frío:** la primera ejecución del día puede tardar hasta 15 segundos. Abrir la URL de la aplicación web en el navegador 2-3 minutos antes de la clase para pre-calentar el servidor.
  
 ### Paso 4 — Descargar
@@ -134,6 +136,25 @@ El HTML que recibe el estudiante incluye:
 - **Pantalla completa obligatoria**: al iniciar se solicita modo pantalla completa; si el estudiante sale de ella, cambia de ventana o de pestaña, aparece una pantalla de bloqueo y la salida queda registrada en la planilla.
 - **Herramientas del navegador bloqueadas**: durante la actividad se bloquean F12, Ctrl+Shift+I/J/C, Ctrl+U y el clic derecho. Ninguna página web puede impedirlo del todo (se pueden abrir desde el menú del navegador, lo que obliga a salir de pantalla completa y queda registrado como salida).
 - **Respuestas protegidas**: las respuestas correctas (incluidas las del banco de palabras) solo están en `Code.gs`, no en el HTML del estudiante.
+- **Un solo envío por nombre**: lo controla el `Code.gs` en la planilla (no el navegador), así que no se evita con incógnito ni borrando datos. Para que alguien repita, borrar su fila en la hoja Respuestas.
+
+---
+
+## Seguridad
+
+El estudiante tiene el archivo HTML, así que puede ver la URL del `Code.gs` y mandarle pedidos a mano. Por eso las protecciones están en el servidor:
+
+| Riesgo | Protección |
+|--------|-----------|
+| Ver las respuestas con F12 o abriendo el HTML | Las respuestas solo están en `Code.gs` |
+| Enviar varias veces (incógnito, borrar datos) | Un solo envío por nombre, verificado en la planilla |
+| Enviar con nombre ajeno o inventado | Con **lista de estudiantes**, solo se aceptan nombres de la lista |
+| Usar la corrección para «probar» respuestas con nombres inventados | Sin lista, *Automático* no muestra nota ni corrección; con lista, cada prueba gasta el intento de un nombre real y queda en la planilla |
+| Escribir una fórmula (`=…`) en una respuesta | Se guarda como texto |
+
+Lo que **no** se puede evitar desde una página web: un estudiante que elige el nombre de un compañero antes que él (queda registrado con la hora: si un compañero avisa que «ya figura enviado», revisar esa fila), y los contadores de salidas y pegados, que los informa el navegador: son un indicio, no una prueba. Si se elige *Nota y corrección* **sin** lista, el generador lo advierte.
+
+> Las actividades generadas antes de esta versión siguen funcionando con su `Code.gs` anterior. Para que tengan estas protecciones, volver a generar **los dos archivos** (`Code.gs` y HTML), pegar el `Code.gs` nuevo y hacer **Implementar → Gestionar implementaciones → Editar → Nueva versión**.
 ---
  
 ## Preguntas frecuentes

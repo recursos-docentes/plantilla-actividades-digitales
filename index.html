@@ -300,6 +300,8 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
         <strong>Completar la sección Configuración</strong>
         <p>Título, materia, instrucción inicial, tiempo límite (0 = sin límite) y clave de sesión. Además:</p>
         <ul style="margin:6px 0 0;padding-left:20px;font-size:14px">
+          <li><strong>Lista de estudiantes</strong> (recomendada): un nombre por renglón. El estudiante elige su nombre de un desplegable y la planilla acepta <strong>un solo envío por nombre</strong> (para que alguien repita, borrar su fila).</li>
+          <li><strong>Al enviar, el estudiante ve</strong>: <em>Automático</em> (recomendado) muestra nota y corrección si hay lista, y solo «Actividad enviada» si no la hay. Sin lista, cualquiera podría enviar con un nombre inventado para «probar» respuestas.</li>
           <li><strong>Nota máxima</strong> (por defecto 10): los puntos se convierten proporcionalmente a esa escala.</li>
           <li><strong>Envío automático por salidas</strong>: casilla + cantidad de salidas permitidas.</li>
           <li><strong>Copiar y pegar</strong>: solo dentro de la actividad, bloqueado o permitido.</li>
@@ -541,7 +543,7 @@ footer strong{color:#fff;display:block;margin-bottom:4px;font-size:14px}
       <div class="step-num">5</div>
       <div class="step-body">
         <strong>Probar la URL en una ventana de incógnito</strong>
-        <p>Abrir una ventana de incógnito (Ctrl+Shift+N), pegar la URL y agregar al final <code>?callback=p&amp;data={"nombre":"prueba"}</code>. Si aparece <code>p({"ok":true…</code>, funciona: en la planilla se crea la hoja Respuestas con una fila "prueba" (borrarla después). Si aparece <em>"No se pudo abrir el archivo"</em>, revisar que el acceso sea <strong>Cualquier usuario</strong> y volver a implementar.</p>
+        <p>Abrir una ventana de incógnito (Ctrl+Shift+N), pegar la URL y agregar al final <code>?callback=p</code>. Si aparece <code>p({"ok":true,"ping":true…</code>, funciona (no se agrega ninguna fila). Para probar un envío completo, abrir la actividad descargada, enviarla y después borrar esa fila de la planilla. Si aparece <em>"No se pudo abrir el archivo"</em>, revisar que el acceso sea <strong>Cualquier usuario</strong> y volver a implementar.</p>
       </div>
     </div>
   </div>
